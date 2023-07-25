@@ -20,12 +20,12 @@ public class Member extends BaseTimeEntity {
     private Long uid; // PK
 
     @Column(name = "email", nullable = false, unique = true)
-    private String email; // 이메일
+    private String memberEmail; // 이메일
 
-    private String password; // 비밀번호
+    private String memberPassword; // 비밀번호
 
     @Column(name = "nickname", nullable = false, length = 30, unique = true)
-    private String nickName; // 닉네임
+    private String memberNickName; // 닉네임
 
     @Column(name = "certificated_at", nullable = false)
     private LocalDate certificatedAt; // 인증 날짜
@@ -43,12 +43,12 @@ public class Member extends BaseTimeEntity {
     /* 회원 정보 수정 */
     // 닉네임 변경
     public void updateNickName(String nickName) {
-        this.nickName = nickName;
+        this.memberNickName = nickName;
     }
 
     // 비밀번호 변경
     public void updatePassword(PasswordEncoder passwordEncoder, String password){
-        this.password = passwordEncoder.encode(password);
+        this.memberPassword = passwordEncoder.encode(password);
     }
 
     // 인증 날짜 변경
@@ -68,7 +68,7 @@ public class Member extends BaseTimeEntity {
 
     /* 비밀번호 암호화 */
     public void encodePassword(PasswordEncoder passwordEncoder){
-        this.password = passwordEncoder.encode(password);
+        this.memberPassword = passwordEncoder.encode(memberPassword);
     }
 
     /* 인증날짜, 평가 점수, 프로필 색상 기본값 설정 */
