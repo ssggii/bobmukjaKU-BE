@@ -33,12 +33,11 @@ public class Member extends BaseTimeEntity {
     @Column(name = "rate", length = 4)
     private int rate; // 평가 점수
 
-    @Column(name = "profile_color", length = 7)
+    @Column(name = "profile_color", length = 4)
     private String profileColor; // 프로필 배경색
 
     @Enumerated(EnumType.STRING)
-    private Role role; // 권한 (USER, ADMIN)
-
+    private Role role; // 권한 (USER or ADMIN)
 
     /* 회원 정보 수정 */
     // 닉네임 변경
