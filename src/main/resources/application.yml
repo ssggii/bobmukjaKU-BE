@@ -6,12 +6,12 @@ spring:
     password: ssggii
 
   jpa:
-    properties:
-      hibernate:
-        show-sql: true
-        format_sql: true
-        user_sql_comments: true
-        ddl-auto: create
+    show-sql: true
+    format_sql: true
+    hibernate:
+      user_sql_comments: true
+      ddl-auto: create
+    open-in-view: false
 
 logging:
   level:
@@ -19,9 +19,3 @@ logging:
       apache:
         coyote:
           http11: debug
-
-      hiberante:
-        SQL: debug
-
-    bobmukjaku:
-      bobmukjakuDemo: info
