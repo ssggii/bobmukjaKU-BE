@@ -5,10 +5,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import javax.management.relation.Role;
 import java.time.LocalDate;
 
-@Table(name = "MEMBER")
+@Table(name = "member")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -18,6 +17,7 @@ public class Member extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", updatable = false)
     private Long id; // PK
 
     @Column(name = "member_id", nullable = false, length = 30, unique = true)
@@ -25,13 +25,13 @@ public class Member extends BaseTimeEntity {
 
     private String password; // 비밀번호
 
-    @Column(nullable = false, length = 30, unique = true)
+    @Column(name = "nickname", nullable = false, length = 30, unique = true)
     private String nickName; // 닉네임
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "email", nullable = false, unique = true)
     private String email; // 이메일
 
-    @Column(nullable = false)
+    @Column(name = "certificated_at", nullable = false)
     private LocalDate certificatedAt; // 인증 날짜
 
     @Column(name = "rate")
@@ -60,12 +60,22 @@ public class Member extends BaseTimeEntity {
         this.nickName = nickName;
     }
 
+    // 평가점수 변경
+    public void updateRate(double rate){
+        this.rate = rate;
+    }
+
+    // 프로필 색상 변경
+    public void updateProfileColor(String profileColor){
+        this.profileColor = profileColor;
+    }
+
     /* 비밀번호 암호화 */
     public void encodePassword(PasswordEncoder passwordEncoder){
         this.password = passwordEncoder.encode(password);
     }
 
-    /* 기본 값 생성 */
+    /* 인증날짜, 평가 점수, 프로필 색상의 기본값 설정 */
     @PrePersist
     public void defaultSetting(){
         this.certificatedAt = LocalDate.now(); // 인증 날짜 default = 회원가입 날짜
