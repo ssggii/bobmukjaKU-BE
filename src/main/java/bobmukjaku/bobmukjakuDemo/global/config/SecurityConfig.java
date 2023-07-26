@@ -37,7 +37,7 @@ public class SecurityConfig {
         return (web) -> web.ignoring().requestMatchers("/", "/login", "/signUp"); // 초기화면 인증 없이 접근 가능
     }
 
-    /* 세부적인 보안 기능을 설정 (authorization, authentication) */
+    /* 세부적인 보안 기능 설정 (authorization, authentication) */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http
@@ -50,7 +50,7 @@ public class SecurityConfig {
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
                         AuthorizeHttpRequestsConfigurer -> AuthorizeHttpRequestsConfigurer
-                                .requestMatchers("/", "/login").permitAll()
+                                .requestMatchers("/", "/login", "/signUp").permitAll()
                                 .anyRequest().authenticated());
 
         return http.build();

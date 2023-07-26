@@ -39,6 +39,9 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Role role; // 권한 (USER or ADMIN)
 
+    @Column(name = "refresh_Token", length = 1000)
+    private String refreshToken;
+
     /* 회원 정보 수정 */
     // 닉네임 변경
     public void updateNickName(String nickName) {
