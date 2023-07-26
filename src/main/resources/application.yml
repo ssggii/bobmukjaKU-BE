@@ -13,6 +13,10 @@ spring:
       ddl-auto: create
     open-in-view: false
 
+  profiles:
+    include: jwt
+
+
 logging:
   level:
     org:
