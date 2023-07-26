@@ -1,6 +1,10 @@
 package bobmukjaku.bobmukjakuDemo.global.config;
 
+import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
+import bobmukjaku.bobmukjakuDemo.domain.member.service.LoginService;
 import bobmukjaku.bobmukjakuDemo.global.login.filter.JsonUsernamePasswordAuthenticationFilter;
+import bobmukjaku.bobmukjakuDemo.global.login.handler.LoginFailureHandler;
+import bobmukjaku.bobmukjakuDemo.global.login.handler.LoginSuccessJWTProvideHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +27,8 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final ObjectMapper objectMapper;
+    private final LoginService loginService;
+    private final MemberRepository memberRepository;
 
     /* 특정 요청들을 무시하고 싶을 때 사용 (보안 필터를 적용할 필요가 없는 리소스 설정) */
     @Bean
@@ -54,10 +60,20 @@ public class SecurityConfig {
     }
 
     @Bean
+    public LoginSuccessJWTProvideHandler loginSuccessJWTProvideHandler(){
+        return new LoginSuccessJWTProvideHandler();
+    }
+
+    @Bean
+    public LoginFailureHandler loginFailureHandler(){
+        return new LoginFailureHandler();
+    }
+
+    @Bean
     public AuthenticationManager authenticationManager() {// 2. AuthenticationManager 등록
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();// DaoAuthenticationProvider 사용
         provider.setPasswordEncoder(passwordEncoder());// PasswordEncoder로는 PasswordEncoderFactories.createDelegatingPasswordEncoder() 사용
-        //provider.setUserDetailsService(loginService);
+        provider.setUserDetailsService(loginService);
         return new ProviderManager(provider);
     }
 
@@ -65,8 +81,15 @@ public class SecurityConfig {
     public JsonUsernamePasswordAuthenticationFilter jsonUsernamePasswordLoginFilter(){
         JsonUsernamePasswordAuthenticationFilter jsonUsernamePasswordLoginFilter = new JsonUsernamePasswordAuthenticationFilter(objectMapper);
         jsonUsernamePasswordLoginFilter.setAuthenticationManager(authenticationManager());
-        //jsonUsernamePasswordLoginFilter.setAuthenticationSuccessHandler(loginSuccessJWTProvideHandler());
-        //jsonUsernamePasswordLoginFilter.setAuthenticationFailureHandler(loginFailureHandler());//변경
+        jsonUsernamePasswordLoginFilter.setAuthenticationSuccessHandler(loginSuccessJWTProvideHandler());
+        jsonUsernamePasswordLoginFilter.setAuthenticationFailureHandler(loginFailureHandler());//변경
         return jsonUsernamePasswordLoginFilter;
     }
+
+/*    @Bean
+    public JwtAuthenticationProcessingFilter jwtAuthenticationProcessingFilter(){
+        JwtAuthenticationProcessingFilter jsonUsernamePasswordLoginFilter = new JwtAuthenticationProcessingFilter(jwtService, memberRepository);
+
+        return jsonUsernamePasswordLoginFilter;
+    }*/
 }
