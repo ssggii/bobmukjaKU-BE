@@ -2,8 +2,11 @@ package bobmukjaku.bobmukjakuDemo.global.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
@@ -27,10 +30,20 @@ public class SecurityConfig {
                                 -> httpSecuritySessionManagementConfigurer
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
+/*                // 5. 메인 페이지, 로그인, 회원가입은 누구나 접근 가능하며, 그 외의 모든 요청은 인증된 사용자만 접근 가능
+                .authorizeHttpRequests(AuthorizationManager-> AuthorizationManager
+                        .requestMatchers("/", "/login", "/signUp").permitAll()
+                        .anyRequest().authenticated());*/
+
         return http.build();
     }
     @Bean
     public PasswordEncoder passwordEncoder(){
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
+
+/*    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().requestMatchers("/", "/login", "/signUp");
+    }*/
 }
