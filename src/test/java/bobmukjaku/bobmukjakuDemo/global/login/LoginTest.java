@@ -41,7 +41,7 @@ public class LoginTest {
     @Autowired
     EntityManager em;
 
-    PasswordEncoder delegatingPasswordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -61,11 +61,12 @@ public class LoginTest {
     private void init(){
         Member member = Member.builder()
                 .memberEmail(USERNAME)
-                .memberPassword(PASSWORD)
+                .memberPassword(passwordEncoder.encode(PASSWORD))
                 .memberNickName("닉네임1")
                 .role(Role.USER)
                 .build();
         memberRepository.save(member);
+        clear();
     }
 
     private Map getUsernamePasswordMap(String username, String password) {
@@ -103,7 +104,7 @@ public class LoginTest {
         //when
         MvcResult result = perform(LOGIN_URL, APPLICATION_JSON, map)
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andReturn();
     }
 
@@ -116,7 +117,7 @@ public class LoginTest {
         //when
         MvcResult result = perform(LOGIN_URL, APPLICATION_JSON, map)
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andReturn();
     }
 
@@ -125,23 +126,22 @@ public class LoginTest {
         //given
         Map<String, String> map = getUsernamePasswordMap(USERNAME, PASSWORD);
 
-
         //when, then
-        perform(LOGIN_URL+"123", APPLICATION_JSON, map)
+        perform("/login321", APPLICATION_JSON, map)
                 .andDo(print())
                 .andExpect(status().isForbidden());
 
     }
 
     @Test
-    public void 로그인_데이터형식_JSON_아니면_200() throws Exception {
+    public void 로그인_데이터형식_JSON_아니면() throws Exception {
         //given
         Map<String, String> map = getUsernamePasswordMap(USERNAME, PASSWORD);
 
         //when, then
         perform(LOGIN_URL, APPLICATION_FORM_URLENCODED, map)
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andReturn();
     }
 

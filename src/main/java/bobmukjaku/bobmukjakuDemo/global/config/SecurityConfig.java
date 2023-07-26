@@ -14,6 +14,7 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
@@ -30,10 +31,10 @@ public class SecurityConfig {
     private final LoginService loginService;
     private final MemberRepository memberRepository;
 
-    /* 특정 요청들을 무시하고 싶을 때 사용 (보안 필터를 적용할 필요가 없는 리소스 설정) */
+    /* 특정 url 요청 무시 */
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/login", "/signUp", "/"); // 로그인, 회원가입 페이지 인증 없이 접근 가능
+        return (web) -> web.ignoring().requestMatchers("/", "/login", "/signUp"); // 초기화면 인증 없이 접근 가능
     }
 
     /* 세부적인 보안 기능을 설정 (authorization, authentication) */
@@ -46,11 +47,11 @@ public class SecurityConfig {
                 .sessionManagement( // 4. 세션 Stateless로 유지
                         httpSecuritySessionManagementConfigurer
                                 -> httpSecuritySessionManagementConfigurer
-                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-/*                .authorizeHttpRequests(
-                        AuthorizationManager -> AuthorizationManager
-                                .requestMatchers("/login", "/signUp", "/").permitAll()
-                                .anyRequest().authenticated());*/
+                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(
+                        AuthorizeHttpRequestsConfigurer -> AuthorizeHttpRequestsConfigurer
+                                .requestMatchers("/", "/login").permitAll()
+                                .anyRequest().authenticated());
 
         return http.build();
     }
