@@ -19,6 +19,13 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    /* 세부적인 보안 기능을 설정
+       - 리소스(URL) 접근 권한 설정
+       - 커스텀 로그인 페이지 지원
+       - 인증 후 성공/실패 핸들링
+       - 사용자 로그아웃
+       - CSRF 공격으로 부터 보호
+    */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http
@@ -29,11 +36,11 @@ public class SecurityConfig {
                         httpSecuritySessionManagementConfigurer
                                 -> httpSecuritySessionManagementConfigurer
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
-/*                // 5. 메인 페이지, 로그인, 회원가입은 누구나 접근 가능하며, 그 외의 모든 요청은 인증된 사용자만 접근 가능
-                .authorizeHttpRequests(AuthorizationManager-> AuthorizationManager
-                        .requestMatchers("/", "/login", "/signUp").permitAll()
-                        .anyRequest().authenticated());*/
+/*
+                .authorizeHttpRequests(
+                        AuthorizationManager -> AuthorizationManager
+                                .requestMatchers("/login", "/signUp", "/").permitAll());
+*/
 
         return http.build();
     }
@@ -42,8 +49,9 @@ public class SecurityConfig {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
-/*    @Bean
+    /* 특정 요청들을 무시하고 싶을 때 사용 (보안 필터를 적용할 필요가 없는 리소스 설정) */
+    @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/", "/login", "/signUp");
-    }*/
+        return (web) -> web.ignoring().requestMatchers("/"); // 로그인 페이지 인증 없이 접근 가능
+    }
 }
