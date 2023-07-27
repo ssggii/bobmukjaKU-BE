@@ -68,6 +68,16 @@ public class Member extends BaseTimeEntity {
         this.profileColor = profileColor;
     }
 
+    // refreshToken 갱신
+    public void updateRefreshToken(String refreshToken){
+        this.refreshToken = refreshToken;
+    }
+
+    // refreshToken 삭제
+    public void deleteRefreshToken(){
+        this.refreshToken = null;
+    }
+
     /* 비밀번호 암호화 */
     public void encodePassword(PasswordEncoder passwordEncoder){
         this.memberPassword = passwordEncoder.encode(memberPassword);
