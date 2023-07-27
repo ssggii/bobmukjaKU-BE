@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.exceptions.ExceptionIncludingMockitoWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,7 +22,6 @@ import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.springframework.transaction.support.TransactionSynchronizationManager.clear;
 
 @SpringBootTest
 @Transactional
@@ -129,6 +129,20 @@ public class JwtServiceTest {
     }
 
     @Test
+    public void 토큰_유효성_검사() throws Exception {
+        //given
+        String accessToken = jwtService.createAccessToken(username);
+        String refreshToken = jwtService.createRefreshToken();
+
+        //when, then
+        assertThat(jwtService.isTokenValid(accessToken)).isTrue();
+        assertThat(jwtService.isTokenValid(refreshToken)).isTrue();
+        assertThat(jwtService.isTokenValid(accessToken+"d")).isFalse();
+        assertThat(jwtService.isTokenValid(accessToken+"d")).isFalse();
+
+    }
+
+    @Test
     public void AccessToken_헤더_설정() throws Exception{
         // given
         MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
@@ -139,7 +153,7 @@ public class JwtServiceTest {
         jwtService.setAccessTokenHeader(mockHttpServletResponse, accessToken);
 
         // when
-        jwtService.sendToken(mockHttpServletResponse, accessToken, refreshToken);
+        jwtService.sendBothToken(mockHttpServletResponse, accessToken, refreshToken);
 
         // then
         String headerAccessToken = mockHttpServletResponse.getHeader(accessHeader);
@@ -158,7 +172,7 @@ public class JwtServiceTest {
         jwtService.setRefreshTokenHeader(mockHttpServletResponse, refreshToken);
 
         // when
-        jwtService.sendToken(mockHttpServletResponse, accessToken, refreshToken);
+        jwtService.sendBothToken(mockHttpServletResponse, accessToken, refreshToken);
 
         // then
         String headerRefreshToken = mockHttpServletResponse.getHeader(refreshHeader);
@@ -175,7 +189,7 @@ public class JwtServiceTest {
         String refreshToken = jwtService.createRefreshToken();
 
         // when
-        jwtService.sendToken(mockHttpServletResponse, accessToken, refreshToken);
+        jwtService.sendBothToken(mockHttpServletResponse, accessToken, refreshToken);
 
         // then
         String headerAccessToken = mockHttpServletResponse.getHeader(accessHeader);
@@ -188,7 +202,7 @@ public class JwtServiceTest {
     private HttpServletRequest setRequest(String accessToken, String refreshToken) throws IOException{
 
         MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
-        jwtService.sendToken(mockHttpServletResponse,accessToken,refreshToken);
+        jwtService.sendBothToken(mockHttpServletResponse,accessToken,refreshToken);
 
         String headerAccessToken = mockHttpServletResponse.getHeader(accessHeader);
         String headerRefreshToken = mockHttpServletResponse.getHeader(refreshHeader);
@@ -209,11 +223,11 @@ public class JwtServiceTest {
         HttpServletRequest httpServletRequest = setRequest(accessToken, refreshToken);
 
         //when
-        String extractAccessToken = jwtService.extractAccessToken(httpServletRequest);
+        String extractAccessToken = jwtService.extractAccessToken(httpServletRequest).orElseThrow(()-> new Exception("토큰이 없습니다."));
 
         //then
         assertThat(extractAccessToken).isEqualTo(accessToken);
-        assertThat(getVerify(extractAccessToken).getClaim(USERNAME_CLAIM).asString()).isEqualTo(username);
+        assertThat(JWT.require(Algorithm.HMAC512(secret)).build().verify(extractAccessToken).getClaim(USERNAME_CLAIM).asString()).isEqualTo(username);
     }
 
 
@@ -225,13 +239,12 @@ public class JwtServiceTest {
         HttpServletRequest httpServletRequest = setRequest(accessToken, refreshToken);
 
         //when
-        String extractRefreshToken = jwtService.extractRefreshToken(httpServletRequest);
+        String extractRefreshToken = jwtService.extractRefreshToken(httpServletRequest).orElseThrow(()-> new Exception("토큰이 없습니다."));
 
         //then
         assertThat(extractRefreshToken).isEqualTo(refreshToken);
-        assertThat(getVerify(extractRefreshToken).getSubject()).isEqualTo(REFRESH_TOKEN_SUBJECT);
+        assertThat(JWT.require(Algorithm.HMAC512(secret)).build().verify(extractRefreshToken).getSubject()).isEqualTo(REFRESH_TOKEN_SUBJECT);
     }
-
 
     @Test
     public void Username_추출() throws Exception {
@@ -240,10 +253,10 @@ public class JwtServiceTest {
         String refreshToken = jwtService.createRefreshToken();
         HttpServletRequest httpServletRequest = setRequest(accessToken, refreshToken);
 
-        String requestAccessToken = jwtService.extractAccessToken(httpServletRequest);
+        String requestAccessToken = jwtService.extractAccessToken(httpServletRequest).orElseThrow(()-> new Exception("토큰이 없습니다."));
 
         //when
-        String extractUsername = jwtService.extractUsername(requestAccessToken);
+        String extractUsername = jwtService.extractUsername(requestAccessToken).orElseThrow(()-> new Exception("토큰이 없습니다."));
 
         //then
         assertThat(extractUsername).isEqualTo(username);
