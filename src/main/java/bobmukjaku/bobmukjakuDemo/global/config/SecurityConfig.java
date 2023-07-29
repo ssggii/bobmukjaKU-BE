@@ -2,6 +2,7 @@ package bobmukjaku.bobmukjakuDemo.global.config;
 
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
 import bobmukjaku.bobmukjakuDemo.domain.member.service.LoginService;
+import bobmukjaku.bobmukjakuDemo.global.jwt.filter.JwtAuthenticationProcessingFilter;
 import bobmukjaku.bobmukjakuDemo.global.jwt.service.JwtService;
 import bobmukjaku.bobmukjakuDemo.global.login.filter.JsonUsernamePasswordAuthenticationFilter;
 import bobmukjaku.bobmukjakuDemo.global.login.handler.LoginFailureHandler;
@@ -34,10 +35,10 @@ public class SecurityConfig {
     private final JwtService jwtService;
 
     /* 특정 url 요청 무시 */
-    @Bean
+/*    @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().requestMatchers("/", "/login", "/signUp"); // 초기화면 인증 없이 접근 가능
-    }
+    }*/
 
     /* 세부적인 보안 기능 설정 (authorization, authentication) */
     @Bean
@@ -52,8 +53,7 @@ public class SecurityConfig {
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
                         AuthorizeHttpRequestsConfigurer -> AuthorizeHttpRequestsConfigurer
-                                .requestMatchers("/", "/login", "/signUp").permitAll()
-                                .anyRequest().authenticated());
+                                .requestMatchers("/", "/login", "/signUp").permitAll());
 
         return http.build();
     }
@@ -89,10 +89,10 @@ public class SecurityConfig {
         return jsonUsernamePasswordLoginFilter;
     }
 
-/*    @Bean
+    @Bean
     public JwtAuthenticationProcessingFilter jwtAuthenticationProcessingFilter(){
         JwtAuthenticationProcessingFilter jsonUsernamePasswordLoginFilter = new JwtAuthenticationProcessingFilter(jwtService, memberRepository);
 
         return jsonUsernamePasswordLoginFilter;
-    }*/
+    }
 }
