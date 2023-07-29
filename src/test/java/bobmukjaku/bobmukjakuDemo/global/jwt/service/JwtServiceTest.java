@@ -227,7 +227,7 @@ public class JwtServiceTest {
 
         //then
         assertThat(extractAccessToken).isEqualTo(accessToken);
-        assertThat(JWT.require(Algorithm.HMAC512(secret)).build().verify(extractAccessToken).getClaim(USERNAME_CLAIM).asString()).isEqualTo(username);
+        assertThat(getVerify(extractAccessToken).getClaim(USERNAME_CLAIM).asString()).isEqualTo(username);
     }
 
 
@@ -243,7 +243,7 @@ public class JwtServiceTest {
 
         //then
         assertThat(extractRefreshToken).isEqualTo(refreshToken);
-        assertThat(JWT.require(Algorithm.HMAC512(secret)).build().verify(extractRefreshToken).getSubject()).isEqualTo(REFRESH_TOKEN_SUBJECT);
+        assertThat(getVerify(extractRefreshToken).getSubject()).isEqualTo(REFRESH_TOKEN_SUBJECT);
     }
 
     @Test

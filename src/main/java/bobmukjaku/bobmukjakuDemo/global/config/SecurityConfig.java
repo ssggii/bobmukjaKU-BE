@@ -2,6 +2,7 @@ package bobmukjaku.bobmukjakuDemo.global.config;
 
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
 import bobmukjaku.bobmukjakuDemo.domain.member.service.LoginService;
+import bobmukjaku.bobmukjakuDemo.global.jwt.service.JwtService;
 import bobmukjaku.bobmukjakuDemo.global.login.filter.JsonUsernamePasswordAuthenticationFilter;
 import bobmukjaku.bobmukjakuDemo.global.login.handler.LoginFailureHandler;
 import bobmukjaku.bobmukjakuDemo.global.login.handler.LoginSuccessJWTProvideHandler;
@@ -30,6 +31,7 @@ public class SecurityConfig {
     private final ObjectMapper objectMapper;
     private final LoginService loginService;
     private final MemberRepository memberRepository;
+    private final JwtService jwtService;
 
     /* 특정 url 요청 무시 */
     @Bean
@@ -62,7 +64,7 @@ public class SecurityConfig {
 
     @Bean
     public LoginSuccessJWTProvideHandler loginSuccessJWTProvideHandler(){
-        return new LoginSuccessJWTProvideHandler();
+        return new LoginSuccessJWTProvideHandler(jwtService, memberRepository);
     }
 
     @Bean
