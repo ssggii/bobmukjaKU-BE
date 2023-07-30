@@ -42,6 +42,17 @@ public class Member extends BaseTimeEntity {
     @Column(name = "refresh_Token", length = 1000)
     private String refreshToken;
 
+    // 회원 가입 시 USER 권한 부여
+    public void giveUserAuthority(){
+        this.role = Role.USER;
+    }
+
+    // 회원 가입 or 회원 탈퇴 시 비밀번호 확인하여 비밀번호 일치 여부 판단
+    public boolean matchPassword(PasswordEncoder passwordEncoder, String checkPassword){
+        boolean result = passwordEncoder.matches(checkPassword, getMemberPassword());
+        return result;
+    }
+
     /* 회원 정보 수정 */
     // 닉네임 변경
     public void updateNickName(String nickName) {
