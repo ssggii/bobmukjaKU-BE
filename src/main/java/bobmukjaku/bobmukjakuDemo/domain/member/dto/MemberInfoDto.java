@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @Data
 public class MemberInfoDto {
 
+    private Long uid; // uid
     private String memberEmail; // 이메일
     private String memberNickName; // 닉네임
     private LocalDate certificatedAt; // 인증 날짜
@@ -18,6 +19,7 @@ public class MemberInfoDto {
 
     @Builder
     public MemberInfoDto(Member member){
+        this.uid = member.getUid();
         this.memberEmail = member.getMemberEmail();
         this.memberNickName = member.getMemberNickName();
         this.certificatedAt = member.getCertificatedAt();
