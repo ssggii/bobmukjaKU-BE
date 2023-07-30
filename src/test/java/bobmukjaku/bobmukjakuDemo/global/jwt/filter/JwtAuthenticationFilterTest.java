@@ -20,11 +20,13 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -118,10 +120,9 @@ public class JwtAuthenticationFilterTest {
     @Test
     public void Access_Refresh_모두_존재_X() throws Exception {
         //when, then
-        mockMvc.perform(get(LOGIN_URL+"123"))//login이 아닌 다른 임의의 주소
+        mockMvc.perform(get("/notLogin"))//login이 아닌 다른 임의의 주소
                 .andExpect(status().isForbidden());
     }
-
 
     /**
      * AccessToken : 유효,
@@ -134,8 +135,8 @@ public class JwtAuthenticationFilterTest {
         String accessToken = (String) accessAndRefreshToken.get(accessHeader);
 
         //when, then
-        mockMvc.perform(get(LOGIN_URL+"123") //login이 아닌 다른 임의의 주소
-                        .header(accessHeader,BEARER+ accessToken))
+        ResultActions resultActions = mockMvc.perform(get(LOGIN_URL + "123") //login이 아닌 다른 임의의 주소
+                        .header(accessHeader, BEARER + accessToken))
                 .andExpectAll(status().isNotFound());//없는 주소로 보냈으므로 NotFound
 
     }
@@ -152,8 +153,8 @@ public class JwtAuthenticationFilterTest {
         String accessToken= (String) accessAndRefreshToken.get(accessHeader);
 
         //when, then
-        mockMvc.perform(get(LOGIN_URL+"123").header(accessHeader,accessToken+"1"))//login이 아닌 다른 임의의 주소
-                .andExpectAll(status().isForbidden());//없는 주소로 보냈으므로 NotFound
+        mockMvc.perform(get("/notLogin").header(accessHeader,accessToken+"1"))
+                .andExpectAll(status().isForbidden());
     }
 
 
@@ -189,10 +190,10 @@ public class JwtAuthenticationFilterTest {
         String refreshToken= (String) accessAndRefreshToken.get(refreshHeader);
 
         //when, then
-        mockMvc.perform(get(LOGIN_URL + "123").header(refreshHeader, refreshToken))//Bearer을 붙이지 않음
+        mockMvc.perform(get("/notLogin").header(refreshHeader, refreshToken))//Bearer을 붙이지 않음
                 .andExpect(status().isForbidden());
 
-        mockMvc.perform(get(LOGIN_URL + "123").header(refreshHeader, BEARER+refreshToken+"1"))//유효하지 않은 토큰
+        mockMvc.perform(get("/notLogin").header(refreshHeader, BEARER+refreshToken+"1"))//유효하지 않은 토큰
                 .andExpect(status().isForbidden());
     }
 
@@ -292,10 +293,10 @@ public class JwtAuthenticationFilterTest {
         String refreshToken= (String) accessAndRefreshToken.get(refreshHeader);
 
         //when, then
-        MvcResult result = mockMvc.perform(get(LOGIN_URL + "123")
+        MvcResult result = mockMvc.perform(get(LOGIN_URL + "/notLogin")
                         .header(refreshHeader, BEARER + refreshToken+1)
                         .header(accessHeader, BEARER + accessToken+1 ))
-                .andExpect(status().isForbidden())//없는 주소로 보냈으므로 NotFound
+                .andExpect(status().isForbidden())
                 .andReturn();
 
         String responseAccessToken = result.getResponse().getHeader(accessHeader);

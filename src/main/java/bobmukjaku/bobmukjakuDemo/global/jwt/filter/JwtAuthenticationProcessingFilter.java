@@ -62,7 +62,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
                 accessToken -> jwtService.extractUsername(accessToken).ifPresent(
 
                         username -> memberRepository.findByMemberEmail(username).ifPresent(
-                                member -> saveAuthentication(member)
+                                this::saveAuthentication
                         )
                 )
         );

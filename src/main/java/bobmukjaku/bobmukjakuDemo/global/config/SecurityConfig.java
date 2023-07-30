@@ -15,6 +15,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
@@ -26,6 +27,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
+@EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -34,11 +36,15 @@ public class SecurityConfig {
     private final MemberRepository memberRepository;
     private final JwtService jwtService;
 
+    private static final String[] WHITE_LIST = {
+            "/login**", "/signUp"
+    };
+
     /* 특정 url 요청 무시 */
-/*    @Bean
+    @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/", "/login", "/signUp"); // 초기화면 인증 없이 접근 가능
-    }*/
+        return (web) -> web.ignoring().requestMatchers(WHITE_LIST);
+    }
 
     /* 세부적인 보안 기능 설정 (authorization, authentication) */
     @Bean
@@ -52,8 +58,9 @@ public class SecurityConfig {
                                 -> httpSecuritySessionManagementConfigurer
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
-                        AuthorizeHttpRequestsConfigurer -> AuthorizeHttpRequestsConfigurer
-                                .requestMatchers("/", "/login", "/signUp").permitAll());
+                        authorize -> authorize
+                                .requestMatchers(WHITE_LIST).permitAll()
+                                .anyRequest().authenticated());
 
         return http.build();
     }
