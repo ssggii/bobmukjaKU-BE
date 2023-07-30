@@ -4,10 +4,12 @@ import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import jakarta.persistence.Column;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
 @Data
+@NoArgsConstructor
 public class MemberInfoDto {
 
     private Long uid; // uid
