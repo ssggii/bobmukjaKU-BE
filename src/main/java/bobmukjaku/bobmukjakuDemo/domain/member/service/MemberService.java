@@ -8,9 +8,9 @@ public interface MemberService {
 
     // 회원가입, 회원정보수정, 회원탈퇴, 회원정보조회
     public void signUp(MemberSignUpDto memberSignUpDto) throws Exception;
-    public void updateMemberInfo(MemberUpdateDto memberUpdateDto) throws Exception;
-    public void updatePassword(String checkPassword, String toBePassword) throws Exception;
-    public void withdraw(String checkPassword) throws Exception;
+    public void updateMemberInfo(MemberUpdateDto memberUpdateDto, String username) throws Exception;
+    public void updatePassword(String checkPassword, String toBePassword, String username) throws Exception;
+    public void withdraw(String checkPassword, String username) throws Exception;
 
     MemberInfoDto getInfo(Long id) throws Exception; // id로 조회
     MemberInfoDto getMyInfo() throws Exception; // 이메일로 조회

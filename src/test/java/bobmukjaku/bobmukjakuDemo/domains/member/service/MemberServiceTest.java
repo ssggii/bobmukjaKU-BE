@@ -5,8 +5,11 @@ import bobmukjaku.bobmukjakuDemo.domain.member.Role;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberSignUpDto;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberUpdateDto;
+import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberException;
+import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberExceptionType;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
 import bobmukjaku.bobmukjakuDemo.domain.member.service.MemberService;
+import bobmukjaku.bobmukjakuDemo.global.utility.SecurityUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
@@ -90,14 +93,12 @@ public class MemberServiceTest {
         memberService.signUp(memberSignUpDto);
         clear();
 
-        // then TODO: 여기 MEMBEREXCEPTION으로 고치기
-        Member member = memberRepository.findByMemberEmail(memberSignUpDto.memberEmail()).orElseThrow(()->new Exception("가입하지 않은 회원입니다."));
+        // then
+        Member member = memberRepository.findByMemberEmail(memberSignUpDto.memberEmail()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         assertThat(member.getUid()).isNotNull();
         assertThat(member.getMemberEmail()).isEqualTo(memberSignUpDto.memberEmail());
         assertThat(member.getMemberNickName()).isEqualTo(memberSignUpDto.memberNickname());
-/*        assertThat(member.getRate()).isEqualTo(memberSignUpDto.rate());
-        assertThat(member.getProfileColor()).isEqualTo(memberSignUpDto.profileColor());
-        assertThat(member.getCertificatedAt()).isEqualTo(memberSignUpDto.certificatedAt());*/
+        assertThat(member.getRole()).isSameAs(Role.USER);
 
     }
 
@@ -108,8 +109,8 @@ public class MemberServiceTest {
         memberService.signUp(memberSignUpDto);
         clear();
 
-        // when, then TODO : MemberException으로 고쳐야 함
-        assertThat(assertThrows(Exception.class, () -> memberService.signUp(memberSignUpDto)).getMessage()).isEqualTo("이미 존재하는 아이디입니다.");
+        // when, then
+        assertThat(assertThrows(MemberException.class, () -> memberService.signUp(memberSignUpDto)).getExceptionType()).isEqualTo(MemberExceptionType.ALREADY_EXIST_USERNAME);
     }
 
     @Test
@@ -119,8 +120,8 @@ public class MemberServiceTest {
         memberService.signUp(memberSignUpDto);
         clear();
 
-        // when, then TODO : MemberException으로 고쳐야 함
-        assertThat(assertThrows(Exception.class, () -> memberService.signUp(memberSignUpDto)).getMessage()).isEqualTo("이미 존재하는 닉네임입니다.");
+        // when, then
+        assertThat(assertThrows(MemberException.class, () -> memberService.signUp(memberSignUpDto)).getExceptionType()).isEqualTo(MemberExceptionType.ALREADY_EXIST_USERNAME);
     }
 
     @Test
@@ -154,7 +155,7 @@ public class MemberServiceTest {
 
         // when
         String toBePasword = "1234567890!@#";
-        memberService.updatePassword(PASSWORD, toBePasword);
+        memberService.updatePassword(PASSWORD, toBePasword, SecurityUtil.getLoginUsername());
         clear();
 
         // then
@@ -169,7 +170,7 @@ public class MemberServiceTest {
 
         // when
         String updateNickName = "수정닉네임";
-        memberService.updateMemberInfo(new MemberUpdateDto(Optional.of(updateNickName), Optional.empty()));
+        memberService.updateMemberInfo(new MemberUpdateDto(Optional.of(updateNickName), Optional.empty()), SecurityUtil.getLoginUsername());
         clear();
         
         // then
@@ -185,7 +186,7 @@ public class MemberServiceTest {
 
         // when
         String updateColor = "bg18";
-        memberService.updateMemberInfo(new MemberUpdateDto(Optional.empty(), Optional.of(updateColor)));
+        memberService.updateMemberInfo(new MemberUpdateDto(Optional.empty(), Optional.of(updateColor)), SecurityUtil.getLoginUsername());
         clear();
 
         // then
@@ -203,7 +204,7 @@ public class MemberServiceTest {
         // when
         String updateNickName = "수정닉네임";
         String updateColor = "bg18";
-        memberService.updateMemberInfo(new MemberUpdateDto(Optional.of(updateNickName), Optional.of(updateColor)));
+        memberService.updateMemberInfo(new MemberUpdateDto(Optional.of(updateNickName), Optional.of(updateColor)), SecurityUtil.getLoginUsername());
         clear();
 
         // then
@@ -220,7 +221,7 @@ public class MemberServiceTest {
         MemberSignUpDto memberSignUpDto = setMember();
 
         // when
-        memberService.withdraw(PASSWORD);
+        memberService.withdraw(PASSWORD, SecurityUtil.getLoginUsername());
 
         // then
         assertThat(assertThrows(Exception.class, ()->
@@ -233,8 +234,8 @@ public class MemberServiceTest {
         // given
         MemberSignUpDto memberSignUpDto = setMember();
 
-        // when, then TODO: MemberException으로 고쳐야 함
-        assertThat(assertThrows(Exception.class, () -> memberService.withdraw(PASSWORD+"123")).getMessage()).isEqualTo("비밀번호가 일치하지 않습니다.");
+        // when, then
+        assertThat(assertThrows(MemberException.class, () -> memberService.withdraw(PASSWORD+"123", SecurityUtil.getLoginUsername())).getExceptionType()).isEqualTo(MemberExceptionType.WRONG_PASSWORD);
     }
 
     @Test

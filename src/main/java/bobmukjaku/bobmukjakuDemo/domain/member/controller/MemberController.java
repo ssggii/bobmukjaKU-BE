@@ -2,6 +2,7 @@ package bobmukjaku.bobmukjakuDemo.domain.member.controller;
 
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.*;
 import bobmukjaku.bobmukjakuDemo.domain.member.service.MemberService;
+import bobmukjaku.bobmukjakuDemo.global.utility.SecurityUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,21 +27,21 @@ public class MemberController {
     @PutMapping("/member")
     @ResponseStatus(HttpStatus.OK)
     public void updateInfo(@Valid @RequestBody MemberUpdateDto memberUpdateDto) throws Exception {
-        memberService.updateMemberInfo(memberUpdateDto);
+        memberService.updateMemberInfo(memberUpdateDto, SecurityUtil.getLoginUsername());
     }
 
     // 비밀번호 수정
     @PutMapping("/member/password")
     @ResponseStatus(HttpStatus.OK)
     public void updatePassword(@Valid @RequestBody UpdatePasswordDto updatePasswordDto) throws Exception {
-        memberService.updatePassword(updatePasswordDto.checkPassword(), updatePasswordDto.toBePassword());
+        memberService.updatePassword(updatePasswordDto.checkPassword(), updatePasswordDto.toBePassword(), SecurityUtil.getLoginUsername());
     }
 
     // 회원탈퇴
     @DeleteMapping("/member")
     @ResponseStatus(HttpStatus.OK)
     public void withdraw(@Valid @RequestBody MemberWithdrawDto memberWithdrawDto) throws Exception {
-        memberService.withdraw(memberWithdrawDto.checkPassword());
+        memberService.withdraw(memberWithdrawDto.checkPassword(), SecurityUtil.getLoginUsername());
     }
 
     // 회원정보 조회

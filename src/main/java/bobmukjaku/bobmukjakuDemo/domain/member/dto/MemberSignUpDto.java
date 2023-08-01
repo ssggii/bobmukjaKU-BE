@@ -1,7 +1,6 @@
 package bobmukjaku.bobmukjakuDemo.domain.member.dto;
 
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
-import jakarta.persistence.PrePersist;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -23,6 +22,9 @@ public record MemberSignUpDto(@NotBlank(message = "이메일을 입력해주세�
                 .memberEmail(memberEmail)
                 .memberPassword(password)
                 .memberNickName(memberNickname)
+                .rate(45)
+                .profileColor("bg1")
+                .certificatedAt(LocalDate.now())
                 .build();
     }
 

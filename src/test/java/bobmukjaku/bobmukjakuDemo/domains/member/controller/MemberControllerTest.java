@@ -2,6 +2,7 @@ package bobmukjaku.bobmukjakuDemo.domains.member.controller;
 
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberSignUpDto;
+import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberExceptionType;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
 import bobmukjaku.bobmukjakuDemo.domain.member.service.MemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -76,6 +77,14 @@ public class MemberControllerTest {
                 .andExpect(status().isOk());
     }
 
+    private void signUpFail(String signUpData) throws Exception {
+        mockMvc.perform(
+                        MockMvcRequestBuilders.post(SIGN_UP_URL)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(signUpData))
+                .andExpect(status().isBadRequest());
+    }
+
     @Value("${jwt.access.header}")
     private String accessHeader;
     private static final String BEARER = "Bearer ";
@@ -119,9 +128,9 @@ public class MemberControllerTest {
         String noNickNameSignUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username, password, null));
 
         //when, then
-        signUp(noUsernameSignUpData);//예외가 발생하더라도 상태코드는 200
-        signUp(noPasswordSignUpData);//예외가 발생하더라도 상태코드는 200
-        signUp(noNickNameSignUpData);//예외가 발생하더라도 상태코드는 200
+        signUpFail(noUsernameSignUpData);//예외가 발생하면 상태코드는 400
+        signUpFail(noPasswordSignUpData);//예외가 발생하면 상태코드는 400
+        signUpFail(noNickNameSignUpData);//예외가 발생하면 상태코드는 400
 
         assertThat(memberRepository.findAll().size()).isEqualTo(0);
     }
@@ -201,7 +210,7 @@ public class MemberControllerTest {
                                 .header(accessHeader, BEARER+accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
-                .andExpect(status().isOk());
+                .andExpect(status().isBadRequest());
 
         // then
         Member member = memberRepository.findByMemberEmail(username).orElseThrow(()->new Exception("회원이 아닙니다."));
@@ -230,7 +239,7 @@ public class MemberControllerTest {
                                 .header(accessHeader, BEARER+accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
-                .andExpect(status().isOk());
+                .andExpect(status().isBadRequest());
 
         // then
         Member member = memberRepository.findByMemberEmail(username).orElseThrow(()->new Exception("회원이 아닙니다."));
@@ -281,7 +290,7 @@ public class MemberControllerTest {
                                 .header(accessHeader, BEARER+accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
-                .andExpect(status().isOk());
+                .andExpect(status().isBadRequest());
 
         // then
         Member member = memberRepository.findByMemberEmail(username).orElseThrow(()->new Exception("회원이 아닙니다."));
@@ -390,11 +399,11 @@ public class MemberControllerTest {
                         get("/member/5555")
                                 .characterEncoding(StandardCharsets.UTF_8)
                                 .header(accessHeader, BEARER+accessToken))
-                .andExpect(status().isOk())
-                .andReturn();
+                .andExpect(status().isNotFound()).andReturn();
 
         // then
-        assertThat(result.getResponse().getContentAsString()).isEqualTo("");
+        Map<String, Integer> map = objectMapper.readValue(result.getResponse().getContentAsString(), Map.class);
+        assertThat(map.get("errorCode")).isEqualTo(MemberExceptionType.NOT_FOUND_MEMBER.getErrorCode());
     }
 
     @Test

@@ -4,6 +4,8 @@ import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberSignUpDto;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberUpdateDto;
+import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberException;
+import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberExceptionType;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
 import bobmukjaku.bobmukjakuDemo.global.utility.SecurityUtil;
 import jakarta.transaction.Transactional;
@@ -25,39 +27,42 @@ public class MemberServiceImpl implements MemberService{
         member.giveUserAuthority();
         member.encodePassword(passwordEncoder);
 
-        // 아이디 중복 체크
+        // 이메일 중복 체크
         if (memberRepository.findByMemberEmail(memberSignUpDto.memberEmail()).isPresent()){
-            throw new Exception("이미 존재하는 아이디입니다.");
+            throw new MemberException(MemberExceptionType.ALREADY_EXIST_USERNAME);
         }
 
         memberRepository.save(member);
     }
 
     @Override
-    public void updateMemberInfo(MemberUpdateDto memberUpdateDto) throws Exception {
-        Member member = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new Exception("회원이 존재하지 않습니다."));
+    public void updateMemberInfo(MemberUpdateDto memberUpdateDto, String username) throws Exception {
+        Member member = memberRepository.findByMemberEmail(username)
+                .orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
         memberUpdateDto.nickName().ifPresent(member::updateNickName);
         memberUpdateDto.profileColor().ifPresent(member::updateProfileColor);
     }
 
     @Override
-    public void updatePassword(String checkPassword, String toBePassword) throws Exception {
-        Member member = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new Exception("회원이 존재하지 않습니다."));
+    public void updatePassword(String checkPassword, String toBePassword, String username) throws Exception {
+        Member member = memberRepository.findByMemberEmail(username)
+                .orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
         if (!member.matchPassword(passwordEncoder, checkPassword)) {
-            throw new Exception("비밀번호가 일치하지 않습니다.");
+            throw new MemberException(MemberExceptionType.WRONG_PASSWORD);
         }
 
         member.updatePassword(passwordEncoder, toBePassword);
     }
 
     @Override
-    public void withdraw(String checkPassword) throws Exception {
-        Member member = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new Exception("회원이 존재하지 않습니다."));
+    public void withdraw(String checkPassword, String username) throws Exception {
+        Member member = memberRepository.findByMemberEmail(username)
+                .orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
         if(!member.matchPassword(passwordEncoder, checkPassword)){
-            throw new Exception("비밀번호가 일치하지 않습니다.");
+            throw new MemberException(MemberExceptionType.WRONG_PASSWORD);
         }
 
         memberRepository.delete(member);
@@ -65,13 +70,13 @@ public class MemberServiceImpl implements MemberService{
 
     @Override
     public MemberInfoDto getInfo(Long id) throws Exception {
-        Member findMember = memberRepository.findById(id).orElseThrow(()->new Exception("회원이 존재하지 않습니다."));
+        Member findMember = memberRepository.findById(id).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         return new MemberInfoDto(findMember);
     }
 
     @Override
     public MemberInfoDto getMyInfo() throws Exception {
-        Member findMember = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new Exception("회원이 존재하지 않습니다."));
+        Member findMember = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         return new MemberInfoDto(findMember);
     }
 }
