@@ -1,12 +1,11 @@
 package bobmukjaku.bobmukjakuDemo.domain.member.dto;
 
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
+import bobmukjaku.bobmukjakuDemo.global.jwt.service.JwtService;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-
-import java.time.LocalDate;
 
 public record MemberSignUpDto(@NotBlank(message = "이메일을 입력해주세요") @Email String memberEmail,
                               @NotBlank(message = "비밀번호를 입력해주세요")
@@ -22,9 +21,6 @@ public record MemberSignUpDto(@NotBlank(message = "이메일을 입력해주세�
                 .memberEmail(memberEmail)
                 .memberPassword(password)
                 .memberNickName(memberNickname)
-                .rate(45)
-                .profileColor("bg1")
-                .certificatedAt(LocalDate.now())
                 .build();
     }
 

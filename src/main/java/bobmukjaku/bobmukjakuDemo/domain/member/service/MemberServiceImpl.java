@@ -7,6 +7,7 @@ import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberUpdateDto;
 import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberException;
 import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberExceptionType;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
+import bobmukjaku.bobmukjakuDemo.global.jwt.service.JwtService;
 import bobmukjaku.bobmukjakuDemo.global.utility.SecurityUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -20,17 +21,19 @@ public class MemberServiceImpl implements MemberService{
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     @Override
     public void signUp(MemberSignUpDto memberSignUpDto) throws Exception {
-        Member member = memberSignUpDto.toEntity();
-        member.giveUserAuthority();
-        member.encodePassword(passwordEncoder);
 
-        // 이메일 중복 체크
+        // 회원가입 여부 체크
         if (memberRepository.findByMemberEmail(memberSignUpDto.memberEmail()).isPresent()){
             throw new MemberException(MemberExceptionType.ALREADY_EXIST_USERNAME);
         }
+
+        Member member = memberSignUpDto.toEntity();
+        member.giveUserAuthority();
+        member.encodePassword(passwordEncoder);
 
         memberRepository.save(member);
     }
