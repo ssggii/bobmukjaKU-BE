@@ -31,7 +31,7 @@ public class Member extends BaseTimeEntity {
     private LocalDate certificatedAt; // 인증 날짜
 
     @Column(name = "rate", length = 4)
-    private int rate; // 평가 점수
+    private Integer rate; // 평가 점수
 
     @Column(name = "profile_color", length = 4)
     private String profileColor; // 프로필 배경색

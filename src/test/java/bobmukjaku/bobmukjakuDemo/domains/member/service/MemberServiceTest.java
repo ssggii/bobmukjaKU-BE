@@ -49,7 +49,7 @@ public class MemberServiceTest {
     }
 
     private MemberSignUpDto createMemberSignUpDto(){
-        return new MemberSignUpDto("이메일", PASSWORD, "닉네임", 45, "bg1", LocalDate.now());
+        return new MemberSignUpDto("이메일", PASSWORD, "닉네임");
     }
 
     private MemberSignUpDto setMember() throws Exception{
@@ -95,9 +95,9 @@ public class MemberServiceTest {
         assertThat(member.getUid()).isNotNull();
         assertThat(member.getMemberEmail()).isEqualTo(memberSignUpDto.memberEmail());
         assertThat(member.getMemberNickName()).isEqualTo(memberSignUpDto.memberNickname());
-        assertThat(member.getRate()).isEqualTo(memberSignUpDto.rate());
+/*        assertThat(member.getRate()).isEqualTo(memberSignUpDto.rate());
         assertThat(member.getProfileColor()).isEqualTo(memberSignUpDto.profileColor());
-        assertThat(member.getCertificatedAt()).isEqualTo(memberSignUpDto.certificatedAt());
+        assertThat(member.getCertificatedAt()).isEqualTo(memberSignUpDto.certificatedAt());*/
 
     }
 
@@ -126,9 +126,9 @@ public class MemberServiceTest {
     @Test
     public void 회원가입_실패_필수입력_필드없으면_오류() throws Exception {
         // given
-        MemberSignUpDto memberSignUpDto1 = new MemberSignUpDto(null,passwordEncoder.encode(PASSWORD),"닉네임",45,"bg1", LocalDate.now());
-        MemberSignUpDto memberSignUpDto2 = new MemberSignUpDto("이메일",null,"닉네임",45,"bg1", LocalDate.now());
-        MemberSignUpDto memberSignUpDto3 = new MemberSignUpDto("이메일",passwordEncoder.encode(PASSWORD),null,45,"bg1", LocalDate.now());
+        MemberSignUpDto memberSignUpDto1 = new MemberSignUpDto(null,passwordEncoder.encode(PASSWORD),"닉네임");
+        MemberSignUpDto memberSignUpDto2 = new MemberSignUpDto("이메일",null,"닉네임");
+        MemberSignUpDto memberSignUpDto3 = new MemberSignUpDto("이메일",passwordEncoder.encode(PASSWORD),null);
 
         // when, then
 
@@ -175,8 +175,6 @@ public class MemberServiceTest {
         // then
         memberRepository.findByMemberEmail(memberSignUpDto.memberEmail()).ifPresent((member -> {
             assertThat(member.getMemberNickName()).isEqualTo(updateNickName);
-            assertThat(member.getRate()).isEqualTo(memberSignUpDto.rate());
-            assertThat(member.getProfileColor()).isEqualTo(memberSignUpDto.profileColor());
         }));
     }
 
@@ -193,7 +191,6 @@ public class MemberServiceTest {
         // then
         memberRepository.findByMemberEmail(memberSignUpDto.memberEmail()).ifPresent((member -> {
             assertThat(member.getMemberNickName()).isEqualTo(memberSignUpDto.memberNickname());
-            assertThat(member.getRate()).isEqualTo(memberSignUpDto.rate());
             assertThat(member.getProfileColor()).isEqualTo(updateColor);
         }));
     }
@@ -213,7 +210,6 @@ public class MemberServiceTest {
         memberRepository.findByMemberEmail(memberSignUpDto.memberEmail()).ifPresent((member -> {
             assertThat(member.getMemberNickName()).isEqualTo(updateNickName);
             assertThat(member.getProfileColor()).isEqualTo(updateColor);
-            assertThat(member.getRate()).isEqualTo(memberSignUpDto.rate());
         }));
 
     }
@@ -255,9 +251,6 @@ public class MemberServiceTest {
         // then
         assertThat(infoDto.getMemberEmail()).isEqualTo(memberSignUpDto.memberEmail());
         assertThat(infoDto.getMemberNickName()).isEqualTo(memberSignUpDto.memberNickname());
-        assertThat(infoDto.getRate()).isEqualTo(memberSignUpDto.rate());
-        assertThat(infoDto.getProfileColor()).isEqualTo(memberSignUpDto.profileColor());
-        assertThat(infoDto.getCertificatedAt()).isEqualTo(memberSignUpDto.certificatedAt());
     }
 
     @Test
@@ -271,9 +264,6 @@ public class MemberServiceTest {
         //then
         assertThat(myInfo.getMemberEmail()).isEqualTo(memberSignUpDto.memberEmail());
         assertThat(myInfo.getMemberNickName()).isEqualTo(memberSignUpDto.memberNickname());
-        assertThat(myInfo.getRate()).isEqualTo(memberSignUpDto.rate());
-        assertThat(myInfo.getProfileColor()).isEqualTo(memberSignUpDto.profileColor());
-        assertThat(myInfo.getCertificatedAt()).isEqualTo(memberSignUpDto.certificatedAt());
 
     }
 }

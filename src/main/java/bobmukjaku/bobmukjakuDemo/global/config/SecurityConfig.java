@@ -37,7 +37,7 @@ public class SecurityConfig {
     private final JwtService jwtService;
 
     private static final String[] WHITE_LIST = {
-            "/login**", "/signUp"
+            "/login**", "/signUp**", "/"
     };
 
     /* 특정 url 요청 무시 */
@@ -61,6 +61,8 @@ public class SecurityConfig {
                         authorize -> authorize
                                 .requestMatchers(WHITE_LIST).permitAll()
                                 .anyRequest().authenticated());
+
+        //http.addFilterBefore(jwtAuthenticationProcessingFilter(), JsonUsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
