@@ -2,6 +2,7 @@ package bobmukjaku.bobmukjakuDemo.domains.member.controller;
 
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberSignUpDto;
+import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberException;
 import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberExceptionType;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
 import bobmukjaku.bobmukjakuDemo.domain.member.service.MemberService;
@@ -174,7 +175,7 @@ public class MemberControllerTest {
 
         Map<String, Object> map = new HashMap<>();
         map.put("checkPassword", password);
-        map.put("toBePassword", password+"!@#");
+        map.put("toBePassword", password+"!");
         String updatePassword = objectMapper.writeValueAsString(map);
 
         // when
@@ -188,7 +189,7 @@ public class MemberControllerTest {
         // then
         Member member = memberRepository.findByMemberEmail(username).orElseThrow(()->new Exception("회원이 아닙니다."));
         assertThat(passwordEncoder.matches(password, member.getMemberPassword())).isFalse();
-        assertThat(passwordEncoder.matches(password+"!@#", member.getMemberPassword())).isTrue();
+        assertThat(passwordEncoder.matches(password+"!", member.getMemberPassword())).isTrue();
     }
 
     @Test
@@ -332,7 +333,7 @@ public class MemberControllerTest {
 
         // when
         MvcResult result = mockMvc.perform(
-                get("/member")
+                get("/member/"+0)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .header(accessHeader, BEARER+accessToken))
                 .andExpect(status().isOk())
@@ -340,9 +341,9 @@ public class MemberControllerTest {
 
         // then
         Map<String, Object> map = objectMapper.readValue(result.getResponse().getContentAsString(), Map.class);
-        Member member = memberRepository.findByMemberEmail(username).orElseThrow(()->new Exception("회원이 아닙니다."));
-        assertThat(member.getMemberEmail()).isEqualTo(map.get("username"));
-        assertThat(member.getMemberNickName()).isEqualTo(map.get("nickname"));
+        Member member = memberRepository.findByMemberEmail(username).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        assertThat(member.getMemberEmail()).isEqualTo(username);
+        assertThat(member.getMemberNickName()).isEqualTo(nickName);
     }
 
     @Test
@@ -373,7 +374,7 @@ public class MemberControllerTest {
 
         // when
         MvcResult result = mockMvc.perform(
-                        get("/member"+uid)
+                        get("/member/"+uid)
                                 .characterEncoding(StandardCharsets.UTF_8)
                                 .header(accessHeader, BEARER+accessToken))
                 .andExpect(status().isOk())
@@ -381,9 +382,9 @@ public class MemberControllerTest {
 
         // then
         Map<String, Object> map = objectMapper.readValue(result.getResponse().getContentAsString(), Map.class);
-        Member member = memberRepository.findByMemberEmail(username).orElseThrow(()->new Exception("회원이 아닙니다."));
-        assertThat(member.getMemberEmail()).isEqualTo(map.get("username"));
-        assertThat(member.getMemberNickName()).isEqualTo(map.get("nickname"));
+        Member member = memberRepository.findByMemberEmail(username).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        assertThat(member.getMemberEmail()).isEqualTo(username);
+        assertThat(member.getMemberNickName()).isEqualTo(nickName);
     }
 
     @Test
@@ -420,6 +421,21 @@ public class MemberControllerTest {
                                 .characterEncoding(StandardCharsets.UTF_8)
                                 .header(accessHeader, BEARER+accessToken+1))
                 .andExpect(status().isForbidden());
+
+    }
+
+    @Test
+    public void 닉네임_중복_검사_성공() throws Exception {
+        // given
+        String signUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username,password,nickName));
+        signUp(signUpData);
+        String accessToken = getAccessToken();
+
+    }
+
+    @Test
+    public void 닉네임_중복_검사_실패() throws Exception {
+
 
     }
 }

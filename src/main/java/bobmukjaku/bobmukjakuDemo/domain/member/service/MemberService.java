@@ -11,6 +11,7 @@ public interface MemberService {
     public void updateMemberInfo(MemberUpdateDto memberUpdateDto, String username) throws Exception;
     public void updatePassword(String checkPassword, String toBePassword, String username) throws Exception;
     public void withdraw(String checkPassword, String username) throws Exception;
+    public boolean checkNickName(String nickName) throws Exception;
 
     MemberInfoDto getInfo(Long id) throws Exception; // id로 조회
     MemberInfoDto getMyInfo() throws Exception; // 이메일로 조회

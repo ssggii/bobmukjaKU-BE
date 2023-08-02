@@ -1,5 +1,6 @@
 package bobmukjaku.bobmukjakuDemo.global.config;
 
+import bobmukjaku.bobmukjakuDemo.domain.member.Role;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
 import bobmukjaku.bobmukjakuDemo.domain.member.service.LoginService;
 import bobmukjaku.bobmukjakuDemo.global.jwt.filter.JwtAuthenticationProcessingFilter;
@@ -11,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -25,6 +27,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
+
+import static org.hibernate.cfg.AvailableSettings.USER;
 
 @Configuration
 @EnableWebSecurity
@@ -37,14 +42,16 @@ public class SecurityConfig {
     private final JwtService jwtService;
 
     private static final String[] WHITE_LIST = {
-            "/login**", "/signUp**", "/"
+            "/", "/login**", "/signUp**"
     };
 
     /* 특정 url 요청 무시 */
+/*
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().requestMatchers(WHITE_LIST);
     }
+*/
 
     /* 세부적인 보안 기능 설정 (authorization, authentication) */
     @Bean
@@ -60,9 +67,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         authorize -> authorize
                                 .requestMatchers(WHITE_LIST).permitAll()
+                                .requestMatchers("/member").hasRole(USER)
                                 .anyRequest().authenticated());
 
-        //http.addFilterBefore(jwtAuthenticationProcessingFilter(), JsonUsernamePasswordAuthenticationFilter.class);
+        http.addFilterAfter(jsonUsernamePasswordLoginFilter(), LogoutFilter.class);
+        http.addFilterBefore(jwtAuthenticationProcessingFilter(), JsonUsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

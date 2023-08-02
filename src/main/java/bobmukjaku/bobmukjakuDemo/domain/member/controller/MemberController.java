@@ -16,11 +16,19 @@ public class MemberController {
 
     private final MemberService memberService;
 
+    // 로그인 - POST, "/login"
+
     // 회원가입
     @PostMapping("/signUp")
     @ResponseStatus(HttpStatus.OK)
     public void signUp(@Valid @RequestBody MemberSignUpDto memberSignUpDto) throws Exception {
         memberService.signUp(memberSignUpDto);
+    }
+
+    // 닉네임 중복 검사
+    @GetMapping("/member/{nickName}")
+    public ResponseEntity<Boolean> checkNicknameDoubled(@PathVariable String nickName) throws Exception{
+        return ResponseEntity.ok(memberService.checkNickName(nickName));
     }
 
     // 회원정보 수정
@@ -30,7 +38,7 @@ public class MemberController {
         memberService.updateMemberInfo(memberUpdateDto, SecurityUtil.getLoginUsername());
     }
 
-    // 비밀번호 수정
+    // 비밀번호 재설정
     @PutMapping("/member/password")
     @ResponseStatus(HttpStatus.OK)
     public void updatePassword(@Valid @RequestBody UpdatePasswordDto updatePasswordDto) throws Exception {
@@ -45,14 +53,14 @@ public class MemberController {
     }
 
     // 회원정보 조회
-    @GetMapping("/member/{id}")
-    public ResponseEntity getInfo(@Valid @PathVariable("id") Long id) throws Exception{
+    @GetMapping("/member/{uid}")
+    public ResponseEntity getInfo(@Valid @PathVariable("uid") Long id) throws Exception{
         MemberInfoDto info = memberService.getInfo(id);
         return new ResponseEntity<>(info, HttpStatus.OK);
     }
 
     // 내 정보 조회
-    @GetMapping("/member")
+    @GetMapping("/member/"+0)
     public ResponseEntity getMyInfo(HttpServletResponse response) throws Exception {
         MemberInfoDto info = memberService.getMyInfo();
         return new ResponseEntity(info, HttpStatus.OK);
