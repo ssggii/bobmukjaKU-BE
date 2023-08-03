@@ -22,7 +22,8 @@ public class JsonUsernamePasswordAuthenticationFilter extends AbstractAuthentica
 
     private static final String HTTP_METHOD = "POST";
 
-    private static final String CONTENT_TYPE = "application/json";//json 타입의 데이터로만 로그인을 진행
+    private static final String CONTENT_TYPE = "application/json";
+    private static final String CONTENT_TYPE2 = "application/json; charset=UTF-8"; // 앱에서 받는 content-type이 이 경우일 수 있음
 
     private final ObjectMapper objectMapper;
 
@@ -35,14 +36,14 @@ public class JsonUsernamePasswordAuthenticationFilter extends AbstractAuthentica
 
     public JsonUsernamePasswordAuthenticationFilter(ObjectMapper objectMapper) {
 
-        super(DEFAULT_LOGIN_PATH_REQUEST_MATCHER);   // 위에서 설정한  /oauth2/login/*, GET으로 온 요청을 처리하기 위해 설정
+        super(DEFAULT_LOGIN_PATH_REQUEST_MATCHER);   // GET으로 온 요청을 처리하기 위해 설정
         this.objectMapper = objectMapper;
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
 
-        if(request.getContentType() == null || !request.getContentType().equals(CONTENT_TYPE)  ) {
+        if(request.getContentType() == null || !(request.getContentType().equals(CONTENT_TYPE) || request.getContentType().equals(CONTENT_TYPE2))) {
             throw new AuthenticationServiceException("Authentication Content-Type not supported: " + request.getContentType());
         }
 
