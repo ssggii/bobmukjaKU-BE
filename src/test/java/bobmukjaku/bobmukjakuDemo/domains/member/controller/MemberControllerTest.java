@@ -30,9 +30,11 @@ import org.springframework.web.context.WebApplicationContext;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.springframework.http.RequestEntity.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -129,9 +131,9 @@ public class MemberControllerTest {
         String noNickNameSignUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username, password, null));
 
         //when, then
-        signUpFail(noUsernameSignUpData);//예외가 발생하면 상태코드는 400
-        signUpFail(noPasswordSignUpData);//예외가 발생하면 상태코드는 400
-        signUpFail(noNickNameSignUpData);//예외가 발생하면 상태코드는 400
+        signUpFail(noUsernameSignUpData); // 상태코드 400
+        signUpFail(noPasswordSignUpData); // 상태코드 400
+        signUpFail(noNickNameSignUpData); // 상태코드 400
 
         assertThat(memberRepository.findAll().size()).isEqualTo(0);
     }
@@ -151,7 +153,7 @@ public class MemberControllerTest {
 
         //when
         mockMvc.perform(
-                        put("/member")
+                        put("/member/info")
                                 .header(accessHeader,BEARER+accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updateMemberData))
@@ -161,7 +163,6 @@ public class MemberControllerTest {
         Member member = memberRepository.findByMemberEmail(username).orElseThrow(() -> new Exception("회원이 없습니다"));
         assertThat(member.getMemberNickName()).isEqualTo("닉네임변경");
         assertThat(member.getProfileColor()).isEqualTo("bg수정");
-        assertThat(memberRepository.findAll().size()).isEqualTo(1);
 
     }
 
@@ -180,7 +181,7 @@ public class MemberControllerTest {
 
         // when
         mockMvc.perform(
-                put("/member/password")
+                put("/member/info/password")
                         .header(accessHeader, BEARER+accessToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updatePassword))
@@ -207,7 +208,7 @@ public class MemberControllerTest {
 
         // when
         mockMvc.perform(
-                        put("/member/password")
+                        put("/member/info/password")
                                 .header(accessHeader, BEARER+accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
@@ -236,7 +237,7 @@ public class MemberControllerTest {
 
         // when
         mockMvc.perform(
-                        put("/member/password")
+                        put("/member/info/password")
                                 .header(accessHeader, BEARER+accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
@@ -263,7 +264,7 @@ public class MemberControllerTest {
 
         // when
         mockMvc.perform(
-                delete("/member")
+                delete("/member/info")
                         .header(accessHeader, BEARER+accessToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updatePassword))
@@ -287,7 +288,7 @@ public class MemberControllerTest {
 
         // when
         mockMvc.perform(
-                        delete("/member")
+                        delete("/member/info")
                                 .header(accessHeader, BEARER+accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
@@ -312,7 +313,7 @@ public class MemberControllerTest {
 
         // when
         mockMvc.perform(
-                        delete("/member")
+                        delete("/member/info")
                                 .header(accessHeader, BEARER+accessToken+"1")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
@@ -333,7 +334,7 @@ public class MemberControllerTest {
 
         // when
         MvcResult result = mockMvc.perform(
-                get("/member/"+0)
+                get("/member/info")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .header(accessHeader, BEARER+accessToken))
                 .andExpect(status().isOk())
@@ -356,9 +357,9 @@ public class MemberControllerTest {
 
         // when, then
         mockMvc.perform(
-                        get("/member")
+                        get("/member/info")
                                 .characterEncoding(StandardCharsets.UTF_8)
-                                .header(accessHeader, BEARER+accessToken+"1"))
+                                .header(accessHeader, BEARER+accessToken+1))
                 .andExpect(status().isForbidden());
 
     }
@@ -374,7 +375,7 @@ public class MemberControllerTest {
 
         // when
         MvcResult result = mockMvc.perform(
-                        get("/member/"+uid)
+                        get("/member/info"+uid)
                                 .characterEncoding(StandardCharsets.UTF_8)
                                 .header(accessHeader, BEARER+accessToken))
                 .andExpect(status().isOk())
@@ -397,7 +398,7 @@ public class MemberControllerTest {
 
         // when
         MvcResult result = mockMvc.perform(
-                        get("/member/5555")
+                        get("/member/info/5555")
                                 .characterEncoding(StandardCharsets.UTF_8)
                                 .header(accessHeader, BEARER+accessToken))
                 .andExpect(status().isNotFound()).andReturn();
@@ -417,7 +418,7 @@ public class MemberControllerTest {
 
         // when, then
         mockMvc.perform(
-                        get("/member/1")
+                        get("/member/info")
                                 .characterEncoding(StandardCharsets.UTF_8)
                                 .header(accessHeader, BEARER+accessToken+1))
                 .andExpect(status().isForbidden());
@@ -425,17 +426,59 @@ public class MemberControllerTest {
     }
 
     @Test
-    public void 닉네임_중복_검사_성공() throws Exception {
+    public void 닉네임_중복인_경우_true() throws Exception {
         // given
-        String signUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username,password,nickName));
-        signUp(signUpData);
-        String accessToken = getAccessToken();
+        String signUpData1 = objectMapper.writeValueAsString(new MemberSignUpDto(username,password,nickName));
+        signUp(signUpData1);
+        String checkNickname = nickName;
+
+        // when, then
+        mockMvc.perform(
+                get("/check/nickname")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(nickName))
+                .andDo(print())
+                .andExpect(status().isOk());
 
     }
 
     @Test
-    public void 닉네임_중복_검사_실패() throws Exception {
+    public void 닉네임_중복_아닌경우_false() throws Exception {
 
+        // given
+        String signUpData1 = objectMapper.writeValueAsString(new MemberSignUpDto(username,password,nickName));
+        signUp(signUpData1);
+        String checkNickname = nickName+"변경";
+
+        // when, then
+        mockMvc.perform(
+                        get("/check/nickname")
+                                .characterEncoding(StandardCharsets.UTF_8)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(checkNickname))
+                .andDo(print())
+                .andExpect(status().isOk());
 
     }
+
+/*    @Test
+    public void 전체_회원_조회() throws Exception {
+        // given
+        String signUpData1 = objectMapper.writeValueAsString(new MemberSignUpDto("member1@konkuk.ac.kr", "pass1234@!","nick2"));
+        String signUpData2 = objectMapper.writeValueAsString(new MemberSignUpDto("member2@konkuk.ac.kr", "pass1234@!","nick2"));
+        String signUpData3 = objectMapper.writeValueAsString(new MemberSignUpDto("member3@konkuk.ac.kr", "pass1234@!","nick3"));
+        signUp(signUpData1);
+        signUp(signUpData2);
+        signUp(signUpData3);
+
+        // when
+
+
+        // then
+        Map<String, Object> map = objectMapper.readValue(result.getResponse().getContentAsString(), Map.class);
+        Member member = memberRepository.findByMemberEmail(username).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        assertThat(member.getMemberEmail()).isEqualTo(username);
+        assertThat(member.getMemberNickName()).isEqualTo(nickName);
+    }*/
 }

@@ -97,7 +97,7 @@ public class MemberServiceTest {
         Member member = memberRepository.findByMemberEmail(memberSignUpDto.memberEmail()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         assertThat(member.getUid()).isNotNull();
         assertThat(member.getMemberEmail()).isEqualTo(memberSignUpDto.memberEmail());
-        assertThat(member.getMemberNickName()).isEqualTo(memberSignUpDto.memberNickname());
+        assertThat(member.getMemberNickName()).isEqualTo(memberSignUpDto.nickname());
         assertThat(member.getRole()).isSameAs(Role.USER);
 
     }
@@ -191,7 +191,7 @@ public class MemberServiceTest {
 
         // then
         memberRepository.findByMemberEmail(memberSignUpDto.memberEmail()).ifPresent((member -> {
-            assertThat(member.getMemberNickName()).isEqualTo(memberSignUpDto.memberNickname());
+            assertThat(member.getMemberNickName()).isEqualTo(memberSignUpDto.nickname());
             assertThat(member.getProfileColor()).isEqualTo(updateColor);
         }));
     }
@@ -251,7 +251,7 @@ public class MemberServiceTest {
 
         // then
         assertThat(infoDto.getMemberEmail()).isEqualTo(memberSignUpDto.memberEmail());
-        assertThat(infoDto.getMemberNickName()).isEqualTo(memberSignUpDto.memberNickname());
+        assertThat(infoDto.getMemberNickName()).isEqualTo(memberSignUpDto.nickname());
     }
 
     @Test
@@ -264,7 +264,7 @@ public class MemberServiceTest {
 
         //then
         assertThat(myInfo.getMemberEmail()).isEqualTo(memberSignUpDto.memberEmail());
-        assertThat(myInfo.getMemberNickName()).isEqualTo(memberSignUpDto.memberNickname());
+        assertThat(myInfo.getMemberNickName()).isEqualTo(memberSignUpDto.nickname());
 
     }
 }

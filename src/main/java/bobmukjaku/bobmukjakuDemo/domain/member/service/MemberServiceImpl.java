@@ -14,6 +14,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -87,6 +90,13 @@ public class MemberServiceImpl implements MemberService{
     public MemberInfoDto getMyInfo() throws Exception {
         Member findMember = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         return new MemberInfoDto(findMember);
+    }
+
+    @Override
+    public List<MemberInfoDto> getAllMembers() throws Exception {
+        List<Member> allMembers = memberRepository.findAll();
+        List<MemberInfoDto> result = allMembers.stream().map(MemberInfoDto::new).collect(Collectors.toList());
+        return result;
     }
 
 

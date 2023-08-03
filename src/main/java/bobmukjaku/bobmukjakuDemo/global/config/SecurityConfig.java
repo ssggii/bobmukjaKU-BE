@@ -42,7 +42,7 @@ public class SecurityConfig {
     private final JwtService jwtService;
 
     private static final String[] WHITE_LIST = {
-            "/", "/login**", "/signUp**"
+            "/", "/login**", "/signUp**", "/check/nickname"
     };
 
     /* 특정 url 요청 무시 */
@@ -67,7 +67,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         authorize -> authorize
                                 .requestMatchers(WHITE_LIST).permitAll()
-                                .requestMatchers("/member").hasRole(USER)
+                                .requestMatchers("/members").permitAll()
+                                .requestMatchers("/member/info", "/member/info/*").permitAll()
                                 .anyRequest().authenticated());
 
         http.addFilterAfter(jsonUsernamePasswordLoginFilter(), LogoutFilter.class);
