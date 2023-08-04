@@ -42,6 +42,13 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
+    public List<MemberInfoDto> getAllMembers() throws Exception {
+        List<Member> allMembers = memberRepository.findAll();
+        List<MemberInfoDto> result = allMembers.stream().map(MemberInfoDto::new).collect(Collectors.toList());
+        return result;
+    }
+
+    @Override
     public void updateMemberInfo(MemberUpdateDto memberUpdateDto, String username) throws Exception {
         Member member = memberRepository.findByMemberEmail(username)
                 .orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
@@ -92,12 +99,7 @@ public class MemberServiceImpl implements MemberService{
         return new MemberInfoDto(findMember);
     }
 
-    @Override
-    public List<MemberInfoDto> getAllMembers() throws Exception {
-        List<Member> allMembers = memberRepository.findAll();
-        List<MemberInfoDto> result = allMembers.stream().map(MemberInfoDto::new).collect(Collectors.toList());
-        return result;
-    }
+
 
 
 }

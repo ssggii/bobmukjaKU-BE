@@ -10,7 +10,8 @@ spring:
     format_sql: true
     hibernate:
       user_sql_comments: true
-      ddl-auto: update #create
+#      ddl-auto: update
+      ddl-auto: create
     open-in-view: false
 
   profiles:

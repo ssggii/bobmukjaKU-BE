@@ -137,6 +137,61 @@ public class MemberControllerTest {
 
         assertThat(memberRepository.findAll().size()).isEqualTo(0);
     }
+    @Test
+    public void 닉네임_중복인_경우_true() throws Exception {
+        // given
+        String signUpData1 = objectMapper.writeValueAsString(new MemberSignUpDto(username,password,nickName));
+        signUp(signUpData1);
+        String checkNickname = nickName;
+
+        // when, then
+        mockMvc.perform(
+                        get("/check/nickname")
+                                .characterEncoding(StandardCharsets.UTF_8)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(nickName))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+    }
+
+    @Test
+    public void 닉네임_중복_아닌경우_false() throws Exception {
+
+        // given
+        String signUpData1 = objectMapper.writeValueAsString(new MemberSignUpDto(username,password,nickName));
+        signUp(signUpData1);
+        String checkNickname = nickName+"변경";
+
+        // when, then
+        mockMvc.perform(
+                        get("/check/nickname")
+                                .characterEncoding(StandardCharsets.UTF_8)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(checkNickname))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+    }
+
+    @Test
+    public void 전체_회원_조회() throws Exception {
+        // given
+        String signUpData1 = objectMapper.writeValueAsString(new MemberSignUpDto("member1@konkuk.ac.kr", "pass1234@!","nick1"));
+        String signUpData2 = objectMapper.writeValueAsString(new MemberSignUpDto("member2@konkuk.ac.kr", "pass1234@!","nick2"));
+        String signUpData3 = objectMapper.writeValueAsString(new MemberSignUpDto("member3@konkuk.ac.kr", "pass1234@!","nick3"));
+        signUp(signUpData1);
+        signUp(signUpData2);
+        signUp(signUpData3);
+
+        // when, then
+        mockMvc.perform(
+                        get("/members/info")
+                                .characterEncoding(StandardCharsets.UTF_8)
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
 
     @Test
     public void 회원정보수정_성공() throws Exception {
@@ -425,60 +480,6 @@ public class MemberControllerTest {
 
     }
 
-    @Test
-    public void 닉네임_중복인_경우_true() throws Exception {
-        // given
-        String signUpData1 = objectMapper.writeValueAsString(new MemberSignUpDto(username,password,nickName));
-        signUp(signUpData1);
-        String checkNickname = nickName;
-
-        // when, then
-        mockMvc.perform(
-                get("/check/nickname")
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(nickName))
-                .andDo(print())
-                .andExpect(status().isOk());
-
-    }
-
-    @Test
-    public void 닉네임_중복_아닌경우_false() throws Exception {
-
-        // given
-        String signUpData1 = objectMapper.writeValueAsString(new MemberSignUpDto(username,password,nickName));
-        signUp(signUpData1);
-        String checkNickname = nickName+"변경";
-
-        // when, then
-        mockMvc.perform(
-                        get("/check/nickname")
-                                .characterEncoding(StandardCharsets.UTF_8)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(checkNickname))
-                .andDo(print())
-                .andExpect(status().isOk());
-
-    }
-
-/*    @Test
-    public void 전체_회원_조회() throws Exception {
-        // given
-        String signUpData1 = objectMapper.writeValueAsString(new MemberSignUpDto("member1@konkuk.ac.kr", "pass1234@!","nick2"));
-        String signUpData2 = objectMapper.writeValueAsString(new MemberSignUpDto("member2@konkuk.ac.kr", "pass1234@!","nick2"));
-        String signUpData3 = objectMapper.writeValueAsString(new MemberSignUpDto("member3@konkuk.ac.kr", "pass1234@!","nick3"));
-        signUp(signUpData1);
-        signUp(signUpData2);
-        signUp(signUpData3);
-
-        // when
 
 
-        // then
-        Map<String, Object> map = objectMapper.readValue(result.getResponse().getContentAsString(), Map.class);
-        Member member = memberRepository.findByMemberEmail(username).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-        assertThat(member.getMemberEmail()).isEqualTo(username);
-        assertThat(member.getMemberNickName()).isEqualTo(nickName);
-    }*/
 }

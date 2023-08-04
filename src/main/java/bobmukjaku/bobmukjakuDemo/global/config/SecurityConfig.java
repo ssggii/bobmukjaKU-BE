@@ -67,7 +67,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         authorize -> authorize
                                 .requestMatchers(WHITE_LIST).permitAll()
-                                .requestMatchers("/members").permitAll()
+                                .requestMatchers("/members/info").permitAll()
                                 .requestMatchers("/member/info", "/member/info/*").permitAll()
                                 .anyRequest().authenticated());
 
