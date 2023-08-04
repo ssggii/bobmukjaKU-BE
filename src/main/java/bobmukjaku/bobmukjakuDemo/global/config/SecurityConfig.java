@@ -67,8 +67,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         authorize -> authorize
                                 .requestMatchers(WHITE_LIST).permitAll()
-                                .requestMatchers("/members/info").permitAll()
-                                .requestMatchers("/member/info", "/member/info/*").permitAll()
+                                .requestMatchers("/members/info").permitAll() // TODO: ADMIN만 접근 가능하도록 수정해야함
+                                .requestMatchers("/member/info", "/member/info/*").hasRole(String.valueOf(Role.USER)) // USER 권한으로 가능한 요청 경로
                                 .anyRequest().authenticated());
 
         http.addFilterAfter(jsonUsernamePasswordLoginFilter(), LogoutFilter.class);

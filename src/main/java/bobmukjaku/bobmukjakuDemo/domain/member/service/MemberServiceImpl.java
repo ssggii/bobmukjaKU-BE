@@ -49,6 +49,18 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
+    public MemberInfoDto getInfo(Long id) throws Exception {
+        Member findMember = memberRepository.findById(id).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        return new MemberInfoDto(findMember);
+    }
+
+    @Override
+    public MemberInfoDto getMyInfo() throws Exception {
+        Member findMember = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        return new MemberInfoDto(findMember);
+    }
+
+    @Override
     public void updateMemberInfo(MemberUpdateDto memberUpdateDto, String username) throws Exception {
         Member member = memberRepository.findByMemberEmail(username)
                 .orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
@@ -86,20 +98,5 @@ public class MemberServiceImpl implements MemberService{
         boolean result = memberRepository.existsByMemberNickName(nickName);
         return result;
     }
-
-    @Override
-    public MemberInfoDto getInfo(Long id) throws Exception {
-        Member findMember = memberRepository.findById(id).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-        return new MemberInfoDto(findMember);
-    }
-
-    @Override
-    public MemberInfoDto getMyInfo() throws Exception {
-        Member findMember = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-        return new MemberInfoDto(findMember);
-    }
-
-
-
 
 }

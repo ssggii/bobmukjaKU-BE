@@ -194,9 +194,112 @@ public class MemberControllerTest {
     }
 
     @Test
+    public void 회원정보_조회_성공() throws Exception {
+        // given
+        String signUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username,password,nickName));
+        signUp(signUpData);
+
+        String accessToken = getAccessToken();
+        Long uid = memberRepository.findAll().get(0).getUid();
+
+        // when
+        MvcResult result = mockMvc.perform(
+                        get("/member/info/"+uid)
+                                .characterEncoding(StandardCharsets.UTF_8)
+                                .header(accessHeader, BEARER+accessToken))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // then
+        Map<String, Object> map = objectMapper.readValue(result.getResponse().getContentAsString(), Map.class);
+        Member member = memberRepository.findByMemberEmail(username).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        assertThat(member.getMemberEmail()).isEqualTo(username);
+        assertThat(member.getMemberNickName()).isEqualTo(nickName);
+    }
+
+    @Test
+    public void 회원정보_조회_실패_없는회원() throws Exception {
+        // given
+        String signUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username,password,nickName));
+        signUp(signUpData);
+
+        String accessToken = getAccessToken();
+
+        // when
+        MvcResult result = mockMvc.perform(
+                        get("/member/info/5555")
+                                .characterEncoding(StandardCharsets.UTF_8)
+                                .header(accessHeader, BEARER+accessToken))
+                .andExpect(status().isNotFound()).andReturn();
+
+        // then
+        Map<String, Integer> map = objectMapper.readValue(result.getResponse().getContentAsString(), Map.class);
+        assertThat(map.get("errorCode")).isEqualTo(MemberExceptionType.NOT_FOUND_MEMBER.getErrorCode());
+    }
+
+    @Test
+    public void 회원정보_조회_실패_JWT없음() throws Exception {
+        // given
+        String signUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username,password,nickName));
+        signUp(signUpData);
+
+        String accessToken = getAccessToken();
+        Long uid = memberRepository.findAll().get(0).getUid();
+
+        // when, then
+        mockMvc.perform(
+                        get("/member/info/" + uid)
+                                .characterEncoding(StandardCharsets.UTF_8)
+                                .header(accessHeader, BEARER+accessToken+1))
+                .andExpect(status().isForbidden());
+
+    }
+    @Test
+    public void 내정보_조회_성공() throws Exception {
+        // given
+        String signUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username,password,nickName));
+        signUp(signUpData);
+
+        String accessToken = getAccessToken();
+
+        // when
+        MvcResult result = mockMvc.perform(
+                        get("/member/info")
+                                .characterEncoding(StandardCharsets.UTF_8)
+                                .header(accessHeader, BEARER+accessToken))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // then
+        Map<String, Object> map = objectMapper.readValue(result.getResponse().getContentAsString(), Map.class);
+        Member member = memberRepository.findByMemberEmail(username).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        assertThat(member.getMemberEmail()).isEqualTo(username);
+        assertThat(member.getMemberNickName()).isEqualTo(nickName);
+    }
+
+    @Test
+    public void 내정보_조회_실패_JWT없음() throws Exception {
+        // given
+        String signUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username,password,nickName));
+        signUp(signUpData);
+
+        String accessToken = getAccessToken();
+
+        // when, then
+        mockMvc.perform(
+                        get("/member/info")
+                                .characterEncoding(StandardCharsets.UTF_8)
+                                .header(accessHeader, BEARER+accessToken+1))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+
+    }
+
+    @Test
     public void 회원정보수정_성공() throws Exception {
         //given
-        objectMapper.registerModule(new JavaTimeModule());
         String signUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username, password, nickName));
         signUp(signUpData);
 
@@ -212,6 +315,7 @@ public class MemberControllerTest {
                                 .header(accessHeader,BEARER+accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updateMemberData))
+                .andDo(print())
                 .andExpect(status().isOk());
 
         //then
@@ -222,7 +326,7 @@ public class MemberControllerTest {
     }
 
     @Test
-    public void 비밀번호_수정_성공() throws Exception{
+    public void 비밀번호_재설정_성공() throws Exception{
         // given
         String signUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username,password,nickName));
         signUp(signUpData);
@@ -240,6 +344,7 @@ public class MemberControllerTest {
                         .header(accessHeader, BEARER+accessToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updatePassword))
+                .andDo(print())
                 .andExpect(status().isOk());
 
         // then
@@ -323,6 +428,7 @@ public class MemberControllerTest {
                         .header(accessHeader, BEARER+accessToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updatePassword))
+                .andDo(print())
                 .andExpect(status().isOk());
 
         // then
@@ -378,108 +484,5 @@ public class MemberControllerTest {
         Member member = memberRepository.findByMemberEmail(username).orElseThrow(()->new Exception("회원이 아닙니다."));
         assertThat(member).isNotNull();
     }
-
-    @Test
-    public void 내정보_조회_성공() throws Exception {
-        // given
-        String signUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username,password,nickName));
-        signUp(signUpData);
-
-        String accessToken = getAccessToken();
-
-        // when
-        MvcResult result = mockMvc.perform(
-                get("/member/info")
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .header(accessHeader, BEARER+accessToken))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        // then
-        Map<String, Object> map = objectMapper.readValue(result.getResponse().getContentAsString(), Map.class);
-        Member member = memberRepository.findByMemberEmail(username).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-        assertThat(member.getMemberEmail()).isEqualTo(username);
-        assertThat(member.getMemberNickName()).isEqualTo(nickName);
-    }
-
-    @Test
-    public void 내정보_조회_실패_JWT없음() throws Exception {
-        // given
-        String signUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username,password,nickName));
-        signUp(signUpData);
-
-        String accessToken = getAccessToken();
-
-        // when, then
-        mockMvc.perform(
-                        get("/member/info")
-                                .characterEncoding(StandardCharsets.UTF_8)
-                                .header(accessHeader, BEARER+accessToken+1))
-                .andExpect(status().isForbidden());
-
-    }
-
-    @Test
-    public void 회원정보_조회_성공() throws Exception {
-        // given
-        String signUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username,password,nickName));
-        signUp(signUpData);
-
-        String accessToken = getAccessToken();
-        Long uid = memberRepository.findAll().get(0).getUid();
-
-        // when
-        MvcResult result = mockMvc.perform(
-                        get("/member/info"+uid)
-                                .characterEncoding(StandardCharsets.UTF_8)
-                                .header(accessHeader, BEARER+accessToken))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        // then
-        Map<String, Object> map = objectMapper.readValue(result.getResponse().getContentAsString(), Map.class);
-        Member member = memberRepository.findByMemberEmail(username).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-        assertThat(member.getMemberEmail()).isEqualTo(username);
-        assertThat(member.getMemberNickName()).isEqualTo(nickName);
-    }
-
-    @Test
-    public void 회원정보_조회_실패_없는회원() throws Exception {
-        // given
-        String signUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username,password,nickName));
-        signUp(signUpData);
-
-        String accessToken = getAccessToken();
-
-        // when
-        MvcResult result = mockMvc.perform(
-                        get("/member/info/5555")
-                                .characterEncoding(StandardCharsets.UTF_8)
-                                .header(accessHeader, BEARER+accessToken))
-                .andExpect(status().isNotFound()).andReturn();
-
-        // then
-        Map<String, Integer> map = objectMapper.readValue(result.getResponse().getContentAsString(), Map.class);
-        assertThat(map.get("errorCode")).isEqualTo(MemberExceptionType.NOT_FOUND_MEMBER.getErrorCode());
-    }
-
-    @Test
-    public void 회원정보_조회_실패_JWT없음() throws Exception {
-        // given
-        String signUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username,password,nickName));
-        signUp(signUpData);
-
-        String accessToken = getAccessToken();
-
-        // when, then
-        mockMvc.perform(
-                        get("/member/info")
-                                .characterEncoding(StandardCharsets.UTF_8)
-                                .header(accessHeader, BEARER+accessToken+1))
-                .andExpect(status().isForbidden());
-
-    }
-
-
 
 }
