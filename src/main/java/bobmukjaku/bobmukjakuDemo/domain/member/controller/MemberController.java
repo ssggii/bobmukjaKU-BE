@@ -83,5 +83,11 @@ public class MemberController {
         memberService.withdraw(memberWithdrawDto.checkPassword(), SecurityUtil.getLoginUsername());
     }
 
+    //메일인증
+    @GetMapping("/mailAuth")
+    @ResponseBody
+    public HashedAuthCodeDto mailAuth(@RequestParam String email) throws Exception {
+        return memberService.mailAuth(email);
+    }
 
 }

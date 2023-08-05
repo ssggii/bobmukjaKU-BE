@@ -1,5 +1,6 @@
 package bobmukjaku.bobmukjakuDemo.domain.member.service;
 
+import bobmukjaku.bobmukjakuDemo.domain.member.dto.HashedAuthCodeDto;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberSignUpDto;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberUpdateDto;
@@ -18,4 +19,5 @@ public interface MemberService {
     MemberInfoDto getInfo(Long id) throws Exception; // id로 조회
     MemberInfoDto getMyInfo() throws Exception; // 이메일로 조회
     List<MemberInfoDto> getAllMembers() throws Exception; // 전체 회원 조회
+    public HashedAuthCodeDto mailAuth(String email) throws Exception; //메일인증
 }

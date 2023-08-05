@@ -1,6 +1,7 @@
 package bobmukjaku.bobmukjakuDemo.domain.member.service;
 
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
+import bobmukjaku.bobmukjakuDemo.domain.member.dto.HashedAuthCodeDto;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberSignUpDto;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberUpdateDto;
@@ -25,6 +26,7 @@ public class MemberServiceImpl implements MemberService{
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final EmailAuthService emailAuthService;
 
     @Override
     public void signUp(MemberSignUpDto memberSignUpDto) throws Exception {
@@ -97,6 +99,14 @@ public class MemberServiceImpl implements MemberService{
     public boolean checkNickName(String nickName) throws Exception {
         boolean result = memberRepository.existsByMemberNickName(nickName);
         return result;
+    }
+
+    @Override
+    public HashedAuthCodeDto mailAuth(String email) throws Exception {
+        String authcode = emailAuthService.createAuthCode();
+        emailAuthService.sendMail(authcode, email);
+        System.out.println("메일인증~~");
+        return emailAuthService.hashAuthCode(authcode);
     }
 
 }

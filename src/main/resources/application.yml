@@ -17,6 +17,16 @@ spring:
   profiles:
     include: jwt
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: bobmukjaku@gmail.com
+    password: mkugqklcddnehrrx
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+      mail.debug: true
+
 
 logging:
   level:
