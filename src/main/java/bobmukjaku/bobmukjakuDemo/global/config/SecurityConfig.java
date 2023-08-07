@@ -9,6 +9,7 @@ import bobmukjaku.bobmukjakuDemo.global.login.filter.JsonUsernamePasswordAuthent
 import bobmukjaku.bobmukjakuDemo.global.login.handler.LoginFailureHandler;
 import bobmukjaku.bobmukjakuDemo.global.login.handler.LoginSuccessJWTProvideHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -68,7 +69,7 @@ public class SecurityConfig {
                         authorize -> authorize
                                 .requestMatchers(WHITE_LIST).permitAll()
                                 .requestMatchers("/members/info", "/member/info").permitAll() // TODO: ADMIN만 접근 가능하도록 수정해야함
-                                .requestMatchers("/member/info/*").hasRole(String.valueOf(Role.USER)) // USER 권한으로 가능한 요청 경로
+                                .requestMatchers("/member/info", "/member/info/*").hasRole(String.valueOf(Role.USER)) // USER 권한으로 가능한 요청 경로
                                 .anyRequest().authenticated());
 
         http.addFilterAfter(jsonUsernamePasswordLoginFilter(), LogoutFilter.class);

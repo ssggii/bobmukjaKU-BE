@@ -64,8 +64,11 @@ public class Member extends BaseTimeEntity {
     }
 
     /* 연관관계 메서드 */
-    // 개설한 모집방 추가
-
+    // 참여하는 모집방 추가
+    public void addChatRoom(MemberChatRoom chatRoom){
+        memberChatRooms.add(chatRoom); // 멤버 엔티티 입장에서 chatroom 추가
+        chatRoom.setJoiner(this); // chatroom 입장에서 member 추가
+    }
 
     /* 회원 정보 수정 */
     // 닉네임 변경

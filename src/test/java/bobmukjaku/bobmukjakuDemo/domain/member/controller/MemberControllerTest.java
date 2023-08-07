@@ -1,4 +1,4 @@
-package bobmukjaku.bobmukjakuDemo.domains.member.controller;
+package bobmukjaku.bobmukjakuDemo.domain.member.controller;
 
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberSignUpDto;
@@ -9,9 +9,6 @@ import bobmukjaku.bobmukjakuDemo.domain.member.service.MemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.persistence.EntityManager;
-import org.aspectj.lang.annotation.Before;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,15 +19,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.springframework.http.RequestEntity.post;

@@ -1,8 +1,7 @@
-package bobmukjaku.bobmukjakuDemo.domains.member.repository;
+package bobmukjaku.bobmukjakuDemo.domain.member.repository;
 
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import bobmukjaku.bobmukjakuDemo.domain.member.Role;
-import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
@@ -10,8 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;

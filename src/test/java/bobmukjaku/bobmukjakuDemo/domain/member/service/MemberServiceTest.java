@@ -1,4 +1,4 @@
-package bobmukjaku.bobmukjakuDemo.domains.member.service;
+package bobmukjaku.bobmukjakuDemo.domain.member.service;
 
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import bobmukjaku.bobmukjakuDemo.domain.member.Role;
@@ -8,7 +8,6 @@ import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberUpdateDto;
 import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberException;
 import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberExceptionType;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
-import bobmukjaku.bobmukjakuDemo.domain.member.service.MemberService;
 import bobmukjaku.bobmukjakuDemo.global.utility.SecurityUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -22,7 +21,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
