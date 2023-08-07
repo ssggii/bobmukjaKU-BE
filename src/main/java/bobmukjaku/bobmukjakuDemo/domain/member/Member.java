@@ -1,11 +1,17 @@
 package bobmukjaku.bobmukjakuDemo.domain.member;
 
 import bobmukjaku.bobmukjakuDemo.BaseTimeEntity;
+import bobmukjaku.bobmukjakuDemo.domain.MemberChatRoom;
+import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoom;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+import static jakarta.persistence.CascadeType.ALL;
 
 @Table(name = "member")
 @Getter
@@ -42,6 +48,10 @@ public class Member extends BaseTimeEntity {
     @Column(name = "refresh_Token", length = 1000)
     private String refreshToken;
 
+    // member-chatroom 연관관계 매핑
+    @OneToMany(mappedBy = "joiner", cascade = ALL, orphanRemoval = true)
+    private List<MemberChatRoom> memberChatRooms = new ArrayList<>();
+
     // 회원 가입 시 USER 권한 부여
     public void giveUserAuthority(){
         this.role = Role.USER;
@@ -52,6 +62,10 @@ public class Member extends BaseTimeEntity {
         boolean result = passwordEncoder.matches(checkPassword, getMemberPassword());
         return result;
     }
+
+    /* 연관관계 메서드 */
+    // 개설한 모집방 추가
+
 
     /* 회원 정보 수정 */
     // 닉네임 변경

@@ -1,14 +1,17 @@
 package bobmukjaku.bobmukjakuDemo.domain.chatroom;
 
 import bobmukjaku.bobmukjakuDemo.BaseTimeEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import bobmukjaku.bobmukjakuDemo.domain.MemberChatRoom;
+import bobmukjaku.bobmukjakuDemo.domain.member.Member;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import static jakarta.persistence.CascadeType.ALL;
 
 @Table(name = "chatroom")
 @Getter
@@ -19,9 +22,15 @@ import java.time.LocalTime;
 public class ChatRoom extends BaseTimeEntity {
 
     @Id
-    private String id; // PK
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long chatRoomId;
 
-    @Column(name = "room_name", nullable = false) // 길이 추가 예정
+    // member-chatroom 연관관계 매핑
+    @OneToMany(mappedBy = "chatRoom", cascade = ALL, orphanRemoval = true)
+    private List<MemberChatRoom> memberChatRooms = new ArrayList<>();
+
+    @Column(name = "room_name", nullable = false)
     private String roomName;
 
     @Column(name = "date")
@@ -36,7 +45,10 @@ public class ChatRoom extends BaseTimeEntity {
     @Column(name = "kind_of_food")
     private String kindOfFood;
 
-    @Column(name = "member_num")
-    private Integer memberNum;
+    @Column(name = "total")
+    private Integer total;
+
+    @Column(name = "current_num")
+    private Integer currentNum;
 
 }
