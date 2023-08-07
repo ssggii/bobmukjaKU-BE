@@ -1,5 +1,6 @@
 package bobmukjaku.bobmukjakuDemo.domain.member.service;
 
+import bobmukjaku.bobmukjakuDemo.chatting.ChatModel;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.HashedAuthCodeDto;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberSignUpDto;
@@ -20,4 +21,5 @@ public interface MemberService {
     MemberInfoDto getMyInfo() throws Exception; // 이메일로 조회
     List<MemberInfoDto> getAllMembers() throws Exception; // 전체 회원 조회
     public HashedAuthCodeDto mailAuth(String email) throws Exception; //메일인증
+    public void sendMessageToFireBase(ChatModel md) throws Exception; //파이어베이스로 메시지 전송
 }

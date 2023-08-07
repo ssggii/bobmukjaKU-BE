@@ -1,5 +1,6 @@
 package bobmukjaku.bobmukjakuDemo.domain.member.controller;
 
+import bobmukjaku.bobmukjakuDemo.chatting.ChatModel;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.*;
 import bobmukjaku.bobmukjakuDemo.domain.member.service.MemberService;
 import bobmukjaku.bobmukjakuDemo.global.utility.SecurityUtil;
@@ -89,5 +90,15 @@ public class MemberController {
     public HashedAuthCodeDto mailAuth(@RequestParam String email) throws Exception {
         return memberService.mailAuth(email);
     }
+
+    //파이어베이스로 메시지 전송
+    @PutMapping("message")
+    @ResponseBody
+    public ResponseEntity<Object> sendMessageToFireBase(@RequestBody ChatModel md) throws Exception {
+        System.out.println("파이어베이스 메시지 전송 로그");
+        memberService.sendMessageToFireBase(md);
+        return ResponseEntity.ok().build();
+    }
+
 
 }

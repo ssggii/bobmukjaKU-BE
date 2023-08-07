@@ -42,7 +42,7 @@ public class SecurityConfig {
     private final JwtService jwtService;
 
     private static final String[] WHITE_LIST = {
-            "/", "/login**", "/signUp**", "/check/nickname", "/mailAuth"
+            "/", "/login**", "/signUp**", "/check/nickname", "/mailAuth", "message"
     };
 
     /* 특정 url 요청 무시 */
