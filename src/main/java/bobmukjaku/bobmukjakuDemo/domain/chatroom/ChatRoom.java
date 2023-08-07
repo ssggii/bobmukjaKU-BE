@@ -27,6 +27,7 @@ public class ChatRoom extends BaseTimeEntity {
     private Long chatRoomId;
 
     // member-chatroom 연관관계 매핑
+    @Builder.Default
     @OneToMany(mappedBy = "chatRoom", cascade = ALL, orphanRemoval = true)
     private List<MemberChatRoom> participants = new ArrayList<>();
 
@@ -54,8 +55,20 @@ public class ChatRoom extends BaseTimeEntity {
     /* 연관관계 메서드 */
     // 참여자 추가 메소드
     public void addParticipant(Member participant) {
-        MemberChatRoom memberChatRoom = new MemberChatRoom(this.getChatRoomId(), participant, this);
+        MemberChatRoom memberChatRoom = MemberChatRoom.builder().chatRoom(this).joiner(participant).build();
         participants.add(memberChatRoom);
+    }
+
+    // 중복 참여자 확인
+    public boolean isParticipant(Member member) {
+        return participants.stream()
+                .map(MemberChatRoom::getJoiner)
+                .anyMatch(joiner -> joiner.equals(member));
+    }
+
+    @PrePersist
+    public void defaultSetting(){
+        currentNum = 1; // 생성 시 참여 인원은 1명이 됨
     }
 
 }

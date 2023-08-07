@@ -49,6 +49,7 @@ public class Member extends BaseTimeEntity {
     private String refreshToken;
 
     // member-chatroom 연관관계 매핑
+    @Builder.Default
     @OneToMany(mappedBy = "joiner", cascade = ALL, orphanRemoval = true)
     private List<MemberChatRoom> JoiningRooms = new ArrayList<>();
 
@@ -64,15 +65,9 @@ public class Member extends BaseTimeEntity {
     }
 
     /* 연관관계 메서드 */
-    // 참여하는 모집방 추가
-    public void addChatRoom(MemberChatRoom chatRoom){
-        JoiningRooms.add(chatRoom);
-        chatRoom.setJoiner(this);
-    }
-
-    // 모집방 입장
-    public void joinChatRoom(ChatRoom chatRoom) {
-        MemberChatRoom memberChatRoom = new MemberChatRoom(chatRoom.getChatRoomId(), this, chatRoom);
+    // 참여 모집방 추가
+    public void addChatRoom(ChatRoom chatRoom) {
+        MemberChatRoom memberChatRoom = MemberChatRoom.builder().joiner(this).chatRoom(chatRoom).build();
         JoiningRooms.add(memberChatRoom);
     }
 

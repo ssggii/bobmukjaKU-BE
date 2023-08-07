@@ -28,8 +28,12 @@ public class MemberChatRoom extends BaseTimeEntity {
     @JoinColumn(name = "chatroom_id")
     private ChatRoom chatRoom;
 
-    public void setJoiner(Member joiner) {
-        this.joiner = joiner;
+    public MemberChatRoom(Member member, ChatRoom chatRoom) {
+        this.joiner = member;
+        this.chatRoom = chatRoom;
+        // 양방향 연관관계 설정
+        joiner.getJoiningRooms().add(this);
+        chatRoom.getParticipants().add(this);
     }
 
 }
