@@ -43,7 +43,7 @@ public class SecurityConfig {
     private final JwtService jwtService;
 
     private static final String[] WHITE_LIST = {
-            "/", "/login**", "/signUp**", "/check/nickname", "/mailAuth", "/chatRoom"
+            "/", "/login**", "/signUp**", "/check/nickname", "/mailAuth"
     };
 
     /* 특정 url 요청 무시 */
@@ -69,7 +69,7 @@ public class SecurityConfig {
                         authorize -> authorize
                                 .requestMatchers(WHITE_LIST).permitAll()
                                 .requestMatchers("/members/info", "/member/info").permitAll() // TODO: ADMIN만 접근 가능하도록 수정해야함
-                                .requestMatchers("/member/info", "/member/info/*").hasRole(String.valueOf(Role.USER)) // USER 권한으로 가능한 요청 경로
+                                .requestMatchers("/member/info", "/member/info/*","/chatRoom/member", "/chatRoom").hasRole(String.valueOf(Role.USER)) // USER 권한으로 가능한 요청 경로
                                 .anyRequest().authenticated());
 
         http.addFilterAfter(jsonUsernamePasswordLoginFilter(), LogoutFilter.class);

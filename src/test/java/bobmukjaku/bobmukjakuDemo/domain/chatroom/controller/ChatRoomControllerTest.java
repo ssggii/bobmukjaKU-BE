@@ -1,7 +1,7 @@
 package bobmukjaku.bobmukjakuDemo.domain.chatroom.controller;
 
-import bobmukjaku.bobmukjakuDemo.domain.MemberChatRoom;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoom;
+import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.AddMemberDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomCreateDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.repository.ChatRoomRepository;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.service.ChatRoomService;
@@ -21,12 +21,14 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -108,6 +110,44 @@ public class ChatRoomControllerTest {
         System.out.println("<참여자 이메일>");
         findChatRoom.getParticipants().stream().map(r->r.getJoiner().getMemberEmail()).forEach(System.out::println);
 
+    }
+
+    @Test
+    public void 모집방_참여자_추가_성공() throws Exception {
+        // Given
+        ChatRoom chatRoom = ChatRoom.builder()
+                .roomName("모집방")
+                .meetingDate(LocalDate.parse("2023-08-27"))
+                .kindOfFood("일식")
+                .startTime(LocalTime.parse("17:30"))
+                .endTime(LocalTime.parse("20:00"))
+                .total(4)
+                .build();
+
+        chatRoomRepository.save(chatRoom);
+
+        signUp();
+        String accessToken = login();
+
+        Long roomId = chatRoomRepository.findAll().get(0).getChatRoomId();
+        System.out.println("roomId: " + roomId);
+        Long uid = memberRepository.findAll().get(0).getUid();
+        System.out.println("uid: " + uid);
+
+        AddMemberDto chatRoomMemberDto = new AddMemberDto(roomId, uid);
+
+        // When
+        mockMvc.perform(post("/chatRoom/member")
+                        .header(accessHeader, BEARER+accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(chatRoomMemberDto)))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        // Then
+        ChatRoom findChatRoom = chatRoomRepository.findById(roomId).orElse(null);
+        System.out.println("<참여자 닉네임>");
+        chatRoomRepository.findById(findChatRoom.getChatRoomId()).get().getParticipants().stream().map(m->m.getJoiner().getMemberNickName()).forEach(System.out::println);
     }
 
 }

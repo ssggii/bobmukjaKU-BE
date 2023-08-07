@@ -37,13 +37,20 @@ public class ChatRoomService {
     }
 
     // 모집방 참여자 추가
-    public void addMemberToChatRoom(Long chatRoomId, Long memberId){
-        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
-                .orElseThrow(()-> new IllegalArgumentException("모집방을 찾을 수 없습니다. 모집방 ID: " + chatRoomId));
-        Member joiner = memberRepository.findById(memberId)
-                .orElseThrow(()-> new IllegalArgumentException("회원을 찾을 수 없습니다. 회원 UID: " + memberId));
-
-        chatRoom.addParticipant(joiner);
+    public Boolean addMemberToChatRoom(Long roomId, Long uid){
+        Boolean result = false;
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(()-> new IllegalArgumentException("모집방을 찾을 수 없습니다. 모집방 ID: " + roomId));
+        Member joiner = memberRepository.findById(uid)
+                .orElseThrow(()-> new IllegalArgumentException("회원을 찾을 수 없습니다. 회원 UID: " + uid));
+        if(chatRoom.getCurrentNum() < chatRoom.getTotal()){
+            chatRoom.addParticipant(joiner);
+            joiner.addChatRoom(chatRoom);
+            result = true;
+        } else {
+            System.out.println("모집 정원 초과입니다");
+        }
+        return result;
     }
 
 }
