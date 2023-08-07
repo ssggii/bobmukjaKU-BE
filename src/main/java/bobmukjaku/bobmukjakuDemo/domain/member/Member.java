@@ -50,7 +50,7 @@ public class Member extends BaseTimeEntity {
 
     // member-chatroom 연관관계 매핑
     @OneToMany(mappedBy = "joiner", cascade = ALL, orphanRemoval = true)
-    private List<MemberChatRoom> memberChatRooms = new ArrayList<>();
+    private List<MemberChatRoom> JoiningRooms = new ArrayList<>();
 
     // 회원 가입 시 USER 권한 부여
     public void giveUserAuthority(){
@@ -66,8 +66,14 @@ public class Member extends BaseTimeEntity {
     /* 연관관계 메서드 */
     // 참여하는 모집방 추가
     public void addChatRoom(MemberChatRoom chatRoom){
-        memberChatRooms.add(chatRoom); // 멤버 엔티티 입장에서 chatroom 추가
-        chatRoom.setJoiner(this); // chatroom 입장에서 member 추가
+        JoiningRooms.add(chatRoom);
+        chatRoom.setJoiner(this);
+    }
+
+    // 모집방 입장
+    public void joinChatRoom(ChatRoom chatRoom) {
+        MemberChatRoom memberChatRoom = new MemberChatRoom(chatRoom.getChatRoomId(), this, chatRoom);
+        JoiningRooms.add(memberChatRoom);
     }
 
     /* 회원 정보 수정 */

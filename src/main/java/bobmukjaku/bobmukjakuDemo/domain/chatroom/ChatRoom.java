@@ -28,7 +28,7 @@ public class ChatRoom extends BaseTimeEntity {
 
     // member-chatroom 연관관계 매핑
     @OneToMany(mappedBy = "chatRoom", cascade = ALL, orphanRemoval = true)
-    private List<MemberChatRoom> memberChatRooms = new ArrayList<>();
+    private List<MemberChatRoom> participants = new ArrayList<>();
 
     @Column(name = "room_name", nullable = false)
     private String roomName;
@@ -50,5 +50,12 @@ public class ChatRoom extends BaseTimeEntity {
 
     @Column(name = "current_num")
     private Integer currentNum;
+
+    /* 연관관계 메서드 */
+    // 참여자 추가 메소드
+    public void addParticipant(Member participant) {
+        MemberChatRoom memberChatRoom = new MemberChatRoom(this.getChatRoomId(), participant, this);
+        participants.add(memberChatRoom);
+    }
 
 }
