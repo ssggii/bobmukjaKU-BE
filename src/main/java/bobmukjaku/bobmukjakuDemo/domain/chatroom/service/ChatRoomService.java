@@ -1,6 +1,7 @@
 package bobmukjaku.bobmukjakuDemo.domain.chatroom.service;
 
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoom;
+import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomCreateDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.repository.ChatRoomRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,8 @@ public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
 
     // 모집방 생성
-    public void createChatRoom(ChatRoom chatRoom){
-        chatRoomRepository.save(chatRoom);
+    public void createChatRoom(ChatRoomCreateDto chatRoomCreateDto){
+        ChatRoom createdChatRoom = chatRoomCreateDto.toEntity();
+        chatRoomRepository.save(createdChatRoom);
     }
 }
