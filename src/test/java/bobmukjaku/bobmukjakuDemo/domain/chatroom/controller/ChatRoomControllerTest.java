@@ -112,6 +112,8 @@ public class ChatRoomControllerTest {
 
     }
 
+    // 모집방 참여자
+
     @Test
     public void 모집방_참여자_추가_성공() throws Exception {
         // Given
@@ -125,6 +127,9 @@ public class ChatRoomControllerTest {
                 .build();
 
         chatRoomRepository.save(chatRoom);
+        System.out.println("개설된 방 이름: " + chatRoomRepository.findAll().get(0).getRoomName());
+        System.out.println("개설된 방 ID: " + chatRoomRepository.findAll().get(0).getChatRoomId());
+        System.out.println("현재 인원: " + chatRoomRepository.findAll().get(0).getCurrentNum());
 
         signUp();
         String accessToken = login();

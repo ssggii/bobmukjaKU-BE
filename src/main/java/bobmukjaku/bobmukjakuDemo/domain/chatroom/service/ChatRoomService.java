@@ -46,6 +46,7 @@ public class ChatRoomService {
         if(chatRoom.getCurrentNum() < chatRoom.getTotal()){
             chatRoom.addParticipant(joiner);
             joiner.addChatRoom(chatRoom);
+            chatRoom.addCurrentNum(); // 참여 인원 ++
             result = true;
         } else {
             System.out.println("모집 정원 초과입니다");

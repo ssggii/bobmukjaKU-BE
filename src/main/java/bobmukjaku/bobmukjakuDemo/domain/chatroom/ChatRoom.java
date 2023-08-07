@@ -66,9 +66,16 @@ public class ChatRoom extends BaseTimeEntity {
                 .anyMatch(joiner -> joiner.equals(member));
     }
 
+    // 참여 인원 증가
+    public void addCurrentNum(){
+        this.currentNum = currentNum++;
+    }
+
     @PrePersist
     public void defaultSetting(){
         currentNum = 1; // 생성 시 참여 인원은 1명이 됨
+        this.createdAt = createdAt.withNano(0);
+        this.createdAt = createdAt.withNano(0);
     }
 
 }

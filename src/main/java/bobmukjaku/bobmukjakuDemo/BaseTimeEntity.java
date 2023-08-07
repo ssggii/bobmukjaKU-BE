@@ -19,17 +19,11 @@ public abstract class BaseTimeEntity {
     // 생성 시간
     @CreatedDate
     @Column(updatable = false)
-    private LocalDateTime createdAt;
+    protected LocalDateTime createdAt;
 
     // 수정 시간
     @LastModifiedDate
     @Column(updatable = true)
-    private LocalDateTime lastModifiedAt;
-
-    @PrePersist
-    public void timeSetting(){
-        this.createdAt = createdAt.withNano(0);
-        this.createdAt = createdAt.withNano(0);
-    }
+    protected LocalDateTime lastModifiedAt;
 
 }
