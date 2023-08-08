@@ -9,6 +9,8 @@ import java.util.Optional;
 
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
-    List<ChatRoom> findChatRoomByKindOfFood(String kindOfFood); // 음식 종류로 모집방 검색
+    List<ChatRoom> findChatRoomsByKindOfFood(String kindOfFood); // 음식 종류로 모집방 검색
+
+    List<ChatRoom> findChatRoomsByTotal(int total); // 정원 수로 모집방 검색
 
 }

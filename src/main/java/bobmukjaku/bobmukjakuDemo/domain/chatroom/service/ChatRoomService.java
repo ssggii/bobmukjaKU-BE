@@ -77,9 +77,16 @@ public class ChatRoomService {
         return null;
     }
 
-    // 음식 분류 별 모집방 조회
+    // 음식 분류로 모집방 조회
     public List<ChatRoomInfo> getChatRoomByFood(String kindOfFood) throws Exception {
-        List<ChatRoom> chatRooms = chatRoomRepository.findChatRoomByKindOfFood(kindOfFood);
+        List<ChatRoom> chatRooms = chatRoomRepository.findChatRoomsByKindOfFood(kindOfFood);
+        List<ChatRoomInfo> chatRoomInfoList = chatRooms.stream().map(ChatRoomInfo::new).collect(Collectors.toList());
+        return chatRoomInfoList;
+    }
+
+    // 정원으로 모집방 조회
+    public List<ChatRoomInfo> getChatRoomByTotal(int total) throws Exception {
+        List<ChatRoom> chatRooms = chatRoomRepository.findChatRoomsByTotal(total);
         List<ChatRoomInfo> chatRoomInfoList = chatRooms.stream().map(ChatRoomInfo::new).collect(Collectors.toList());
         return chatRoomInfoList;
     }

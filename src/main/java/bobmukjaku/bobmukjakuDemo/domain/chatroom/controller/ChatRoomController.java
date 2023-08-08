@@ -62,7 +62,14 @@ public class ChatRoomController {
     @GetMapping("/chatRoom/filter/1/{kindOfFood}")
     public ResponseEntity getChatRoomByFood(@PathVariable("kindOfFood")String kindOfFood) throws Exception {
         List<ChatRoomInfo> roomInfoList = chatRoomService.getChatRoomByFood(kindOfFood);
-        return new ResponseEntity<>(roomInfoList, HttpStatus.OK);
+        return new ResponseEntity(roomInfoList, HttpStatus.OK);
+    }
+
+    // 정원으로 모집방 조회
+    @GetMapping("/chatRoom/filter/2/{total}")
+    public ResponseEntity getChatRoomByTotal(@PathVariable("total")int total) throws Exception {
+        List<ChatRoomInfo> roomInfoList = chatRoomService.getChatRoomByTotal(total);
+        return new ResponseEntity(roomInfoList, HttpStatus.OK);
     }
 
 }

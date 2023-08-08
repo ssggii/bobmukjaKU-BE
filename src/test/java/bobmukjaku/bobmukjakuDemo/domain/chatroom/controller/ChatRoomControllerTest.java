@@ -10,6 +10,7 @@ import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberSignUpDto;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -57,6 +58,12 @@ public class ChatRoomControllerTest {
     private String username = "username@konkuk.ac.kr";
     private String password = "password1234@";
     private String nickName = "ssggii";
+
+    @AfterEach
+    private void clear() {
+        em.flush();
+        em.clear();
+    }
 
     private void signUp() throws Exception {
         String signUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username, password, nickName));
@@ -243,7 +250,7 @@ public class ChatRoomControllerTest {
         String accessToken = login();
         String kindOfFood = "한식";
 
-        // when
+        // when, then
         mockMvc.perform(
                         get("/chatRoom/filter/1/"+kindOfFood)
                                 .characterEncoding(StandardCharsets.UTF_8)
@@ -251,8 +258,32 @@ public class ChatRoomControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        // then
-        assertThat(chatRoomRepository.findAll().size()).isEqualTo(4);
+    }
+
+    @Test
+    public void 모집방_정원으로_조회_성공() throws Exception{
+        // given
+        ChatRoomCreateDto chatRoomCreateDto1 = new ChatRoomCreateDto("모집방1", "2023-08-07", "17:30", "19:30", "한식", 2);
+        ChatRoomCreateDto chatRoomCreateDto2 = new ChatRoomCreateDto("모집방2", "2023-08-07", "17:30", "19:30", "한식", 3);
+        ChatRoomCreateDto chatRoomCreateDto3 = new ChatRoomCreateDto("모집방3", "2023-08-07", "17:30", "19:30", "일식", 4);
+        ChatRoomCreateDto chatRoomCreateDto4 = new ChatRoomCreateDto("모집방4", "2023-08-07", "17:30", "19:30", "중식", 4);
+        chatRoomRepository.save(chatRoomCreateDto1.toEntity());
+        chatRoomRepository.save(chatRoomCreateDto2.toEntity());
+        chatRoomRepository.save(chatRoomCreateDto3.toEntity());
+        chatRoomRepository.save(chatRoomCreateDto4.toEntity());
+
+        signUp();
+        String accessToken = login();
+        int total = 4;
+
+        // when, then
+        mockMvc.perform(
+                        get("/chatRoom/filter/2/"+total)
+                                .characterEncoding(StandardCharsets.UTF_8)
+                                .header(accessHeader, BEARER+accessToken))
+                .andDo(print())
+                .andExpect(status().isOk());
+
     }
 
 }
