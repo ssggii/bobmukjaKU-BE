@@ -53,11 +53,16 @@ public class ChatRoomController {
 
     // 방 id로 모집방 조회
     @GetMapping("/chatRoom/info/{roomId}")
-    public ResponseEntity getChatRoomInfo(@PathVariable("roomId") Long roomId) throws Exception {
+    public ResponseEntity getChatRoomInfo(@PathVariable("roomId")Long roomId) throws Exception {
         ChatRoomInfo roomInfo = chatRoomService.getChatRoomInfo(roomId);
         return new ResponseEntity(roomInfo, HttpStatus.OK);
     }
 
-    // 방 id로 참여자 조회
+    // 음식 분류로 모집방 조회
+    @GetMapping("/chatRoom/filter/1/{kindOfFood}")
+    public ResponseEntity getChatRoomByFood(@PathVariable("kindOfFood")String kindOfFood) throws Exception {
+        List<ChatRoomInfo> roomInfoList = chatRoomService.getChatRoomByFood(kindOfFood);
+        return new ResponseEntity<>(roomInfoList, HttpStatus.OK);
+    }
 
 }
