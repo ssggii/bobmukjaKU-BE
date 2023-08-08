@@ -65,4 +65,10 @@ public class ChatRoomService {
         return result;
     }
 
+    // 모집방 id로 조회
+    public ChatRoomInfo getChatRoomInfo(Long id) throws Exception {
+        ChatRoom chatRoom = chatRoomRepository.findById(id).orElseThrow(() -> new Exception("존재하지 않는 모집방입니다"));
+        return new ChatRoomInfo(chatRoom);
+    }
+
 }
