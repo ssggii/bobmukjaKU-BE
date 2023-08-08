@@ -22,7 +22,7 @@ public class ChatRoomController {
      * <모집방 API>
      * 모집방 개설
      * 모집방 참여자 추가
-     * 모집방 조회 - 전체 조회, 방 id로 조회, 방 id로 모집방 참여자 조회, 최근순 조회, 음식 카테고리별 조회, 정원 별 조회
+     * 모집방 조회 - 전체 조회, 방 id로 모집방 조회, 방 id로 참여자 조회, 최근순 조회, 음식 카테고리별 조회, 정원 별 조회
      * 모집방 삭제
      *
      * */
@@ -51,11 +51,13 @@ public class ChatRoomController {
         return new ResponseEntity<>(allChatRooms, HttpStatus.OK);
     }
 
-    // 모집방 id로 조회
+    // 방 id로 모집방 조회
     @GetMapping("/chatRoom/info/{roomId}")
     public ResponseEntity getChatRoomInfo(@PathVariable("roomId") Long roomId) throws Exception {
         ChatRoomInfo roomInfo = chatRoomService.getChatRoomInfo(roomId);
         return new ResponseEntity(roomInfo, HttpStatus.OK);
     }
+
+    // 방 id로 참여자 조회
 
 }
