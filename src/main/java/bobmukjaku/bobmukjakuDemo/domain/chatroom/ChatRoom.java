@@ -47,10 +47,10 @@ public class ChatRoom extends BaseTimeEntity {
     private String kindOfFood;
 
     @Column(name = "total")
-    private Integer total;
+    private int total;
 
     @Column(name = "current_num")
-    private Integer currentNum;
+    private int currentNum;
 
     /* 연관관계 메서드 */
     // 참여자 추가 메소드
@@ -68,14 +68,7 @@ public class ChatRoom extends BaseTimeEntity {
 
     // 참여 인원 증가
     public void addCurrentNum(){
-        this.currentNum = currentNum++;
-    }
-
-    @PrePersist
-    public void defaultSetting(){
-        currentNum = 1; // 생성 시 참여 인원은 1명이 됨
-        this.createdAt = createdAt.withNano(0);
-        this.createdAt = createdAt.withNano(0);
+        this.currentNum++;
     }
 
 }

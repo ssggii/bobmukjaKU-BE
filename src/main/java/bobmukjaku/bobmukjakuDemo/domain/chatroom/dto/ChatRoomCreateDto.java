@@ -7,7 +7,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public record ChatRoomCreateDto(String roomName, String date,
-                                String startTime, String endTime, String kindOfFood, Integer total) {
+                                String startTime, String endTime, String kindOfFood, int total) {
 
     public ChatRoom toEntity(){
         ChatRoom chatRoom = ChatRoom.builder().roomName(roomName)

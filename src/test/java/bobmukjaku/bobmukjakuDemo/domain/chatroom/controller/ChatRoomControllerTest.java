@@ -1,5 +1,7 @@
 package bobmukjaku.bobmukjakuDemo.domain.chatroom.controller;
 
+import bobmukjaku.bobmukjakuDemo.domain.MemberChatRoom.MemberChatRoom;
+import bobmukjaku.bobmukjakuDemo.domain.MemberChatRoom.repository.MemberChatRoomRepository;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoom;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.AddMemberDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomCreateDto;
@@ -52,6 +54,9 @@ public class ChatRoomControllerTest {
 
     @Autowired
     MemberRepository memberRepository;
+
+    @Autowired
+    MemberChatRoomRepository memberChatRoomRepository;
 
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -178,13 +183,13 @@ public class ChatRoomControllerTest {
     * 모집방_전체_조회_실패_권한없음
     * 모집방_방id로_조회_성공 (완료)
     * 모집방_방id로_조회_실패_권한없음
-    * 모집방_방id로_참여자_조회_성공
+    * 모집방_방id로_참여자_조회_성공 (완료)
     * 모집방_방id로_참여자_조회_실패_권한없음
     * 모집방_방id로_참여자_조회_실패_없는방임
     * 모집방_음식종류로_조회_성공 (완료)
     * 모집방_음식종류로_조회_실패_권한없음
     * 모집방_음식종류로_조회_실패_없는카테고리
-    * 모집방_정원으로_조회_성공
+    * 모집방_정원으로_조회_성공 (완료)
     * 모집방_정원으로_조회_실패_범위에없는정원값
     * 모집방_정원으로_조회_실패_권한없음
     * */
@@ -284,6 +289,43 @@ public class ChatRoomControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
 
+    }
+
+    @Test
+    public void 모집방_방id로_참여자_조회_성공() throws Exception {
+        // given
+        Member member1 = Member.builder().memberEmail("user1@konkuk.ac.kr").memberPassword("password1@").memberNickName("nick1").build();
+        Member member2 = Member.builder().memberEmail("user2@konkuk.ac.kr").memberPassword("password2@").memberNickName("nick2").build();
+        Member member3 = Member.builder().memberEmail("user3@konkuk.ac.kr").memberPassword("password3@").memberNickName("nick3").build();
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        memberRepository.save(member3);
+
+        ChatRoomCreateDto chatRoomCreateDto = new ChatRoomCreateDto("모집방1", "2023-08-07", "17:30", "19:30", "한식", 4);
+        ChatRoom chatRoom = chatRoomCreateDto.toEntity();
+        chatRoomRepository.save(chatRoom);
+
+        MemberChatRoom memberChatRoom1 = new MemberChatRoom(member1, chatRoom);
+        MemberChatRoom memberChatRoom2 = new MemberChatRoom(member2, chatRoom);
+//        MemberChatRoom memberChatRoom3 = new MemberChatRoom(member3, chatRoom);
+
+        assertThat(memberRepository.findAll().size()).isEqualTo(3);
+        assertThat(chatRoomRepository.findAll().get(0).getRoomName()).isEqualTo("모집방1");
+        System.out.println("현재 인원: " + chatRoomRepository.findAll().get(0).getCurrentNum() + "명");
+        System.out.println("memberchatroom 테이블 행: " + memberChatRoomRepository.findAll().size() + "개");
+
+        signUp();
+        String accessToken = login();
+        Long roomId = chatRoomRepository.findAll().get(0).getChatRoomId();
+        // when, then
+
+        mockMvc.perform(
+                get("/chatRoom/joiners/" + roomId)
+                        .header(accessHeader, BEARER+accessToken)
+                        .characterEncoding(StandardCharsets.UTF_8)
+        )
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
 }

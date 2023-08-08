@@ -1,9 +1,11 @@
 package bobmukjaku.bobmukjakuDemo.domain.chatroom.controller;
 
+import bobmukjaku.bobmukjakuDemo.domain.MemberChatRoom.MemberChatRoom;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.AddMemberDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomCreateDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomInfo;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.service.ChatRoomService;
+import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberInfoDto;
 import bobmukjaku.bobmukjakuDemo.global.utility.SecurityUtil;
 import jakarta.validation.Valid;
@@ -22,7 +24,8 @@ public class ChatRoomController {
      * <모집방 API>
      * 모집방 개설
      * 모집방 참여자 추가
-     * 모집방 조회 - 전체 조회, 방 id로 모집방 조회, 방 id로 참여자 조회, 최근순 조회, 음식 카테고리별 조회, 정원 별 조회
+     * 모집방 조회 - 전체 조회, 방 id로 모집방 조회, 방 id로 참여자 조회,
+     *              최근순 조회, 마감 임박순 조회, 음식 카테고리별 조회, 정원 별 조회
      * 모집방 삭제
      *
      * */
@@ -70,6 +73,13 @@ public class ChatRoomController {
     public ResponseEntity getChatRoomByTotal(@PathVariable("total")int total) throws Exception {
         List<ChatRoomInfo> roomInfoList = chatRoomService.getChatRoomByTotal(total);
         return new ResponseEntity(roomInfoList, HttpStatus.OK);
+    }
+
+    // 방 id로 참여자 조회
+    @GetMapping("/chatRoom/joiners/{roomId}")
+    public ResponseEntity getChatRoomJoiners(@PathVariable("roomId")Long roomId) throws Exception {
+        List<MemberInfoDto> joinerList = chatRoomService.getChatRoomJoinerInfo(roomId);
+        return new ResponseEntity(joinerList, HttpStatus.OK);
     }
 
 }

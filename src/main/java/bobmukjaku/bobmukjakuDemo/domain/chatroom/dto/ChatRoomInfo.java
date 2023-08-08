@@ -19,8 +19,8 @@ public class ChatRoomInfo {
     private LocalTime startTime; // 시작 시간
     private LocalTime endTime; // 종료 시간
     private String kindOfFood; // 음식 분류
-    private Integer total; // 전체 인원
-    private Integer currentNum; // 참여 인원
+    private int total; // 전체 인원
+    private int currentNum; // 참여 인원
 
     @Builder
     public ChatRoomInfo(ChatRoom chatRoom) {

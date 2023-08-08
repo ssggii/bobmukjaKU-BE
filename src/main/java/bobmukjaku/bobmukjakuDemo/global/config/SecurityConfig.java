@@ -50,7 +50,7 @@ public class SecurityConfig {
     // USER 권한으로 접근 가능
     private static final String[] USER_LIST = {
             "/member/info", "/member/info/*",
-            "/chatRoom/member", "/chatRoom/info/*", "/chatRoom", "/chatRooms/info", "/chatRoom/filter/*"
+            "/chatRoom/member", "/chatRoom/info/*", "/chatRoom", "/chatRooms/info", "/chatRoom/filter/*", "/chatRoom/joiners"
     };
 
     /* 특정 url 요청 무시 */
