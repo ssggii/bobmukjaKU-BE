@@ -21,14 +21,14 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -86,8 +86,14 @@ public class ChatRoomControllerTest {
         return result.getResponse().getHeader(accessHeader);
     }
 
+    /*
+    * 모집방_개설_성공 (완료)
+    * 모집방_개설_실패_권한없음
+    * 모집방_개설_실패_필드없음
+    * */
+
     @Test
-    public void 모집방_생성_성공() throws Exception {
+    public void 모집방_개설_성공() throws Exception {
         // given
         signUp();
         String accessToken = login();
@@ -112,8 +118,13 @@ public class ChatRoomControllerTest {
 
     }
 
-    // 모집방 참여자
+    /*
+    * 모집방_참여자추가_성공 (완료)
+    * 모집방_참여자추가_실패_이미_참여중인_참여자
+    * 모집방_참여자추가_실패_권한없음
+    * */
 
+    // 모집방 참여자 추가
     @Test
     public void 모집방_참여자_추가_성공() throws Exception {
         // Given
@@ -153,6 +164,44 @@ public class ChatRoomControllerTest {
         ChatRoom findChatRoom = chatRoomRepository.findById(roomId).orElse(null);
         System.out.println("<참여자 닉네임>");
         chatRoomRepository.findById(findChatRoom.getChatRoomId()).get().getParticipants().stream().map(m->m.getJoiner().getMemberNickName()).forEach(System.out::println);
+    }
+
+    /*
+    * 모집방_전체_조회_성공 (완료)
+    * 모집방_전체_조회_실패_권한없음
+    * 모집방_방id로_조회_성공
+    * 모집방_방id로_조회_실패_권한없음
+    * */
+
+    @Test
+    public void 모집방_전체_조회_성공() throws Exception {
+        // given
+        ChatRoomCreateDto chatRoomCreateDto1 = new ChatRoomCreateDto("모집방1", "2023-08-07", "17:30", "19:30", "한식", 4);
+        ChatRoomCreateDto chatRoomCreateDto2 = new ChatRoomCreateDto("모집방2", "2023-08-07", "17:30", "19:30", "일식", 5);
+        ChatRoomCreateDto chatRoomCreateDto3 = new ChatRoomCreateDto("모집방3", "2023-08-07", "17:30", "19:30", "중식", 6);
+        chatRoomRepository.save(chatRoomCreateDto1.toEntity());
+        chatRoomRepository.save(chatRoomCreateDto2.toEntity());
+        chatRoomRepository.save(chatRoomCreateDto3.toEntity());
+
+        signUp();
+        String accessToken = login();
+
+        // when, then
+        mockMvc.perform(
+                get("/chatRooms/info")
+                        .header(accessHeader, BEARER+accessToken)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        assertThat(chatRoomRepository.findAll().size()).isEqualTo(3);
+
+    }
+
+    @Test
+    public void 모집방_방id로_조회_성공() throws Exception {
+
     }
 
 }

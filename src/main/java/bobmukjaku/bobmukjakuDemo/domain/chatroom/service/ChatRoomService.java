@@ -5,12 +5,16 @@ import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomCreateDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomInfo;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.repository.ChatRoomRepository;
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
+import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberException;
 import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberExceptionType;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -51,6 +55,13 @@ public class ChatRoomService {
         } else {
             System.out.println("모집 정원 초과입니다");
         }
+        return result;
+    }
+
+    // 전체 모집방 조회
+    public List<ChatRoomInfo> getAllChatRooms() throws Exception {
+        List<ChatRoom> allChatRooms = chatRoomRepository.findAll();
+        List<ChatRoomInfo> result = allChatRooms.stream().map(ChatRoomInfo::new).collect(Collectors.toList());
         return result;
     }
 

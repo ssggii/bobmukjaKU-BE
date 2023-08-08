@@ -42,8 +42,15 @@ public class SecurityConfig {
     private final MemberRepository memberRepository;
     private final JwtService jwtService;
 
+    // 인증 없이 접근 가능
     private static final String[] WHITE_LIST = {
             "/", "/login**", "/signUp**", "/check/nickname", "/mailAuth"
+    };
+
+    // USER 권한으로 접근 가능
+    private static final String[] USER_LIST = {
+            "/member/info", "/member/info/*","/chatRoom/member", "/chatRoom",
+            "/chatRooms/info"
     };
 
     /* 특정 url 요청 무시 */
@@ -69,7 +76,7 @@ public class SecurityConfig {
                         authorize -> authorize
                                 .requestMatchers(WHITE_LIST).permitAll()
                                 .requestMatchers("/members/info").permitAll() // TODO: ADMIN만 접근 가능하도록 수정해야함
-                                .requestMatchers("/member/info", "/member/info/*","/chatRoom/member", "/chatRoom").hasRole(String.valueOf(Role.USER)) // USER 권한으로 가능한 요청 경로
+                                .requestMatchers(USER_LIST).hasRole(String.valueOf(Role.USER)) // USER 권한으로 가능한 요청 경로
                                 .anyRequest().authenticated());
 
         http.addFilterAfter(jsonUsernamePasswordLoginFilter(), LogoutFilter.class);
