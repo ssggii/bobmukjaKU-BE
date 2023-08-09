@@ -21,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.swing.text.html.Option;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -168,7 +169,7 @@ public class MemberServiceTest {
 
         // when
         String updateNickName = "수정닉네임";
-        memberService.updateMemberInfo(new MemberUpdateDto(Optional.of(updateNickName), Optional.empty()), SecurityUtil.getLoginUsername());
+        memberService.updateMemberInfo(new MemberUpdateDto(Optional.of(updateNickName), Optional.empty(), Optional.empty(), Optional.empty()), SecurityUtil.getLoginUsername());
         clear();
         
         // then
@@ -184,7 +185,7 @@ public class MemberServiceTest {
 
         // when
         String updateColor = "bg18";
-        memberService.updateMemberInfo(new MemberUpdateDto(Optional.empty(), Optional.of(updateColor)), SecurityUtil.getLoginUsername());
+        memberService.updateMemberInfo(new MemberUpdateDto(Optional.empty(), Optional.of(updateColor), Optional.empty(), Optional.empty()), SecurityUtil.getLoginUsername());
         clear();
 
         // then
@@ -202,7 +203,7 @@ public class MemberServiceTest {
         // when
         String updateNickName = "수정닉네임";
         String updateColor = "bg18";
-        memberService.updateMemberInfo(new MemberUpdateDto(Optional.of(updateNickName), Optional.of(updateColor)), SecurityUtil.getLoginUsername());
+        memberService.updateMemberInfo(new MemberUpdateDto(Optional.of(updateNickName), Optional.of(updateColor), Optional.empty(), Optional.empty()), SecurityUtil.getLoginUsername());
         clear();
 
         // then

@@ -72,6 +72,15 @@ public class ChatRoomService {
         return new ChatRoomInfo(chatRoom);
     }
 
+    // 방 id로 참여자 조회
+    public List<MemberInfoDto> getChatRoomJoinerInfo(Long roomId) throws Exception {
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new Exception("존재하지 않는 모집방입니다"));
+        List<MemberInfoDto> joinerInfoList = chatRoom.getParticipants().stream()
+                .map(memberChatRoom -> new MemberInfoDto(memberChatRoom.getJoiner()))
+                .collect(Collectors.toList());
+        return joinerInfoList;
+    }
+
     // 음식 분류로 모집방 조회
     public List<ChatRoomInfo> getChatRoomByFood(String kindOfFood) throws Exception {
         List<ChatRoom> chatRooms = chatRoomRepository.findChatRoomsByKindOfFood(kindOfFood);
@@ -86,12 +95,5 @@ public class ChatRoomService {
         return chatRoomInfoList;
     }
 
-    // 방 id로 참여자 조회
-    public List<MemberInfoDto> getChatRoomJoinerInfo(Long roomId) throws Exception {
-        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new Exception("존재하지 않는 모집방입니다"));
-        List<MemberInfoDto> joinerInfoList = chatRoom.getParticipants().stream()
-                .map(memberChatRoom -> new MemberInfoDto(memberChatRoom.getJoiner()))
-                .collect(Collectors.toList());
-        return joinerInfoList;
-    }
+
 }

@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -297,8 +298,10 @@ public class MemberControllerTest {
 
         String accessToken = getAccessToken();
         Map<String, Object> map = new HashMap<>();
-        map.put("nickName", "닉네임변경");
-        map.put("profileColor", "bg수정");
+/*        map.put("nickName", "닉네임변경");
+        map.put("profileColor", "bg수정");*/
+        map.put("certificatedAt", "2023-08-09");
+        map.put("rate", 60);
         String updateMemberData = objectMapper.writeValueAsString(map);
 
         //when
@@ -312,8 +315,15 @@ public class MemberControllerTest {
 
         //then
         Member member = memberRepository.findByMemberEmail(username).orElseThrow(() -> new Exception("회원이 없습니다"));
-        assertThat(member.getMemberNickName()).isEqualTo("닉네임변경");
-        assertThat(member.getProfileColor()).isEqualTo("bg수정");
+/*        assertThat(member.getMemberNickName()).isEqualTo("닉네임변경");
+        assertThat(member.getProfileColor()).isEqualTo("bg수정");*/
+        assertThat(member.getCertificatedAt()).isEqualTo("2023-08-09");
+        assertThat(member.getRate()).isEqualTo(60);
+
+        /*System.out.println(member.getMemberNickName());
+        System.out.println(member.getProfileColor());*/
+        System.out.println(member.getCertificatedAt());
+        System.out.println(member.getRate());
 
     }
 

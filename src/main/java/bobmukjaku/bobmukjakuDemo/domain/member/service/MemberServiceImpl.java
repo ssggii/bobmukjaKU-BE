@@ -69,6 +69,8 @@ public class MemberServiceImpl implements MemberService{
 
         memberUpdateDto.nickName().ifPresent(member::updateNickName);
         memberUpdateDto.profileColor().ifPresent(member::updateProfileColor);
+        memberUpdateDto.certificatedAt().ifPresent(member::updateCertificatedAt);
+        memberUpdateDto.rate().ifPresent(member::updateRate);
     }
 
     @Override

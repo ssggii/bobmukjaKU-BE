@@ -83,8 +83,9 @@ public class Member extends BaseTimeEntity {
     }
 
     // 인증 날짜 변경
-    public void updateCertificatedAt(LocalDate certificatedAt){
-        this.certificatedAt = certificatedAt;
+    public void updateCertificatedAt(String certificatedAt){
+        LocalDate date = LocalDate.parse(certificatedAt);
+        this.certificatedAt = date;
     }
 
     // 평가점수 변경
