@@ -53,6 +53,10 @@ public class Member extends BaseTimeEntity {
     @OneToMany(mappedBy = "joiner", cascade = ALL, orphanRemoval = true)
     private List<MemberChatRoom> JoiningRooms = new ArrayList<>();
 
+    // member-TimeTable 연관관계 매핑
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL)
+    private TimeTable timeTable;
+
     // 회원 가입 시 USER 권한 부여
     public void giveUserAuthority(){
         this.role = Role.USER;

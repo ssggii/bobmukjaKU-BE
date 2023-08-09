@@ -2,6 +2,7 @@ package bobmukjaku.bobmukjakuDemo.domain.member.repository;
 
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;

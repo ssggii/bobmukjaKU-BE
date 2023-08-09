@@ -1,6 +1,7 @@
 package bobmukjaku.bobmukjakuDemo.domain.chatroom.service;
 
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoom;
+import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoomSpecification;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomCreateDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomInfo;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.repository.ChatRoomRepository;
@@ -11,6 +12,7 @@ import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberExceptionType;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -82,18 +84,22 @@ public class ChatRoomService {
     }
 
     // 음식 분류로 모집방 조회
-    public List<ChatRoomInfo> getChatRoomByFood(String kindOfFood) throws Exception {
-        List<ChatRoom> chatRooms = chatRoomRepository.findChatRoomsByKindOfFood(kindOfFood);
-        List<ChatRoomInfo> chatRoomInfoList = chatRooms.stream().map(ChatRoomInfo::new).collect(Collectors.toList());
-        return chatRoomInfoList;
+    public List<ChatRoomInfo> getChatRoomsByFood(String kindOfFood) throws Exception {
+        Specification<ChatRoom> specification = ChatRoomSpecification.equalKindOfFood(kindOfFood);
+        List<ChatRoom> chatRooms = chatRoomRepository.findAll(specification);
+        List<ChatRoomInfo> chatRoomInfos = chatRooms.stream().map(ChatRoomInfo::new).collect(Collectors.toList());
+        return chatRoomInfos;
     }
 
     // 정원으로 모집방 조회
-    public List<ChatRoomInfo> getChatRoomByTotal(int total) throws Exception {
-        List<ChatRoom> chatRooms = chatRoomRepository.findChatRoomsByTotal(total);
-        List<ChatRoomInfo> chatRoomInfoList = chatRooms.stream().map(ChatRoomInfo::new).collect(Collectors.toList());
-        return chatRoomInfoList;
+    public List<ChatRoomInfo> getChatRoomsByTotal(int total) throws Exception {
+        Specification<ChatRoom> specification = ChatRoomSpecification.equalTotal(total);
+        List<ChatRoom> chatRooms = chatRoomRepository.findAll(specification);
+        List<ChatRoomInfo> chatRoomInfos = chatRooms.stream().map(ChatRoomInfo::new).collect(Collectors.toList());
+        return chatRoomInfos;
     }
+
+
 
 
 }

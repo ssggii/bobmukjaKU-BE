@@ -61,25 +61,27 @@ public class ChatRoomController {
         return new ResponseEntity(roomInfo, HttpStatus.OK);
     }
 
-    // 음식 분류로 모집방 조회
-    @GetMapping("/chatRoom/filter/1/{kindOfFood}")
-    public ResponseEntity getChatRoomByFood(@PathVariable("kindOfFood")String kindOfFood) throws Exception {
-        List<ChatRoomInfo> roomInfoList = chatRoomService.getChatRoomByFood(kindOfFood);
-        return new ResponseEntity(roomInfoList, HttpStatus.OK);
-    }
-
-    // 정원으로 모집방 조회
-    @GetMapping("/chatRoom/filter/2/{total}")
-    public ResponseEntity getChatRoomByTotal(@PathVariable("total")int total) throws Exception {
-        List<ChatRoomInfo> roomInfoList = chatRoomService.getChatRoomByTotal(total);
-        return new ResponseEntity(roomInfoList, HttpStatus.OK);
-    }
-
     // 방 id로 참여자 조회
     @GetMapping("/chatRoom/joiners/{roomId}")
     public ResponseEntity getChatRoomJoiners(@PathVariable("roomId")Long roomId) throws Exception {
         List<MemberInfoDto> joinerList = chatRoomService.getChatRoomJoinerInfo(roomId);
         return new ResponseEntity(joinerList, HttpStatus.OK);
     }
+
+    // 음식 분류로 모집방 조회
+    @GetMapping("/chatRoom/filter/1/{kindOfFood}")
+    public ResponseEntity getChatRoomsByFood(@PathVariable("kindOfFood")String kindOfFood) throws Exception {
+        List<ChatRoomInfo> roomInfoList = chatRoomService.getChatRoomsByFood(kindOfFood);
+        return new ResponseEntity(roomInfoList, HttpStatus.OK);
+    }
+
+    // 정원으로 모집방 조회
+    @GetMapping("/chatRoom/filter/2/{total}")
+    public ResponseEntity getChatRoomsByTotal(@PathVariable("total")int total) throws Exception {
+        List<ChatRoomInfo> roomInfoList = chatRoomService.getChatRoomsByTotal(total);
+        return new ResponseEntity(roomInfoList, HttpStatus.OK);
+    }
+
+
 
 }
