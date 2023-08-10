@@ -10,4 +10,6 @@ import java.util.Optional;
 
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long>, JpaSpecificationExecutor<ChatRoom> {
 
+    List<ChatRoom> findAllByOrderByCreatedAtDesc(); // 최신 순 정렬
+
 }

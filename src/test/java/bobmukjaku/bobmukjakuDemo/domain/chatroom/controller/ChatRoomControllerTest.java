@@ -189,6 +189,7 @@ public class ChatRoomControllerTest {
     * 모집방_방id로_참여자_조회_실패_권한없음
     * 모집방_방id로_참여자_조회_실패_없는방임
     * uid로_참여중인_모집방_조회_성공 (완료)
+    * 모집방_최신순으로_정렬_조회_성공
     * 모집방_음식종류로_조회_성공 (완료)
     * 모집방_음식종류로_조회_실패_권한없음
     * 모집방_음식종류로_조회_실패_없는카테고리
@@ -304,6 +305,37 @@ public class ChatRoomControllerTest {
                 get("/chatRoom/info/2/" + uid)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .header(accessHeader, BEARER+accessToken)
+        )
+                .andDo(print())
+                .andExpect(status().isOk());
+
+    }
+
+    // 모집방_최신순으로_정렬_조회_성공
+    @Test
+    public void 모집방_최신순으로_정렬_조회_성공() throws Exception {
+        // given
+        ChatRoom chatRoom1 = ChatRoom.builder().roomName("모집방1").startTime(LocalTime.parse("17:30")).endTime(LocalTime.parse("19:30")).kindOfFood("한식").meetingDate(LocalDate.parse("2023-08-07")).total(4).build();
+        ChatRoom chatRoom2 = ChatRoom.builder().roomName("모집방2").startTime(LocalTime.parse("17:30")).endTime(LocalTime.parse("19:30")).kindOfFood("한식").meetingDate(LocalDate.parse("2023-08-07")).total(4).build();
+        ChatRoom chatRoom3 = ChatRoom.builder().roomName("모집방3").startTime(LocalTime.parse("17:30")).endTime(LocalTime.parse("19:30")).kindOfFood("한식").meetingDate(LocalDate.parse("2023-08-07")).total(4).build();
+        ChatRoom chatRoom4 = ChatRoom.builder().roomName("모집방4").startTime(LocalTime.parse("17:30")).endTime(LocalTime.parse("19:30")).kindOfFood("한식").meetingDate(LocalDate.parse("2023-08-07")).total(4).build();
+
+        chatRoomRepository.save(chatRoom4); // 모집방4 생성
+        chatRoomRepository.save(chatRoom3); // 모집방3 생성
+        chatRoomRepository.save(chatRoom2); // 모집방2 생성
+        chatRoomRepository.save(chatRoom1); // 모집방1 생성
+
+        signUp();
+        String accessToken = login();
+
+        // when, then
+        assertThat(chatRoomRepository.findAll().size()).isEqualTo(4);
+
+        // 조회 결과 모집방1부터 모집방4 순서로 나와야 함
+        mockMvc.perform(
+                get("/chatRoom/filter/latest")
+                        .header(accessHeader, BEARER+accessToken)
+                        .characterEncoding(StandardCharsets.UTF_8)
         )
                 .andDo(print())
                 .andExpect(status().isOk());

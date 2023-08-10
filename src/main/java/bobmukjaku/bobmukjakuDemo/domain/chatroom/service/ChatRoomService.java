@@ -97,6 +97,13 @@ public class ChatRoomService {
         return chatRoomInfoDtoList;
     }
 
+    // 최신 순으로 정렬
+    public List<ChatRoomInfoDto> getChatRoomsByLatest() {
+        List<ChatRoom> sortedChatRooms = chatRoomRepository.findAllByOrderByCreatedAtDesc();
+        List<ChatRoomInfoDto> result = sortedChatRooms.stream().map(ChatRoomInfoDto::new).collect(Collectors.toList());
+        return result;
+    }
+
     // 음식 분류로 모집방 조회
     public List<ChatRoomInfoDto> getChatRoomsByFood(String kindOfFood) throws Exception {
         Specification<ChatRoom> specification = ChatRoomSpecification.equalKindOfFood(kindOfFood);

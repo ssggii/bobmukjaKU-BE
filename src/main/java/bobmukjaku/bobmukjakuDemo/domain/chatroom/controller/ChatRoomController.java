@@ -86,6 +86,13 @@ public class ChatRoomController {
         return new ResponseEntity(roomInfoList, HttpStatus.OK);
     }
 
+    // 최신 순 정렬
+    @GetMapping("/chatRoom/filter/latest")
+    public ResponseEntity getChatRoomsByLatest() throws Exception{
+        List<ChatRoomInfoDto> roomInfoDtoList = chatRoomService.getChatRoomsByLatest();
+        return new ResponseEntity(roomInfoDtoList, HttpStatus.OK);
+    }
+
     // 다중 조건 필터링
     /*@GetMapping("/chatRoom/filter/all")
     public ResponseEntity<List<ChatRoom>> getChatRoomsByAllFilters(@RequestBody ChatRoomFIlterDto fIlterDto) {
