@@ -1,6 +1,7 @@
 package bobmukjaku.bobmukjakuDemo.domain.member.service;
 
 import bobmukjaku.bobmukjakuDemo.chatting.ChatModel;
+import bobmukjaku.bobmukjakuDemo.chatting.ProfanityResponse;
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.HashedAuthCodeDto;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberInfoDto;
@@ -16,8 +17,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.BodyInserter;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -116,7 +122,7 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public void sendMessageToFireBase(ChatModel md) throws Exception {
         DatabaseReference ref = FirebaseDatabase.getInstance()
-                .getReference("/message/"+md.getChatRoomId());
+                .getReference("/chatRoom/"+md.getChatRoomId()+"/message");
         ref.push().setValue(md, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(DatabaseError error, DatabaseReference ref) {
@@ -125,6 +131,24 @@ public class MemberServiceImpl implements MemberService{
             }
 
         });
+    }
+
+    @Override
+    public Boolean inspectBadWord(String message) throws Exception {
+        WebClient client = WebClient.builder()
+                .baseUrl("http://127.0.0.1")
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .build();
+
+        String jsonBody = "{\"message\":\"" + message + "\"}";
+
+        ProfanityResponse resultBadWordInspection = client.post()
+                .body(BodyInserters.fromValue(jsonBody))
+                .retrieve()
+                .bodyToMono(ProfanityResponse.class)
+                .block();
+
+        return resultBadWordInspection.getProfanity();
     }
 
 }
