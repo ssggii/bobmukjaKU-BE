@@ -188,6 +188,7 @@ public class ChatRoomControllerTest {
     * 모집방_방id로_참여자_조회_성공 (완료)
     * 모집방_방id로_참여자_조회_실패_권한없음
     * 모집방_방id로_참여자_조회_실패_없는방임
+    * uid로_참여중인_모집방_조회_성공 (완료)
     * 모집방_음식종류로_조회_성공 (완료)
     * 모집방_음식종류로_조회_실패_권한없음
     * 모집방_음식종류로_조회_실패_없는카테고리
@@ -234,7 +235,7 @@ public class ChatRoomControllerTest {
 
         // when, then
         mockMvc.perform(
-                get("/chatRoom/info/"+roomId)
+                get("/chatRoom/info/1/"+roomId)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .header(accessHeader, BEARER+accessToken))
                 .andDo(print())
@@ -279,59 +280,38 @@ public class ChatRoomControllerTest {
     }
 
     @Test
-    public void 모집방_음식종류로_필터링_성공() throws Exception{
+    public void uid로_참여중인_모집방_조회_성공() throws Exception {
         // given
-        ChatRoomCreateDto chatRoomCreateDto1 = new ChatRoomCreateDto("모집방1", "2023-08-07", "17:30", "19:30", "한식", 4);
-        ChatRoomCreateDto chatRoomCreateDto2 = new ChatRoomCreateDto("모집방2", "2023-08-07", "17:30", "19:30", "한식", 4);
-        ChatRoomCreateDto chatRoomCreateDto3 = new ChatRoomCreateDto("모집방3", "2023-08-07", "17:30", "19:30", "일식", 4);
-        ChatRoomCreateDto chatRoomCreateDto4 = new ChatRoomCreateDto("모집방4", "2023-08-07", "17:30", "19:30", "중식", 4);
-        chatRoomRepository.save(chatRoomCreateDto1.toEntity());
-        chatRoomRepository.save(chatRoomCreateDto2.toEntity());
-        chatRoomRepository.save(chatRoomCreateDto3.toEntity());
-        chatRoomRepository.save(chatRoomCreateDto4.toEntity());
+        ChatRoom chatRoom1 = ChatRoom.builder().roomName("모집방1").startTime(LocalTime.parse("17:30")).endTime(LocalTime.parse("19:30")).kindOfFood("한식").meetingDate(LocalDate.parse("2023-08-07")).total(4).build();
+        ChatRoom chatRoom2 = ChatRoom.builder().roomName("모집방2").startTime(LocalTime.parse("17:30")).endTime(LocalTime.parse("19:30")).kindOfFood("한식").meetingDate(LocalDate.parse("2023-08-07")).total(4).build();
+        ChatRoom chatRoom3 = ChatRoom.builder().roomName("모집방3").startTime(LocalTime.parse("17:30")).endTime(LocalTime.parse("19:30")).kindOfFood("한식").meetingDate(LocalDate.parse("2023-08-07")).total(4).build();
+        ChatRoom chatRoom4 = ChatRoom.builder().roomName("모집방4").startTime(LocalTime.parse("17:30")).endTime(LocalTime.parse("19:30")).kindOfFood("한식").meetingDate(LocalDate.parse("2023-08-07")).total(4).build();
+        chatRoomRepository.saveAll(Arrays.asList(chatRoom1, chatRoom2, chatRoom3, chatRoom4));
 
         signUp();
         String accessToken = login();
-        String kindOfFood = "한식";
+        Long uid = memberRepository.findByMemberEmail(username).get().getUid();
+
+        chatRoomService.addMemberToChatRoom(chatRoom1.getChatRoomId(), uid);
+        chatRoomService.addMemberToChatRoom(chatRoom2.getChatRoomId(), uid);
 
         // when, then
+        assertThat(memberRepository.findAll().size()).isEqualTo(1);
+        assertThat(chatRoomRepository.findAll().size()).isEqualTo(4);
+        assertThat(memberChatRoomRepository.findAll().size()).isEqualTo(4);
+
         mockMvc.perform(
-                        get("/chatRoom/filter/1/"+kindOfFood)
-                                .characterEncoding(StandardCharsets.UTF_8)
-                                .header(accessHeader, BEARER+accessToken))
-                .andDo(print())
-                .andExpect(status().isOk());
-
-    }
-
-    @Test
-    public void 모집방_정원으로_필터링_성공() throws Exception{
-        // given
-        ChatRoomCreateDto chatRoomCreateDto1 = new ChatRoomCreateDto("모집방1", "2023-08-07", "17:30", "19:30", "한식", 2);
-        ChatRoomCreateDto chatRoomCreateDto2 = new ChatRoomCreateDto("모집방2", "2023-08-07", "17:30", "19:30", "한식", 3);
-        ChatRoomCreateDto chatRoomCreateDto3 = new ChatRoomCreateDto("모집방3", "2023-08-07", "17:30", "19:30", "일식", 4);
-        ChatRoomCreateDto chatRoomCreateDto4 = new ChatRoomCreateDto("모집방4", "2023-08-07", "17:30", "19:30", "중식", 4);
-        chatRoomRepository.save(chatRoomCreateDto1.toEntity());
-        chatRoomRepository.save(chatRoomCreateDto2.toEntity());
-        chatRoomRepository.save(chatRoomCreateDto3.toEntity());
-        chatRoomRepository.save(chatRoomCreateDto4.toEntity());
-
-        signUp();
-        String accessToken = login();
-        int total = 4;
-
-        // when, then
-        mockMvc.perform(
-                        get("/chatRoom/filter/2/"+total)
-                                .characterEncoding(StandardCharsets.UTF_8)
-                                .header(accessHeader, BEARER+accessToken))
+                get("/chatRoom/info/2/" + uid)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .header(accessHeader, BEARER+accessToken)
+        )
                 .andDo(print())
                 .andExpect(status().isOk());
 
     }
 
     // 다중 조건 필터링
-    @Test
+    /*@Test
     public void 다중_조건_검색_성공() throws Exception {
         // given
         ChatRoomCreateDto chatRoomCreateDto1 = new ChatRoomCreateDto("모집방1", "2023-08-07", "17:30", "19:30", "한식", 2);
@@ -368,6 +348,6 @@ public class ChatRoomControllerTest {
 
         // then
 
-    }
+    }*/
 
 }

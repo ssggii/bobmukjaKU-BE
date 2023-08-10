@@ -1,10 +1,11 @@
 package bobmukjaku.bobmukjakuDemo.domain.chatroom.service;
 
+import bobmukjaku.bobmukjakuDemo.domain.MemberChatRoom.MemberChatRoom;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoom;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoomSpecification;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomCreateDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomFIlterDto;
-import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomInfo;
+import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.repository.ChatRoomRepository;
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberInfoDto;
@@ -28,7 +29,7 @@ public class ChatRoomService {
     private final MemberRepository memberRepository;
 
     // 모집방 개설
-    public ChatRoomInfo createChatRoom(ChatRoomCreateDto chatRoomCreateDto, String username){
+    public ChatRoomInfoDto createChatRoom(ChatRoomCreateDto chatRoomCreateDto, String username){
         Member host = memberRepository.findByMemberEmail(username)
                 .orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         ChatRoom createdChatRoom = chatRoomCreateDto.toEntity();
@@ -41,16 +42,18 @@ public class ChatRoomService {
         }
 
         chatRoomRepository.save(createdChatRoom);
-        return new ChatRoomInfo(createdChatRoom);
+        return new ChatRoomInfoDto(createdChatRoom);
     }
 
     // 모집방 참여자 추가
     public Boolean addMemberToChatRoom(Long roomId, Long uid){
-        Boolean result = false;
+        Boolean result = null;
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
                 .orElseThrow(()-> new IllegalArgumentException("모집방을 찾을 수 없습니다. 모집방 ID: " + roomId));
         Member joiner = memberRepository.findById(uid)
                 .orElseThrow(()-> new IllegalArgumentException("회원을 찾을 수 없습니다. 회원 UID: " + uid));
+        System.out.println("currentNum: " + chatRoom.getCurrentNum());
+        System.out.println("total: " + chatRoom.getTotal());
         if(chatRoom.getCurrentNum() < chatRoom.getTotal()){
             chatRoom.addParticipant(joiner);
             joiner.addChatRoom(chatRoom);
@@ -58,21 +61,22 @@ public class ChatRoomService {
             result = true;
         } else {
             System.out.println("모집 정원 초과입니다");
+            result = false;
         }
         return result;
     }
 
     // 전체 모집방 조회
-    public List<ChatRoomInfo> getAllChatRooms() throws Exception {
+    public List<ChatRoomInfoDto> getAllChatRooms() throws Exception {
         List<ChatRoom> allChatRooms = chatRoomRepository.findAll();
-        List<ChatRoomInfo> result = allChatRooms.stream().map(ChatRoomInfo::new).collect(Collectors.toList());
+        List<ChatRoomInfoDto> result = allChatRooms.stream().map(ChatRoomInfoDto::new).collect(Collectors.toList());
         return result;
     }
 
     // 방 id로 모집방 조회
-    public ChatRoomInfo getChatRoomInfo(Long id) throws Exception {
+    public ChatRoomInfoDto getChatRoomInfo(Long id) throws Exception {
         ChatRoom chatRoom = chatRoomRepository.findById(id).orElseThrow(() -> new Exception("존재하지 않는 모집방입니다"));
-        return new ChatRoomInfo(chatRoom);
+        return new ChatRoomInfoDto(chatRoom);
     }
 
     // 방 id로 참여자 조회
@@ -84,28 +88,32 @@ public class ChatRoomService {
         return joinerInfoList;
     }
 
+    // uid로 참여 중인 모집방 조회
+    public List<ChatRoomInfoDto> getChatRoomInfoByUid(Long uid) throws Exception {
+        Member member = memberRepository.findById(uid).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        List<ChatRoomInfoDto> chatRoomInfoDtoList = member.getJoiningRooms().stream()
+                .map(memberChatRoom -> new ChatRoomInfoDto(memberChatRoom.getChatRoom()))
+                .collect(Collectors.toList());
+        return chatRoomInfoDtoList;
+    }
+
     // 음식 분류로 모집방 조회
-    public List<ChatRoomInfo> getChatRoomsByFood(String kindOfFood) throws Exception {
+    public List<ChatRoomInfoDto> getChatRoomsByFood(String kindOfFood) throws Exception {
         Specification<ChatRoom> specification = ChatRoomSpecification.equalKindOfFood(kindOfFood);
         List<ChatRoom> chatRooms = chatRoomRepository.findAll(specification);
-        List<ChatRoomInfo> chatRoomInfos = chatRooms.stream().map(ChatRoomInfo::new).collect(Collectors.toList());
+        List<ChatRoomInfoDto> chatRoomInfos = chatRooms.stream().map(ChatRoomInfoDto::new).collect(Collectors.toList());
         return chatRoomInfos;
     }
 
     // 정원으로 모집방 조회
-    public List<ChatRoomInfo> getChatRoomsByTotal(int total) throws Exception {
+    public List<ChatRoomInfoDto> getChatRoomsByTotal(int total) throws Exception {
         Specification<ChatRoom> specification = ChatRoomSpecification.equalTotal(total);
         List<ChatRoom> chatRooms = chatRoomRepository.findAll(specification);
-        List<ChatRoomInfo> chatRoomInfos = chatRooms.stream().map(ChatRoomInfo::new).collect(Collectors.toList());
+        List<ChatRoomInfoDto> chatRoomInfos = chatRooms.stream().map(ChatRoomInfoDto::new).collect(Collectors.toList());
         return chatRoomInfos;
     }
 
     // 다중 조건 검색 - test
-    /*public List<ChatRoom> getFilteredChatRooms(ChatRoomFilterDto filterDto) {
-        Specification<ChatRoom> filters = ChatRoomSpecification.allFilters(filterDto.getFilteredChatRooms(), filterDto.getNextFilter(), filterDto.getInput());
-        return chatRoomRepository.findAll(filters);
-    }*/
-
     public List<ChatRoom> getChatRoomsByAllFilters(ChatRoomFIlterDto chatRoomFIlterDto) {
         Specification<ChatRoom> specification = ChatRoomSpecification.allFilters(chatRoomFIlterDto.filteredChatRooms(), chatRoomFIlterDto.nextFilter(), chatRoomFIlterDto.input());
         List<ChatRoom> findChatRooms = chatRoomRepository.findAll(specification);

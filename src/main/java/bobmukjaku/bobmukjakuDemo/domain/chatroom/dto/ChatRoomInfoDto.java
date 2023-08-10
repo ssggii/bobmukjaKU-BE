@@ -7,11 +7,10 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 
 @Data
 @NoArgsConstructor
-public class ChatRoomInfo {
+public class ChatRoomInfoDto {
 
     private Long roomId; // 모집방 id
     private String roomName; // 방 이름
@@ -23,7 +22,7 @@ public class ChatRoomInfo {
     private int currentNum; // 참여 인원
 
     @Builder
-    public ChatRoomInfo(ChatRoom chatRoom) {
+    public ChatRoomInfoDto(ChatRoom chatRoom) {
         this.roomId = chatRoom.getChatRoomId();
         this.roomName = chatRoom.getRoomName();
         this.meetingDate = chatRoom.getMeetingDate();
