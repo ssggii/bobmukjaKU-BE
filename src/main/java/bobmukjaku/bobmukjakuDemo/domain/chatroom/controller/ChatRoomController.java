@@ -1,8 +1,10 @@
 package bobmukjaku.bobmukjakuDemo.domain.chatroom.controller;
 
 import bobmukjaku.bobmukjakuDemo.domain.MemberChatRoom.MemberChatRoom;
+import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoom;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.AddMemberDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomCreateDto;
+import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomFIlterDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomInfo;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.service.ChatRoomService;
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
@@ -82,6 +84,11 @@ public class ChatRoomController {
         return new ResponseEntity(roomInfoList, HttpStatus.OK);
     }
 
-
+    // 다중 조건 필터링
+    @GetMapping("/chatRoom/filter/all")
+    public ResponseEntity<List<ChatRoom>> getChatRoomsByAllFilters(@RequestBody ChatRoomFIlterDto fIlterDto) {
+        List<ChatRoom> filteredChatRooms = chatRoomService.getChatRoomsByAllFilters(fIlterDto);
+        return new ResponseEntity(filteredChatRooms, HttpStatus.OK);
+    }
 
 }

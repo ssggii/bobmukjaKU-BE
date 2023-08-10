@@ -4,7 +4,6 @@ import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoom;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 
 public record ChatRoomCreateDto(String roomName, String date,
                                 String startTime, String endTime, String kindOfFood, int total) {

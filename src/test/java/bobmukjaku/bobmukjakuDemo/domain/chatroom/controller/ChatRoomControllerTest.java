@@ -3,10 +3,12 @@ package bobmukjaku.bobmukjakuDemo.domain.chatroom.controller;
 import bobmukjaku.bobmukjakuDemo.domain.MemberChatRoom.MemberChatRoom;
 import bobmukjaku.bobmukjakuDemo.domain.MemberChatRoom.repository.MemberChatRoomRepository;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoom;
+import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoomSpecification;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.AddMemberDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomCreateDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.repository.ChatRoomRepository;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.service.ChatRoomService;
+import bobmukjaku.bobmukjakuDemo.domain.chatroom.service.ChatRoomServiceTest;
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberSignUpDto;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -27,8 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -127,7 +129,7 @@ public class ChatRoomControllerTest {
         System.out.println( "참여자: "+ findChatRoom.getParticipants().size() + "명");
         System.out.println("<참여자 이메일>");
         findChatRoom.getParticipants().stream().map(r->r.getJoiner().getMemberEmail()).forEach(System.out::println);
-
+        assertThat(memberChatRoomRepository.findAll().size()).isEqualTo(2);
     }
 
     /*
@@ -325,6 +327,46 @@ public class ChatRoomControllerTest {
                                 .header(accessHeader, BEARER+accessToken))
                 .andDo(print())
                 .andExpect(status().isOk());
+
+    }
+
+    // 다중 조건 필터링
+    @Test
+    public void 다중_조건_검색_성공() throws Exception {
+        // given
+        ChatRoomCreateDto chatRoomCreateDto1 = new ChatRoomCreateDto("모집방1", "2023-08-07", "17:30", "19:30", "한식", 2);
+        ChatRoomCreateDto chatRoomCreateDto2 = new ChatRoomCreateDto("모집방2", "2023-08-07", "17:30", "19:30", "한식", 3);
+        ChatRoomCreateDto chatRoomCreateDto3 = new ChatRoomCreateDto("모집방3", "2023-08-07", "17:30", "19:30", "일식", 4);
+        ChatRoomCreateDto chatRoomCreateDto4 = new ChatRoomCreateDto("모집방4", "2023-08-08", "17:30", "19:30", "중식", 4);
+        ChatRoomCreateDto chatRoomCreateDto5 = new ChatRoomCreateDto("모집방5", "2023-08-08", "17:30", "19:30", "중식", 4);
+        ChatRoomCreateDto chatRoomCreateDto6 = new ChatRoomCreateDto("모집방6", "2023-08-08", "17:30", "19:30", "일식", 3);
+        ChatRoom chatRoom1 = chatRoomCreateDto1.toEntity();
+        ChatRoom chatRoom2 = chatRoomCreateDto2.toEntity();
+        ChatRoom chatRoom3 = chatRoomCreateDto3.toEntity();
+        ChatRoom chatRoom4 = chatRoomCreateDto4.toEntity();
+        ChatRoom chatRoom5 = chatRoomCreateDto5.toEntity();
+        ChatRoom chatRoom6 = chatRoomCreateDto6.toEntity();
+        List<ChatRoom> initial = Arrays.asList(chatRoom1, chatRoom2, chatRoom3, chatRoom4, chatRoom5, chatRoom6);
+        chatRoomRepository.saveAll(initial);
+
+        Specification<ChatRoom> specification1 = ChatRoomSpecification.allFilters(null, "filterByTotal", "4");
+        List<ChatRoom> firstChatRooms = chatRoomRepository.findAll(specification1); // 정원으로 필터링한 chatRooms
+
+        Specification<ChatRoom> specification2 = ChatRoomSpecification.allFilters(firstChatRooms, "filterByFood", "중식");
+        List<ChatRoom> secondChatRooms = chatRoomRepository.findAll(specification2);
+
+        Specification<ChatRoom> specification3 = ChatRoomSpecification.allFilters(secondChatRooms, "filterByRoomName", "모집방89");
+        List<ChatRoom> thirdChatRooms = chatRoomRepository.findAll(specification3);
+
+        Specification<ChatRoom> specification4 = ChatRoomSpecification.allFilters(null, "filterByAvailable", null);
+        List<ChatRoom> fourthChatRooms = chatRoomRepository.findAll(specification4);
+
+        Specification<ChatRoom> specification5 = ChatRoomSpecification.allFilters(fourthChatRooms, "filterByDate", "2023-08-08");
+        List<ChatRoom> fifthChatRooms = chatRoomRepository.findAll(specification5);
+
+        // when
+
+        // then
 
     }
 

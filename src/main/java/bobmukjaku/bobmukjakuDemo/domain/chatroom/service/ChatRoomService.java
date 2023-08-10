@@ -3,6 +3,7 @@ package bobmukjaku.bobmukjakuDemo.domain.chatroom.service;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoom;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoomSpecification;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomCreateDto;
+import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomFIlterDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomInfo;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.repository.ChatRoomRepository;
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
@@ -99,7 +100,18 @@ public class ChatRoomService {
         return chatRoomInfos;
     }
 
+    // 다중 조건 검색 - test
+    /*public List<ChatRoom> getFilteredChatRooms(ChatRoomFilterDto filterDto) {
+        Specification<ChatRoom> filters = ChatRoomSpecification.allFilters(filterDto.getFilteredChatRooms(), filterDto.getNextFilter(), filterDto.getInput());
+        return chatRoomRepository.findAll(filters);
+    }*/
 
-
+    public List<ChatRoom> getChatRoomsByAllFilters(ChatRoomFIlterDto chatRoomFIlterDto) {
+        Specification<ChatRoom> specification = ChatRoomSpecification.allFilters(chatRoomFIlterDto.filteredChatRooms(), chatRoomFIlterDto.nextFilter(), chatRoomFIlterDto.input());
+        List<ChatRoom> findChatRooms = chatRoomRepository.findAll(specification);
+        if(findChatRooms == null || findChatRooms.isEmpty())
+            System.out.println("검색 결과가 없습니다.");
+        return findChatRooms;
+    }
 
 }
