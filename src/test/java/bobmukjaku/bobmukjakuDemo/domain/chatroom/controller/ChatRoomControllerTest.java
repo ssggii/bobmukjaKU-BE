@@ -4,6 +4,7 @@ import bobmukjaku.bobmukjakuDemo.domain.MemberChatRoom.MemberChatRoom;
 import bobmukjaku.bobmukjakuDemo.domain.MemberChatRoom.repository.MemberChatRoomRepository;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoom;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoomSpecification;
+import bobmukjaku.bobmukjakuDemo.domain.chatroom.FilterInfo;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.AddMemberDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomCreateDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.repository.ChatRoomRepository;
@@ -33,6 +34,7 @@ import java.time.LocalTime;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.filter;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -342,10 +344,11 @@ public class ChatRoomControllerTest {
 
     }
 
-    // 다중 조건 필터링
-    /*@Test
-    public void 다중_조건_검색_성공() throws Exception {
+    // 필터링
+    @Test
+    public void 필터링_성공() throws Exception {
         // given
+        // 모집방 1~6이 있고,
         ChatRoomCreateDto chatRoomCreateDto1 = new ChatRoomCreateDto("모집방1", "2023-08-07", "17:30", "19:30", "한식", 2);
         ChatRoomCreateDto chatRoomCreateDto2 = new ChatRoomCreateDto("모집방2", "2023-08-07", "17:30", "19:30", "한식", 3);
         ChatRoomCreateDto chatRoomCreateDto3 = new ChatRoomCreateDto("모집방3", "2023-08-07", "17:30", "19:30", "일식", 4);
@@ -361,25 +364,58 @@ public class ChatRoomControllerTest {
         List<ChatRoom> initial = Arrays.asList(chatRoom1, chatRoom2, chatRoom3, chatRoom4, chatRoom5, chatRoom6);
         chatRoomRepository.saveAll(initial);
 
-        Specification<ChatRoom> specification1 = ChatRoomSpecification.allFilters(null, "filterByTotal", "4");
-        List<ChatRoom> firstChatRooms = chatRoomRepository.findAll(specification1); // 정원으로 필터링한 chatRooms
+        // 음식-한식, 정원-4를 필터링 조건으로 선택했을 때
+        List<FilterInfo> filters = new ArrayList<>();
+        filters.add(new FilterInfo("kindOfFood", "중식"));
+        filters.add(new FilterInfo("total", "4"));
 
-        Specification<ChatRoom> specification2 = ChatRoomSpecification.allFilters(firstChatRooms, "filterByFood", "중식");
-        List<ChatRoom> secondChatRooms = chatRoomRepository.findAll(specification2);
+        signUp();
+        String accessToken = login();
 
-        Specification<ChatRoom> specification3 = ChatRoomSpecification.allFilters(secondChatRooms, "filterByRoomName", "모집방89");
-        List<ChatRoom> thirdChatRooms = chatRoomRepository.findAll(specification3);
+        // when, then
+        mockMvc.perform(post("/chatRooms/filtered")
+                        .header(accessHeader, BEARER+accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(filters)))
+                .andDo(print())
+                .andExpect(status().isOk());
 
-        Specification<ChatRoom> specification4 = ChatRoomSpecification.allFilters(null, "filterByAvailable", null);
-        List<ChatRoom> fourthChatRooms = chatRoomRepository.findAll(specification4);
+    }
+    @Test
+    public void 필터링_조회결과_없음() throws Exception {
+        // given
+        // 모집방 1~6이 있고,
+        ChatRoomCreateDto chatRoomCreateDto1 = new ChatRoomCreateDto("모집방1", "2023-08-07", "17:30", "19:30", "한식", 2);
+        ChatRoomCreateDto chatRoomCreateDto2 = new ChatRoomCreateDto("모집방2", "2023-08-07", "17:30", "19:30", "한식", 3);
+        ChatRoomCreateDto chatRoomCreateDto3 = new ChatRoomCreateDto("모집방3", "2023-08-07", "17:30", "19:30", "일식", 4);
+        ChatRoomCreateDto chatRoomCreateDto4 = new ChatRoomCreateDto("모집방4", "2023-08-08", "17:30", "19:30", "중식", 4);
+        ChatRoomCreateDto chatRoomCreateDto5 = new ChatRoomCreateDto("모집방5", "2023-08-08", "17:30", "19:30", "중식", 4);
+        ChatRoomCreateDto chatRoomCreateDto6 = new ChatRoomCreateDto("모집방6", "2023-08-08", "17:30", "19:30", "일식", 3);
+        ChatRoom chatRoom1 = chatRoomCreateDto1.toEntity();
+        ChatRoom chatRoom2 = chatRoomCreateDto2.toEntity();
+        ChatRoom chatRoom3 = chatRoomCreateDto3.toEntity();
+        ChatRoom chatRoom4 = chatRoomCreateDto4.toEntity();
+        ChatRoom chatRoom5 = chatRoomCreateDto5.toEntity();
+        ChatRoom chatRoom6 = chatRoomCreateDto6.toEntity();
+        List<ChatRoom> initial = Arrays.asList(chatRoom1, chatRoom2, chatRoom3, chatRoom4, chatRoom5, chatRoom6);
+        chatRoomRepository.saveAll(initial);
 
-        Specification<ChatRoom> specification5 = ChatRoomSpecification.allFilters(fourthChatRooms, "filterByDate", "2023-08-08");
-        List<ChatRoom> fifthChatRooms = chatRoomRepository.findAll(specification5);
+        // 음식-한식, 정원-4를 필터링 조건으로 선택했을 때
+        List<FilterInfo> filters = new ArrayList<>();
+        filters.add(new FilterInfo("kindOfFood", "중식"));
+        filters.add(new FilterInfo("total", "5"));
 
-        // when
+        signUp();
+        String accessToken = login();
 
-        // then
+        // when, then
+        mockMvc.perform(post("/chatRooms/filtered")
+                        .header(accessHeader, BEARER+accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(filters)))
+                .andDo(print())
+                .andExpect(status().isNotFound());
 
-    }*/
+    }
 
 }

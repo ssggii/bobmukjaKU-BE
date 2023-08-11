@@ -4,8 +4,6 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class ChatRoomSpecification {
 
@@ -52,51 +50,37 @@ public class ChatRoomSpecification {
         return ((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("total"), total));
     }
 
-    // 필터링 추가
-    public static Specification<ChatRoom> addAllFilters(List<ChatRoom> filteredChatRooms, String nextFilter, String input) {
+    // FilterInfo 객체로부터 Specification 생성
+    public static Specification<ChatRoom> createSpecification(FilterInfo filter) {
+        String filterType = filter.getFilterType();
+        String filterValue = filter.getFilterValue();
+        Specification<ChatRoom> specification = null;
 
-        Specification<ChatRoom> filter = null;
-
-        if (nextFilter != null) {
-            // 적용할 필터 결정
-            switch (nextFilter) {
-                case "filterByRoomName":
-                    filter = containChatRoomName(input);
-                    break;
-                case "filterByDate":
-                    filter = equalMeetingDate(LocalDate.parse(input));
-                    break;
-                case "filterByAvailable":
-                    filter = lessThanTotal();
-                    break;
-                case "filterByFood":
-                    filter = equalKindOfFood(input);
-                    break;
-                case "filterByTotal":
-                    filter = equalTotal(Integer.valueOf(input));
-                    break;
-                default:
-                    filter = null;
-                    break;
-            }
-
-            if (filteredChatRooms != null && !filteredChatRooms.isEmpty()) { // 이전 필터링 결과를 받는 경우
-                Specification<ChatRoom> finalFilter = filter;
-                return (root, query, criteriaBuilder) -> {
-                    List<Long> filteredChatRoomIds = filteredChatRooms.stream()
-                            .map(ChatRoom::getChatRoomId)
-                            .collect(Collectors.toList());
-
-                    return criteriaBuilder.and(
-                            criteriaBuilder.in(root.get("chatRoomId")).value(filteredChatRoomIds),
-                            finalFilter.toPredicate(root, query, criteriaBuilder)
-                    );
-                };
-            }
-        } else {
-            System.out.println("nextFilter 또는 input 인자가 없습니다.");
+        switch (filterType) {
+            case "chatRoomName":
+                specification = ChatRoomSpecification.containChatRoomName(filterValue);
+                break;
+            case "meetingDate":
+                specification = ChatRoomSpecification.equalMeetingDate(LocalDate.parse(filterValue));
+                break;
+            case "available":
+                specification = ChatRoomSpecification.lessThanTotal();
+                break;
+            case "kindOfFood":
+                specification = ChatRoomSpecification.equalKindOfFood(filterValue);
+                break;
+            case "total":
+                specification = ChatRoomSpecification.equalTotal(Integer.parseInt(filterValue));
+                break;
+            default:
+                break; // 유효한 필터 타입이 아닐 경우 null 반환
         }
-        return filter;
+        return specification;
+    }
+
+    // Specification 조합
+    public static Specification<ChatRoom> combineSpecifications(List<Specification<ChatRoom>> specifications) {
+        return specifications.stream().reduce(Specification::and).orElse(null); // 필터 조건 AND로 조합하여 반환
     }
 
 }

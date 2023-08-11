@@ -3,6 +3,7 @@ package bobmukjaku.bobmukjakuDemo.domain.chatroom.service;
 import bobmukjaku.bobmukjakuDemo.domain.MemberChatRoom.MemberChatRoom;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoom;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoomSpecification;
+import bobmukjaku.bobmukjakuDemo.domain.chatroom.FilterInfo;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomCreateDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomFIlterDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomInfoDto;
@@ -14,9 +15,12 @@ import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberExceptionType;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -126,13 +130,24 @@ public class ChatRoomService {
         return chatRoomInfos;
     }
 
-    // 필터링 추가
-    public List<ChatRoom> getChatRoomsByAllFilters(ChatRoomFIlterDto chatRoomFIlterDto) {
-        Specification<ChatRoom> specification = ChatRoomSpecification.addAllFilters(chatRoomFIlterDto.filteredChatRooms(), chatRoomFIlterDto.nextFilter(), chatRoomFIlterDto.input());
-        List<ChatRoom> findChatRooms = chatRoomRepository.findAll(specification);
-        if(findChatRooms == null || findChatRooms.isEmpty())
-            System.out.println("검색 결과가 없습니다.");
-        return findChatRooms;
+    // 필터링
+    public List<ChatRoomInfoDto> getChatRoomsByFilterng(List<FilterInfo> filters) throws Exception {
+
+        List<Specification<ChatRoom>> specifications = new ArrayList<>();
+
+        for (FilterInfo filter : filters) {
+            Specification<ChatRoom> specification = ChatRoomSpecification.createSpecification(filter);
+            if (specification != null)
+                specifications.add(specification);
+        }
+
+        Specification<ChatRoom> combinedSpecification = ChatRoomSpecification.combineSpecifications(specifications);
+        List<ChatRoom> chatRooms = chatRoomRepository.findAll(combinedSpecification);
+        if(chatRooms.isEmpty()) {
+            return null;
+        }
+        return chatRooms.stream().map(ChatRoomInfoDto::new).collect(Collectors.toList());
+
     }
 
 }

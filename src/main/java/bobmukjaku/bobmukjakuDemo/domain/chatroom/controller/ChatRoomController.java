@@ -1,5 +1,7 @@
 package bobmukjaku.bobmukjakuDemo.domain.chatroom.controller;
 
+import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoom;
+import bobmukjaku.bobmukjakuDemo.domain.chatroom.FilterInfo;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.AddMemberDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomCreateDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomInfoDto;
@@ -11,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -22,7 +25,7 @@ public class ChatRoomController {
      * 모집방 개설
      * 모집방 참여자 추가
      * 모집방 조회 - 전체 조회, 방 id로 모집방 조회, 방 id로 참여자 조회, uid로 참여 중인 모집방 조회
-     * 모집방 필터링 - 최신 순 정렬, 필터링 설정, 필터 값만 변경
+     * 모집방 필터링 - 최신 순 정렬, 필터링
      * 모집방 삭제 - 자동 종료, 모집방 나가기
      *
      * */
@@ -99,11 +102,22 @@ public class ChatRoomController {
         return new ResponseEntity(roomInfoDtoList, HttpStatus.OK);
     }
 
-    // 다중 조건 필터링
-    /*@GetMapping("/chatRoom/filter/all")
-    public ResponseEntity<List<ChatRoom>> getChatRoomsByAllFilters(@RequestBody ChatRoomFIlterDto fIlterDto) {
-        List<ChatRoom> filteredChatRooms = chatRoomService.getChatRoomsByAllFilters(fIlterDto);
-        return new ResponseEntity(filteredChatRooms, HttpStatus.OK);
-    }*/
+    // 필터링
+    @PostMapping("/chatRooms/filtered")
+    public ResponseEntity getFilteredChatRooms(@RequestBody List<FilterInfo> filters) throws Exception {
+
+        List<ChatRoomInfoDto> chatRoomInfoDtoList = new ArrayList<>();
+
+        if(filters != null && !filters.isEmpty()){
+            chatRoomInfoDtoList = chatRoomService.getChatRoomsByFilterng(filters);
+            if(chatRoomInfoDtoList == null){
+                return new ResponseEntity("검색 결과가 없습니다", HttpStatus.NOT_FOUND);
+            }
+        } else {
+            System.out.println("인자가 null 값입니다");
+        }
+
+        return new ResponseEntity(chatRoomInfoDtoList, HttpStatus.OK);
+    }
 
 }

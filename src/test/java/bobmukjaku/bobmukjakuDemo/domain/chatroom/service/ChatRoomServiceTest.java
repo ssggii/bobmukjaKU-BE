@@ -3,6 +3,7 @@ package bobmukjaku.bobmukjakuDemo.domain.chatroom.service;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoom;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoomSpecification;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomCreateDto;
+import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.repository.ChatRoomRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,7 +24,10 @@ public class ChatRoomServiceTest {
     @Autowired
     ChatRoomRepository chatRoomRepository;
 
-    @Test
+    @Autowired
+    ChatRoomService chatRoomService;
+
+    /*@Test
     public void 필터링_추가_성공() throws Exception {
         // given
         ChatRoomCreateDto chatRoomCreateDto1 = new ChatRoomCreateDto("모집방1", "2023-08-07", "17:30", "19:30", "한식", 2);
@@ -68,6 +73,35 @@ public class ChatRoomServiceTest {
         fourthChatRooms.stream().map(chatRoom -> chatRoom.getRoomName()).forEach(System.out::println);
         System.out.println("<날짜로 2차 필터링한 결과>");
         fifthChatRooms.stream().map(chatRoom -> chatRoom.getRoomName()).forEach(System.out::println);
+
+    }*/
+
+    @Test
+    public void 필터링_성공() throws Exception {
+        // given
+        ChatRoomCreateDto chatRoomCreateDto1 = new ChatRoomCreateDto("모집방1", "2023-08-07", "17:30", "19:30", "한식", 2);
+        ChatRoomCreateDto chatRoomCreateDto2 = new ChatRoomCreateDto("모집방2", "2023-08-07", "17:30", "19:30", "한식", 3);
+        ChatRoomCreateDto chatRoomCreateDto3 = new ChatRoomCreateDto("모집방3", "2023-08-07", "17:30", "19:30", "일식", 4);
+        ChatRoomCreateDto chatRoomCreateDto4 = new ChatRoomCreateDto("모집방4", "2023-08-08", "17:30", "19:30", "중식", 4);
+        ChatRoomCreateDto chatRoomCreateDto5 = new ChatRoomCreateDto("모집방5", "2023-08-08", "17:30", "19:30", "중식", 4);
+        ChatRoomCreateDto chatRoomCreateDto6 = new ChatRoomCreateDto("모집방6", "2023-08-08", "17:30", "19:30", "일식", 3);
+        ChatRoom chatRoom1 = chatRoomCreateDto1.toEntity();
+        ChatRoom chatRoom2 = chatRoomCreateDto2.toEntity();
+        ChatRoom chatRoom3 = chatRoomCreateDto3.toEntity();
+        ChatRoom chatRoom4 = chatRoomCreateDto4.toEntity();
+        ChatRoom chatRoom5 = chatRoomCreateDto5.toEntity();
+        ChatRoom chatRoom6 = chatRoomCreateDto6.toEntity();
+        List<ChatRoom> initial = Arrays.asList(chatRoom1, chatRoom2, chatRoom3, chatRoom4, chatRoom5, chatRoom6);
+        chatRoomRepository.saveAll(initial);
+
+        // (정원, 4) -> (음식, 중식) : 모집방4, 모집방5
+        List<Specification<ChatRoom>> specificationList1 = new ArrayList<>();
+        specificationList1.add(ChatRoomSpecification.equalTotal(4));
+        specificationList1.add(ChatRoomSpecification.equalKindOfFood("중식"));
+
+        // then
+        /*List<ChatRoomInfoDto> result1 = chatRoomService.getChatRoomsByFilterng()
+        result1.stream().map(chatRoomInfoDto -> chatRoomInfoDto.getRoomName()).forEach(System.out::println);*/
 
     }
 }
