@@ -1,5 +1,6 @@
 package bobmukjaku.bobmukjakuDemo.domain.chatroom;
 
+import com.fasterxml.jackson.core.io.CharTypes;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
@@ -10,20 +11,35 @@ public class ChatRoomSpecification {
     /*
     * 필터링 조건에 맞춰 동적 쿼리를 생성
     * 1. 단일 조건 필터링
+    * - 최신 순으로 정렬
+    * - 오래된 순으로 정렬
     * - 모집방 이름 검색
     * - 모임 날짜로 검색
     * - 참여 가능 여부로 검색
     * - 음식 종류로 검색
     * - 정원 수로 검색
-    * - 최근 순으로 정렬
-    * - 마감 임박 순으로 정렬
     * - 모임 시간으로 검색
     * - 시간표 데이터로 검색
     *
     *  2. 다중 조건 필터링
-    * - 필터링 추가
-    * - 필터링 해제
+    * - 필터링 (최종)
     * */
+
+    // 최신 순으로 정렬
+    public static Specification<ChatRoom> orderByCreatedAtDesc() {
+        return (root, query, criteriaBuilder) -> {
+            query.orderBy(criteriaBuilder.desc(root.get("createdAt")));
+            return criteriaBuilder.conjunction();
+        };
+    }
+
+    // 오래된 순으로 정렬
+    public static Specification<ChatRoom> orderByCreatedAtAsc() {
+        return (root, query, criteriaBuilder) -> {
+            query.orderBy(criteriaBuilder.asc(root.get("createdAt")));
+            return criteriaBuilder.conjunction();
+        };
+    }
 
     // 검색어로 필터링 (검색어를 포함하면 반환)
     public static Specification<ChatRoom> containChatRoomName(String roomName){
@@ -57,6 +73,12 @@ public class ChatRoomSpecification {
         Specification<ChatRoom> specification = null;
 
         switch (filterType) {
+            case "latest":
+                specification = ChatRoomSpecification.orderByCreatedAtDesc();
+                break;
+            case "oldest":
+                specification = ChatRoomSpecification.orderByCreatedAtAsc();
+                break;
             case "chatRoomName":
                 specification = ChatRoomSpecification.containChatRoomName(filterValue);
                 break;

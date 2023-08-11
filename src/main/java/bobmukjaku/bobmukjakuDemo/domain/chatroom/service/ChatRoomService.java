@@ -139,6 +139,8 @@ public class ChatRoomService {
             Specification<ChatRoom> specification = ChatRoomSpecification.createSpecification(filter);
             if (specification != null)
                 specifications.add(specification);
+            else
+                System.out.println("유효하지 않은 필터입니다.");
         }
 
         Specification<ChatRoom> combinedSpecification = ChatRoomSpecification.combineSpecifications(specifications);

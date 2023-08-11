@@ -368,6 +368,7 @@ public class ChatRoomControllerTest {
         List<FilterInfo> filters = new ArrayList<>();
         filters.add(new FilterInfo("kindOfFood", "중식"));
         filters.add(new FilterInfo("total", "4"));
+        filters.add(new FilterInfo("latest", ""));
 
         signUp();
         String accessToken = login();
