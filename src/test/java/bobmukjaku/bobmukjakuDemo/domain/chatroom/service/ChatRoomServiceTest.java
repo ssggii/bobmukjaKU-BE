@@ -23,7 +23,7 @@ public class ChatRoomServiceTest {
     ChatRoomRepository chatRoomRepository;
 
     @Test
-    public void 다중_조건_검색_성공() throws Exception {
+    public void 필터링_추가_성공() throws Exception {
         // given
         ChatRoomCreateDto chatRoomCreateDto1 = new ChatRoomCreateDto("모집방1", "2023-08-07", "17:30", "19:30", "한식", 2);
         ChatRoomCreateDto chatRoomCreateDto2 = new ChatRoomCreateDto("모집방2", "2023-08-07", "17:30", "19:30", "한식", 3);
@@ -41,19 +41,19 @@ public class ChatRoomServiceTest {
         chatRoomRepository.saveAll(initial);
 
         // when
-        Specification<ChatRoom> specification1 = ChatRoomSpecification.allFilters(null, "filterByTotal", "4");
+        Specification<ChatRoom> specification1 = ChatRoomSpecification.addAllFilters(null, "filterByTotal", "4");
         List<ChatRoom> firstChatRooms = chatRoomRepository.findAll(specification1); // 정원으로 필터링한 chatRooms
 
-        Specification<ChatRoom> specification2 = ChatRoomSpecification.allFilters(firstChatRooms, "filterByFood", "중식");
+        Specification<ChatRoom> specification2 = ChatRoomSpecification.addAllFilters(firstChatRooms, "filterByFood", "중식");
         List<ChatRoom> secondChatRooms = chatRoomRepository.findAll(specification2);
 
-        Specification<ChatRoom> specification3 = ChatRoomSpecification.allFilters(secondChatRooms, "filterByRoomName", "모집방89");
+        Specification<ChatRoom> specification3 = ChatRoomSpecification.addAllFilters(secondChatRooms, "filterByRoomName", "모집방89");
         List<ChatRoom> thirdChatRooms = chatRoomRepository.findAll(specification3);
 
-        Specification<ChatRoom> specification4 = ChatRoomSpecification.allFilters(null, "filterByAvailable", null);
+        Specification<ChatRoom> specification4 = ChatRoomSpecification.addAllFilters(null, "filterByAvailable", null);
         List<ChatRoom> fourthChatRooms = chatRoomRepository.findAll(specification4);
 
-        Specification<ChatRoom> specification5 = ChatRoomSpecification.allFilters(fourthChatRooms, "filterByDate", "2023-08-08");
+        Specification<ChatRoom> specification5 = ChatRoomSpecification.addAllFilters(fourthChatRooms, "filterByDate", "2023-08-08");
         List<ChatRoom> fifthChatRooms = chatRoomRepository.findAll(specification5);
 
         // then

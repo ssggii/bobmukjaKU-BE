@@ -9,10 +9,9 @@ import java.util.List;
 
 public interface MemberService {
 
-    // 회원가입, 회원정보수정, 회원탈퇴, 회원정보조회
+    // 회원가입, 회원정보수정, 회원탈퇴, 회원정보조회, 메일 인증, 닉네임 중복 검사
     public void signUp(MemberSignUpDto memberSignUpDto) throws Exception;
     public void updateMemberInfo(MemberUpdateDto memberUpdateDto, String username) throws Exception;
-    public void updatePassword(String checkPassword, String toBePassword, String username) throws Exception;
     public void withdraw(String checkPassword, String username) throws Exception;
     public boolean checkNickName(String nickName) throws Exception;
 

@@ -18,6 +18,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,6 +56,11 @@ public class ChatRoomService {
         System.out.println("currentNum: " + chatRoom.getCurrentNum());
         System.out.println("total: " + chatRoom.getTotal());
         if(chatRoom.getCurrentNum() < chatRoom.getTotal()){
+            List<Long> currentChatRoomIdList = joiner.getJoiningRooms().stream().map(memberChatRoom -> memberChatRoom.getChatRoom().getChatRoomId()).collect(Collectors.toList());
+            if (currentChatRoomIdList.contains(roomId)){
+                System.out.println("이미 가입한 모집방입니다");
+                result = false;
+            }
             chatRoom.addParticipant(joiner);
             joiner.addChatRoom(chatRoom);
             chatRoom.addCurrentNum(); // 참여 인원 ++
@@ -120,9 +126,9 @@ public class ChatRoomService {
         return chatRoomInfos;
     }
 
-    // 다중 조건 검색 - test
+    // 필터링 추가
     public List<ChatRoom> getChatRoomsByAllFilters(ChatRoomFIlterDto chatRoomFIlterDto) {
-        Specification<ChatRoom> specification = ChatRoomSpecification.allFilters(chatRoomFIlterDto.filteredChatRooms(), chatRoomFIlterDto.nextFilter(), chatRoomFIlterDto.input());
+        Specification<ChatRoom> specification = ChatRoomSpecification.addAllFilters(chatRoomFIlterDto.filteredChatRooms(), chatRoomFIlterDto.nextFilter(), chatRoomFIlterDto.input());
         List<ChatRoom> findChatRooms = chatRoomRepository.findAll(specification);
         if(findChatRooms == null || findChatRooms.isEmpty())
             System.out.println("검색 결과가 없습니다.");

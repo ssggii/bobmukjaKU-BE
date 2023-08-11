@@ -22,7 +22,7 @@ public class ChatRoomController {
      * 모집방 개설
      * 모집방 참여자 추가
      * 모집방 조회 - 전체 조회, 방 id로 모집방 조회, 방 id로 참여자 조회, uid로 참여 중인 모집방 조회
-     * 모집방 필터링 - 최근 순 정렬, 전체 필터링 기능
+     * 모집방 필터링 - 최신 순 정렬, 필터링 설정, 필터 값만 변경
      * 모집방 삭제 - 자동 종료, 모집방 나가기
      *
      * */
@@ -65,9 +65,15 @@ public class ChatRoomController {
         return new ResponseEntity(joinerList, HttpStatus.OK);
     }
 
+/*    @GetMapping("/member/info/{uid}")
+    public ResponseEntity getInfo(@Valid @PathVariable("uid") Long id) throws Exception{
+        MemberInfoDto info = memberService.getInfo(id);
+        return new ResponseEntity(info, HttpStatus.OK);
+    }*/
+
     // uid로 참여 중인 모집방 조회
     @GetMapping("/chatRoom/info/2/{uid}")
-    public ResponseEntity getChatRoomInfoByUid(@PathVariable("uid")Long uid) throws Exception {
+    public ResponseEntity getChatRoomInfoByUid(@PathVariable("uid") Long uid) throws Exception {
         List<ChatRoomInfoDto> chatRoomInfoList = chatRoomService.getChatRoomInfoByUid(uid);
         return new ResponseEntity(chatRoomInfoList, HttpStatus.OK);
     }

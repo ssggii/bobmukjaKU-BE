@@ -25,7 +25,6 @@ public class MemberServiceImpl implements MemberService{
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
     private final EmailAuthService emailAuthService;
 
     @Override
@@ -71,18 +70,7 @@ public class MemberServiceImpl implements MemberService{
         memberUpdateDto.profileColor().ifPresent(member::updateProfileColor);
         memberUpdateDto.certificatedAt().ifPresent(member::updateCertificatedAt);
         memberUpdateDto.rate().ifPresent(member::updateRate);
-    }
-
-    @Override
-    public void updatePassword(String checkPassword, String toBePassword, String username) throws Exception {
-        Member member = memberRepository.findByMemberEmail(username)
-                .orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-
-        if (!member.matchPassword(passwordEncoder, checkPassword)) {
-            throw new MemberException(MemberExceptionType.WRONG_PASSWORD);
-        }
-
-        member.updatePassword(passwordEncoder, toBePassword);
+        memberUpdateDto.toBePassword().ifPresent(password -> member.updatePassword(passwordEncoder, password));
     }
 
     @Override

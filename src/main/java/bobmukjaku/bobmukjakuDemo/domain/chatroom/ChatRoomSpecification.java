@@ -23,7 +23,8 @@ public class ChatRoomSpecification {
     * - 시간표 데이터로 검색
     *
     *  2. 다중 조건 필터링
-    *
+    * - 필터링 추가
+    * - 필터링 해제
     * */
 
     // 검색어로 필터링 (검색어를 포함하면 반환)
@@ -51,8 +52,8 @@ public class ChatRoomSpecification {
         return ((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("total"), total));
     }
 
-    // 다중 조건 검색
-    public static Specification<ChatRoom> allFilters(List<ChatRoom> filteredChatRooms, String nextFilter, String input) {
+    // 필터링 추가
+    public static Specification<ChatRoom> addAllFilters(List<ChatRoom> filteredChatRooms, String nextFilter, String input) {
 
         Specification<ChatRoom> filter = null;
 
