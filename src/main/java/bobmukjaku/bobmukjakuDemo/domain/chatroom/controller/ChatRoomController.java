@@ -6,7 +6,9 @@ import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.AddMemberDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomCreateDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.service.ChatRoomService;
+import bobmukjaku.bobmukjakuDemo.domain.chatting.ChatModel;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberInfoDto;
+import bobmukjaku.bobmukjakuDemo.domain.member.service.MemberService;
 import bobmukjaku.bobmukjakuDemo.global.utility.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,6 +33,7 @@ public class ChatRoomController {
      * */
 
     private final ChatRoomService chatRoomService;
+    private final MemberService memberService;
 
     // 모집방 개설
     @PostMapping("/chatRoom")
@@ -118,6 +121,20 @@ public class ChatRoomController {
         }
 
         return new ResponseEntity(chatRoomInfoDtoList, HttpStatus.OK);
+    }
+
+    //파이어베이스로 메시지 전송
+    @PutMapping("/message")
+    @ResponseBody
+    public ResponseEntity<Object> sendMessageToFireBase(@RequestBody ChatModel md) throws Exception {
+        //플라스크에 요청을 보내서 메시지 욕설 여부 확인
+        String message = md.getMessage();
+        if(memberService.inspectBadWord(md.getMessage())){
+            System.out.println("욕설감지\n");
+            md.setMessage("##### " + message );
+        }
+        memberService.sendMessageToFireBase(md);
+        return ResponseEntity.ok().build();
     }
 
 }

@@ -1,5 +1,7 @@
 package bobmukjaku.bobmukjakuDemo.domain.member.service;
 
+import bobmukjaku.bobmukjakuDemo.domain.chatting.ChatModel;
+import bobmukjaku.bobmukjakuDemo.domain.chatting.ProfanityResponse;
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.HashedAuthCodeDto;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberInfoDto;
@@ -10,10 +12,17 @@ import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberExceptionType;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
 import bobmukjaku.bobmukjakuDemo.global.jwt.service.JwtService;
 import bobmukjaku.bobmukjakuDemo.global.utility.SecurityUtil;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -97,6 +106,39 @@ public class MemberServiceImpl implements MemberService{
         emailAuthService.sendMail(authcode, email);
         System.out.println("메일인증~~");
         return emailAuthService.hashAuthCode(authcode);
+    }
+
+    @Override
+    public void sendMessageToFireBase(ChatModel md) throws Exception {
+        DatabaseReference ref = FirebaseDatabase.getInstance()
+                .getReference("/chatRoom/"+md.getChatRoomId()+"/message");
+        ref.push().setValue(md, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError error, DatabaseReference ref) {
+                System.out.println(md.getMessage());
+                System.out.println(error.getMessage());
+            }
+
+        });
+    }
+
+    @Override
+    public Boolean inspectBadWord(String message) throws Exception {
+        WebClient client = WebClient.builder()
+                .baseUrl("http://172.30.1.21:8080")
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .build();
+
+        String jsonBody = "{\"message\":\"" + message + "\"}";
+
+        ProfanityResponse resultBadWordInspection = client.post()
+                .uri("/check_profanity")
+                .body(BodyInserters.fromValue(jsonBody))
+                .retrieve()
+                .bodyToMono(ProfanityResponse.class)
+                .block();
+
+        return resultBadWordInspection.getProfanity();
     }
 
 }
