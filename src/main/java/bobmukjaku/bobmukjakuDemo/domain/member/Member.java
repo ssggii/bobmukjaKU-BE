@@ -1,11 +1,17 @@
 package bobmukjaku.bobmukjakuDemo.domain.member;
 
 import bobmukjaku.bobmukjakuDemo.BaseTimeEntity;
+import bobmukjaku.bobmukjakuDemo.domain.MemberChatRoom.MemberChatRoom;
+import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoom;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+import static jakarta.persistence.CascadeType.ALL;
 
 @Table(name = "member")
 @Getter
@@ -42,6 +48,15 @@ public class Member extends BaseTimeEntity {
     @Column(name = "refresh_Token", length = 1000)
     private String refreshToken;
 
+    // member-chatroom 연관관계 매핑
+    @Builder.Default
+    @OneToMany(mappedBy = "joiner", cascade = ALL, orphanRemoval = true)
+    private List<MemberChatRoom> JoiningRooms = new ArrayList<>();
+
+/*    // member-TimeTable 연관관계 매핑
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL)
+    private TimeTable timeTable;*/
+
     // 회원 가입 시 USER 권한 부여
     public void giveUserAuthority(){
         this.role = Role.USER;
@@ -51,6 +66,13 @@ public class Member extends BaseTimeEntity {
     public boolean matchPassword(PasswordEncoder passwordEncoder, String checkPassword){
         boolean result = passwordEncoder.matches(checkPassword, getMemberPassword());
         return result;
+    }
+
+    /* 연관관계 메서드 */
+    // 참여 모집방 추가
+    public void addChatRoom(ChatRoom chatRoom) {
+        MemberChatRoom memberChatRoom = MemberChatRoom.builder().joiner(this).chatRoom(chatRoom).build();
+        JoiningRooms.add(memberChatRoom);
     }
 
     /* 회원 정보 수정 */
@@ -65,8 +87,9 @@ public class Member extends BaseTimeEntity {
     }
 
     // 인증 날짜 변경
-    public void updateCertificatedAt(LocalDate certificatedAt){
-        this.certificatedAt = certificatedAt;
+    public void updateCertificatedAt(String certificatedAt){
+        LocalDate date = LocalDate.parse(certificatedAt);
+        this.certificatedAt = date;
     }
 
     // 평가점수 변경

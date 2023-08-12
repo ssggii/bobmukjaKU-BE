@@ -1,4 +1,4 @@
-package bobmukjaku.bobmukjakuDemo.domains.member.service;
+package bobmukjaku.bobmukjakuDemo.domain.member.service;
 
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import bobmukjaku.bobmukjakuDemo.domain.member.Role;
@@ -8,7 +8,6 @@ import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberUpdateDto;
 import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberException;
 import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberExceptionType;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
-import bobmukjaku.bobmukjakuDemo.domain.member.service.MemberService;
 import bobmukjaku.bobmukjakuDemo.global.utility.SecurityUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -22,7 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.time.LocalDate;
+import javax.swing.text.html.Option;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -143,25 +142,10 @@ public class MemberServiceTest {
 
     /* 회원정보 수정
        - 이메일은 변경 불가능
-       - 비밀번호 변경 시 현재 비밀번호를 입력받아서 일치하는 경우만 변경 가능
-       - 비밀번호가 아닌 닉네임, 프로필 색상 변경은 2개를 동시에 혹은 선택적으로 변경 가능
+       - 닉네임, 프로필 색상, 인증날짜, 비밀번호 변경은 2개를 동시에 혹은 선택적으로 변경 가능
        - 변경 사항이 없는데 변경 요청 보내면 오류
        - 회원이 아닌 사용자가 정보 수정 요청 시 오류 -> 시큐리티 필터 동작
      */
-    @Test
-    public void 비밀번호_수정_성공() throws Exception{
-        // given
-        MemberSignUpDto memberSignUpDto = setMember();
-
-        // when
-        String toBePasword = "1234567890!@#";
-        memberService.updatePassword(PASSWORD, toBePasword, SecurityUtil.getLoginUsername());
-        clear();
-
-        // then
-        Member findMember = memberRepository.findByMemberEmail(memberSignUpDto.memberEmail()).orElseThrow(()->new Exception());
-        assertThat(findMember.matchPassword(passwordEncoder, toBePasword)).isTrue();
-    }
 
     @Test
     public void 닉네임만_수정_성공() throws Exception{
@@ -170,7 +154,7 @@ public class MemberServiceTest {
 
         // when
         String updateNickName = "수정닉네임";
-        memberService.updateMemberInfo(new MemberUpdateDto(Optional.of(updateNickName), Optional.empty()), SecurityUtil.getLoginUsername());
+        memberService.updateMemberInfo(new MemberUpdateDto(Optional.of(updateNickName), Optional.empty(), Optional.empty(), Optional.empty(), null), SecurityUtil.getLoginUsername());
         clear();
         
         // then
@@ -186,7 +170,7 @@ public class MemberServiceTest {
 
         // when
         String updateColor = "bg18";
-        memberService.updateMemberInfo(new MemberUpdateDto(Optional.empty(), Optional.of(updateColor)), SecurityUtil.getLoginUsername());
+        memberService.updateMemberInfo(new MemberUpdateDto(Optional.empty(), Optional.of(updateColor), Optional.empty(), Optional.empty(), null), SecurityUtil.getLoginUsername());
         clear();
 
         // then
@@ -204,7 +188,7 @@ public class MemberServiceTest {
         // when
         String updateNickName = "수정닉네임";
         String updateColor = "bg18";
-        memberService.updateMemberInfo(new MemberUpdateDto(Optional.of(updateNickName), Optional.of(updateColor)), SecurityUtil.getLoginUsername());
+        memberService.updateMemberInfo(new MemberUpdateDto(Optional.of(updateNickName), Optional.of(updateColor), Optional.empty(), Optional.empty(), null), SecurityUtil.getLoginUsername());
         clear();
 
         // then

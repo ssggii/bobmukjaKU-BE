@@ -3,6 +3,7 @@ package bobmukjaku.bobmukjakuDemo;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.PrePersist;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -18,11 +19,11 @@ public abstract class BaseTimeEntity {
     // 생성 시간
     @CreatedDate
     @Column(updatable = false)
-    private LocalDateTime createdAt;
+    protected LocalDateTime createdAt;
 
     // 수정 시간
     @LastModifiedDate
     @Column(updatable = true)
-    private LocalDateTime lastModifiedAt;
+    protected LocalDateTime lastModifiedAt;
 
 }

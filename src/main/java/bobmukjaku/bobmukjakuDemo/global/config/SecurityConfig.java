@@ -9,6 +9,7 @@ import bobmukjaku.bobmukjakuDemo.global.login.filter.JsonUsernamePasswordAuthent
 import bobmukjaku.bobmukjakuDemo.global.login.handler.LoginFailureHandler;
 import bobmukjaku.bobmukjakuDemo.global.login.handler.LoginSuccessJWTProvideHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,8 +42,16 @@ public class SecurityConfig {
     private final MemberRepository memberRepository;
     private final JwtService jwtService;
 
+    // 인증 없이 접근 가능
     private static final String[] WHITE_LIST = {
             "/", "/login**", "/signUp**", "/check/nickname", "/mailAuth", "message"
+    };
+
+    // USER 권한으로 접근 가능
+    private static final String[] USER_LIST = {
+            "/message",
+            "/member/info", "/member/info/*",
+            "/chatRoom/member", "/chatRoom/info/*", "/chatRooms/info", "/chatRooms/filtered", "/chatRoom/filter/*", "/chatRoom/joiners"
     };
 
     /* 특정 url 요청 무시 */
@@ -67,8 +76,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         authorize -> authorize
                                 .requestMatchers(WHITE_LIST).permitAll()
-                                .requestMatchers("/members/info", "/member/info").permitAll() // TODO: ADMIN만 접근 가능하도록 수정해야함
-                                .requestMatchers("/member/info/*").hasRole(String.valueOf(Role.USER)) // USER 권한으로 가능한 요청 경로
+                                .requestMatchers("/members/info").permitAll() // TODO: ADMIN만 접근 가능하도록 수정해야함
+                                .requestMatchers(USER_LIST).hasRole(String.valueOf(Role.USER)) // USER 권한으로 가능한 요청 경로
                                 .anyRequest().authenticated());
 
         http.addFilterAfter(jsonUsernamePasswordLoginFilter(), LogoutFilter.class);

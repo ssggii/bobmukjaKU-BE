@@ -1,7 +1,7 @@
 package bobmukjaku.bobmukjakuDemo.domain.member.service;
 
-import bobmukjaku.bobmukjakuDemo.chatting.ChatModel;
-import bobmukjaku.bobmukjakuDemo.chatting.ProfanityResponse;
+import bobmukjaku.bobmukjakuDemo.domain.chatting.ChatModel;
+import bobmukjaku.bobmukjakuDemo.domain.chatting.ProfanityResponse;
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.HashedAuthCodeDto;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberInfoDto;
@@ -21,7 +21,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.BodyInserter;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -35,7 +34,6 @@ public class MemberServiceImpl implements MemberService{
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
     private final EmailAuthService emailAuthService;
 
     @Override
@@ -79,18 +77,9 @@ public class MemberServiceImpl implements MemberService{
 
         memberUpdateDto.nickName().ifPresent(member::updateNickName);
         memberUpdateDto.profileColor().ifPresent(member::updateProfileColor);
-    }
-
-    @Override
-    public void updatePassword(String checkPassword, String toBePassword, String username) throws Exception {
-        Member member = memberRepository.findByMemberEmail(username)
-                .orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-
-        if (!member.matchPassword(passwordEncoder, checkPassword)) {
-            throw new MemberException(MemberExceptionType.WRONG_PASSWORD);
-        }
-
-        member.updatePassword(passwordEncoder, toBePassword);
+        memberUpdateDto.certificatedAt().ifPresent(member::updateCertificatedAt);
+        memberUpdateDto.rate().ifPresent(member::updateRate);
+        memberUpdateDto.toBePassword().ifPresent(password -> member.updatePassword(passwordEncoder, password));
     }
 
     @Override
@@ -136,13 +125,14 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public Boolean inspectBadWord(String message) throws Exception {
         WebClient client = WebClient.builder()
-                .baseUrl("http://127.0.0.1")
+                .baseUrl("http://172.30.1.21:8080")
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
 
         String jsonBody = "{\"message\":\"" + message + "\"}";
 
         ProfanityResponse resultBadWordInspection = client.post()
+                .uri("/check_profanity")
                 .body(BodyInserters.fromValue(jsonBody))
                 .retrieve()
                 .bodyToMono(ProfanityResponse.class)
