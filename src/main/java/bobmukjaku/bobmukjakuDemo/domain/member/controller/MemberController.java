@@ -1,6 +1,7 @@
 package bobmukjaku.bobmukjakuDemo.domain.member.controller;
 
-import bobmukjaku.bobmukjakuDemo.chatting.ChatModel;
+
+import bobmukjaku.bobmukjakuDemo.domain.chatting.ChatModel;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.*;
 import bobmukjaku.bobmukjakuDemo.domain.member.service.MemberService;
 import bobmukjaku.bobmukjakuDemo.global.utility.SecurityUtil;
