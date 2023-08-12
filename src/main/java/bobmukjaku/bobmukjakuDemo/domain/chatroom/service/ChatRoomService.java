@@ -101,6 +101,8 @@ public class ChatRoomService {
     // uid로 참여 중인 모집방 조회
     public List<ChatRoomInfoDto> getChatRoomInfoByUid(Long uid) throws Exception {
         Member member = memberRepository.findById(uid).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+
+
         List<ChatRoomInfoDto> chatRoomInfoDtoList = member.getJoiningRooms().stream()
                 .map(memberChatRoom -> new ChatRoomInfoDto(memberChatRoom.getChatRoom()))
                 .collect(Collectors.toList());

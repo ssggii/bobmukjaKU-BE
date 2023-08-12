@@ -85,9 +85,6 @@ public class ChatRoomSpecification {
             case "meetingDate":
                 specification = ChatRoomSpecification.equalMeetingDate(LocalDate.parse(filterValue));
                 break;
-            case "available":
-                specification = ChatRoomSpecification.lessThanTotal();
-                break;
             case "kindOfFood":
                 specification = ChatRoomSpecification.equalKindOfFood(filterValue);
                 break;
@@ -102,6 +99,7 @@ public class ChatRoomSpecification {
 
     // Specification 조합
     public static Specification<ChatRoom> combineSpecifications(List<Specification<ChatRoom>> specifications) {
+        specifications.add(0, lessThanTotal()); // 디폴트 필터링을 참여 가능 여부로 설정
         return specifications.stream().reduce(Specification::and).orElse(null); // 필터 조건 AND로 조합하여 반환
     }
 
