@@ -17,7 +17,7 @@ public class FireBaseAdminSdk {
         try {
             serviceAccount = new FileInputStream(
                     //파이어베이스에서 발급받은 json파일의 경로를 명시
-                    "D:/tools/spring/projects/bobmukjakuDemo/src/main/resources/static/firebaseJson"
+                    "D:/home/study/chat/bobmukjaku-firebase-adminsdk-bpinu-ddcde2a844.json"
             );
 
         } catch (FileNotFoundException e) {

@@ -14,7 +14,7 @@ public class ChatModel {
     private String senderName;
     private Long time;
     private Boolean isShareMessage;
-
     private String chatRoomId;
+    private Boolean isProfanity;
 
 }

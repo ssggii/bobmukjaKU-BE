@@ -86,20 +86,4 @@ public class MemberController {
     public HashedAuthCodeDto mailAuth(@RequestParam String email) throws Exception {
         return memberService.mailAuth(email);
     }
-
-    //파이어베이스로 메시지 전송
-    @PutMapping("message")
-    @ResponseBody
-    public ResponseEntity<Object> sendMessageToFireBase(@RequestBody ChatModel md) throws Exception {
-        //플라스크에 요청을 보내서 메시지 욕설 여부 확인
-        String message = md.getMessage();
-        if(memberService.inspectBadWord(md.getMessage())){
-            System.out.println("욕설감지\n");
-            md.setMessage("##### " + message );
-        }
-        memberService.sendMessageToFireBase(md);
-        return ResponseEntity.ok().build();
-    }
-
-
 }

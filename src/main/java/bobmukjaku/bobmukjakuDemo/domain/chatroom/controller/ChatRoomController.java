@@ -131,7 +131,7 @@ public class ChatRoomController {
         String message = md.getMessage();
         if(memberService.inspectBadWord(md.getMessage())){
             System.out.println("욕설감지\n");
-            md.setMessage("##### " + message );
+            md.setIsProfanity(true);
         }
         memberService.sendMessageToFireBase(md);
         return ResponseEntity.ok().build();
