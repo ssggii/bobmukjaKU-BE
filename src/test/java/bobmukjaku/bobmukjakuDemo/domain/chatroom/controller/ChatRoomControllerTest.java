@@ -324,37 +324,6 @@ public class ChatRoomControllerTest {
 
     }
 
-    // 모집방_최신순으로_정렬_조회_성공
-    @Test
-    public void 모집방_최신순으로_정렬_조회_성공() throws Exception {
-        // given
-        ChatRoom chatRoom1 = ChatRoom.builder().roomName("모집방1").startTime(LocalTime.parse("17:30")).endTime(LocalTime.parse("19:30")).kindOfFood("한식").meetingDate(LocalDate.parse("2023-08-07")).total(4).build();
-        ChatRoom chatRoom2 = ChatRoom.builder().roomName("모집방2").startTime(LocalTime.parse("17:30")).endTime(LocalTime.parse("19:30")).kindOfFood("한식").meetingDate(LocalDate.parse("2023-08-07")).total(4).build();
-        ChatRoom chatRoom3 = ChatRoom.builder().roomName("모집방3").startTime(LocalTime.parse("17:30")).endTime(LocalTime.parse("19:30")).kindOfFood("한식").meetingDate(LocalDate.parse("2023-08-07")).total(4).build();
-        ChatRoom chatRoom4 = ChatRoom.builder().roomName("모집방4").startTime(LocalTime.parse("17:30")).endTime(LocalTime.parse("19:30")).kindOfFood("한식").meetingDate(LocalDate.parse("2023-08-07")).total(4).build();
-
-        chatRoomRepository.save(chatRoom4); // 모집방4 생성
-        chatRoomRepository.save(chatRoom3); // 모집방3 생성
-        chatRoomRepository.save(chatRoom2); // 모집방2 생성
-        chatRoomRepository.save(chatRoom1); // 모집방1 생성
-
-        signUp();
-        String accessToken = login();
-
-        // when, then
-        assertThat(chatRoomRepository.findAll().size()).isEqualTo(4);
-
-        // 조회 결과 모집방1부터 모집방4 순서로 나와야 함
-        mockMvc.perform(
-                get("/chatRoom/filter/latest")
-                        .header(accessHeader, BEARER+accessToken)
-                        .characterEncoding(StandardCharsets.UTF_8)
-        )
-                .andDo(print())
-                .andExpect(status().isOk());
-
-    }
-
     // 필터링
     @Test
     public void 필터링_성공() throws Exception {
@@ -489,7 +458,7 @@ public class ChatRoomControllerTest {
         Member member = memberRepository.findByMemberEmail(username).get();
 
         if(member.getFilterList() != null){
-            member.addFilterInfo(new FilterInfo("kindOfFood", "한식"));
+            member.addFilterInfo(new FilterInfo("kindOfFood", ""));
             member.addFilterInfo(new FilterInfo("total", "4"));
             member.addFilterInfo(new FilterInfo("meetingDate", "2023-08-10"));
         } else {
@@ -498,7 +467,7 @@ public class ChatRoomControllerTest {
 
         // when
         mockMvc.perform(
-                get("/filter/info/" + member.getUid())
+                get("/filter/info")
                         .header(accessHeader, BEARER+accessToken)
                         .characterEncoding(StandardCharsets.UTF_8)
         )

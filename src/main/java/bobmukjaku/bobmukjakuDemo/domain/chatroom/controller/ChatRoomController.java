@@ -4,6 +4,7 @@ import bobmukjaku.bobmukjakuDemo.domain.chatroom.FilterInfo;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.AddMemberDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomCreateDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomInfoDto;
+import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.FilterInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.service.ChatRoomService;
 import bobmukjaku.bobmukjakuDemo.domain.chatting.ChatModel;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberInfoDto;
@@ -113,11 +114,10 @@ public class ChatRoomController {
     }
 
     // 필터 조회
-    @GetMapping("/filter/info/{uid}")
-    public ResponseEntity getMyFilterInfo(@PathVariable("uid") Long uid) throws Exception {
-        List<FilterInfo> filterInfoList = chatRoomService.getMyFilterInfo(uid);
+    @GetMapping("/filter/info")
+    public ResponseEntity getMyFilterInfo(HttpServletResponse response) throws Exception {
+        List<FilterInfoDto> filterInfoList = chatRoomService.getMyFilterInfo();
         return new ResponseEntity(filterInfoList, HttpStatus.OK);
     }
-
 
 }

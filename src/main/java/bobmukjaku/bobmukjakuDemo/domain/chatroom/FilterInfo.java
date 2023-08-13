@@ -1,9 +1,12 @@
 package bobmukjaku.bobmukjakuDemo.domain.chatroom;
 
 import bobmukjaku.bobmukjakuDemo.BaseTimeEntity;
+import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.FilterInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.Optional;
 
 import static jakarta.persistence.FetchType.LAZY;
 
@@ -34,6 +37,11 @@ public class FilterInfo extends BaseTimeEntity {
     public FilterInfo(String type, String value){
         this.filterType = type;
         this.filterValue = value;
+    }
+
+    public FilterInfoDto toDto(FilterInfo filterInfo) {
+        FilterInfoDto filterInfoDto = new FilterInfoDto(filterInfo.filterType, filterInfo.filterValue);
+        return filterInfoDto;
     }
 
 }

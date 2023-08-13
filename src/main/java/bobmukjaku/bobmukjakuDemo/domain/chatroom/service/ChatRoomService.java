@@ -7,6 +7,7 @@ import bobmukjaku.bobmukjakuDemo.domain.chatroom.FilterInfo;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomCreateDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomFIlterDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomInfoDto;
+import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.FilterInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.repository.ChatRoomRepository;
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberInfoDto;
@@ -152,9 +153,10 @@ public class ChatRoomService {
     }
 
     // 필터 조회
-    public List<FilterInfo> getMyFilterInfo(Long uid) throws Exception {
-        Member member = memberRepository.findById(uid).get();
-        return member.getFilterList();
+    public List<FilterInfoDto> getMyFilterInfo() throws Exception {
+        Member member = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        List<FilterInfoDto> filterList = member.getFilterList().stream().map(filterInfo -> filterInfo.toDto(filterInfo)).collect(Collectors.toList());
+        return filterList;
     }
 
 }
