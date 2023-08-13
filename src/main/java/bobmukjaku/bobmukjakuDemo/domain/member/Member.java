@@ -79,6 +79,11 @@ public class Member extends BaseTimeEntity {
         JoiningRooms.add(memberChatRoom);
     }
 
+    // 필터 추가
+    public void addFilterInfo(FilterInfo filterInfo) {
+        filterList.add(filterInfo);
+    }
+
     /* 회원 정보 수정 */
     // 닉네임 변경
     public void updateNickName(String nickName) {
@@ -127,5 +132,6 @@ public class Member extends BaseTimeEntity {
         this.certificatedAt = LocalDate.now(); // 인증 날짜 default = 회원가입 날짜
         this.rate = 45; // 평가 점수 default = 45
         this.profileColor = "bg1"; // 프로필 색상 default = bg1
+        this.filterList = new ArrayList<>(8); // Member 생성 시 filterList 초기화
     }
 }

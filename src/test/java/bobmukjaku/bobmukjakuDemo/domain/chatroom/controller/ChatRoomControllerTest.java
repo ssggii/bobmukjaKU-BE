@@ -8,6 +8,7 @@ import bobmukjaku.bobmukjakuDemo.domain.chatroom.FilterInfo;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.AddMemberDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomCreateDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.repository.ChatRoomRepository;
+import bobmukjaku.bobmukjakuDemo.domain.chatroom.repository.FilterInfoRepository;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.service.ChatRoomService;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.service.ChatRoomServiceTest;
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
@@ -61,6 +62,9 @@ public class ChatRoomControllerTest {
 
     @Autowired
     MemberChatRoomRepository memberChatRoomRepository;
+
+    @Autowired
+    FilterInfoRepository filterInfoRepository;
 
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -474,6 +478,36 @@ public class ChatRoomControllerTest {
         chatRoom3.getParticipants().stream().map(memberChatRoom -> memberChatRoom.getJoiner().getMemberNickName()).forEach(System.out::println);
 
 
+    }
+
+    // 필터 조회
+    @Test
+    public void 필터목록_조회_성공() throws Exception {
+        // given
+        signUp();
+        String accessToken = login();
+        Member member = memberRepository.findByMemberEmail(username).get();
+
+        if(member.getFilterList() != null){
+            member.addFilterInfo(new FilterInfo("kindOfFood", "한식"));
+            member.addFilterInfo(new FilterInfo("total", "4"));
+            member.addFilterInfo(new FilterInfo("meetingDate", "2023-08-10"));
+        } else {
+            System.out.println("filterList가 null입니다.");
+        }
+
+        // when
+        mockMvc.perform(
+                get("/filter/info/" + member.getUid())
+                        .header(accessHeader, BEARER+accessToken)
+                        .characterEncoding(StandardCharsets.UTF_8)
+        )
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        // then
+        assertThat(filterInfoRepository.findAll().size()).isEqualTo(3);
+        assertThat(member.getFilterList().size()).isEqualTo(3);
     }
 
 }

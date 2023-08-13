@@ -13,6 +13,7 @@ import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberException;
 import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberExceptionType;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
+import bobmukjaku.bobmukjakuDemo.global.utility.SecurityUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -148,6 +149,12 @@ public class ChatRoomService {
         }
         return chatRooms.stream().map(ChatRoomInfoDto::new).collect(Collectors.toList());
 
+    }
+
+    // 필터 조회
+    public List<FilterInfo> getMyFilterInfo(Long uid) throws Exception {
+        Member member = memberRepository.findById(uid).get();
+        return member.getFilterList();
     }
 
 }

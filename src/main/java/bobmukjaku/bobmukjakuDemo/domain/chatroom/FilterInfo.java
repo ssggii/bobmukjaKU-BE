@@ -20,7 +20,7 @@ public class FilterInfo extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long filterId;
 
-    @Column(name = "type", length = 10)
+    @Column(name = "type", length = 20)
     private String filterType;
 
     @Column(name = "value")

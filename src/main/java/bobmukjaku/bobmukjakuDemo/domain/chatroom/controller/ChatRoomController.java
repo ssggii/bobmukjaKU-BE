@@ -9,6 +9,7 @@ import bobmukjaku.bobmukjakuDemo.domain.chatting.ChatModel;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.member.service.MemberService;
 import bobmukjaku.bobmukjakuDemo.global.utility.SecurityUtil;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,8 +27,10 @@ public class ChatRoomController {
      * 모집방 개설
      * 모집방 참여자 추가
      * 모집방 조회 - 전체 조회, 방 id로 모집방 조회, 방 id로 참여자 조회, uid로 참여 중인 모집방 조회
-     * 모집방 필터링 - 최신 순 정렬, 필터링
+     * 모집방 필터링 - 종합 필터링
      * 모집방 삭제 - 자동 종료, 모집방 나가기
+     * 메시지 전송
+     * 필터목록 조회
      *
      * */
 
@@ -77,28 +80,7 @@ public class ChatRoomController {
         return new ResponseEntity(chatRoomInfoList, HttpStatus.OK);
     }
 
-    // 음식 분류로 모집방 조회
-    @GetMapping("/chatRoom/filter/1/{kindOfFood}")
-    public ResponseEntity getChatRoomsByFood(@PathVariable("kindOfFood")String kindOfFood) throws Exception {
-        List<ChatRoomInfoDto> roomInfoList = chatRoomService.getChatRoomsByFood(kindOfFood);
-        return new ResponseEntity(roomInfoList, HttpStatus.OK);
-    }
-
-    // 정원으로 모집방 조회
-    @GetMapping("/chatRoom/filter/2/{total}")
-    public ResponseEntity getChatRoomsByTotal(@PathVariable("total")int total) throws Exception {
-        List<ChatRoomInfoDto> roomInfoList = chatRoomService.getChatRoomsByTotal(total);
-        return new ResponseEntity(roomInfoList, HttpStatus.OK);
-    }
-
-    // 최신 순 정렬
-    @GetMapping("/chatRoom/filter/latest")
-    public ResponseEntity getChatRoomsByLatest() throws Exception{
-        List<ChatRoomInfoDto> roomInfoDtoList = chatRoomService.getChatRoomsByLatest();
-        return new ResponseEntity(roomInfoDtoList, HttpStatus.OK);
-    }
-
-    // 필터링
+    // 종합 필터링
     @PostMapping("/chatRooms/filtered")
     public ResponseEntity getFilteredChatRooms(@RequestBody List<FilterInfo> filters) throws Exception {
 
@@ -129,5 +111,13 @@ public class ChatRoomController {
         memberService.sendMessageToFireBase(md);
         return ResponseEntity.ok().build();
     }
+
+    // 필터 조회
+    @GetMapping("/filter/info/{uid}")
+    public ResponseEntity getMyFilterInfo(@PathVariable("uid") Long uid) throws Exception {
+        List<FilterInfo> filterInfoList = chatRoomService.getMyFilterInfo(uid);
+        return new ResponseEntity(filterInfoList, HttpStatus.OK);
+    }
+
 
 }
