@@ -3,6 +3,7 @@ package bobmukjaku.bobmukjakuDemo.domain.member;
 import bobmukjaku.bobmukjakuDemo.BaseTimeEntity;
 import bobmukjaku.bobmukjakuDemo.domain.MemberChatRoom.MemberChatRoom;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoom;
+import bobmukjaku.bobmukjakuDemo.domain.chatroom.FilterInfo;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -52,6 +53,10 @@ public class Member extends BaseTimeEntity {
     @Builder.Default
     @OneToMany(mappedBy = "joiner", cascade = ALL, orphanRemoval = true)
     private List<MemberChatRoom> JoiningRooms = new ArrayList<>();
+
+    // member-filterInfo 연관관계 매핑
+    @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
+    private List<FilterInfo> filterList = new ArrayList<>();
 
 /*    // member-TimeTable 연관관계 매핑
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL)
