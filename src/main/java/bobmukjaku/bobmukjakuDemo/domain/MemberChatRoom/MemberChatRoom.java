@@ -13,7 +13,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @AllArgsConstructor
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Builder
 public class MemberChatRoom extends BaseTimeEntity {
 
     @Id
@@ -31,9 +30,6 @@ public class MemberChatRoom extends BaseTimeEntity {
     public MemberChatRoom(Member member, ChatRoom chatRoom) {
         this.joiner = member;
         this.chatRoom = chatRoom;
-        // 양방향 연관관계 설정
-        joiner.getJoiningRooms().add(this);
-        chatRoom.getParticipants().add(this);
     }
 
 }

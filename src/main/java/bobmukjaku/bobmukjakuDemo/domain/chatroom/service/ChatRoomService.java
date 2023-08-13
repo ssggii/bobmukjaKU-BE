@@ -39,12 +39,10 @@ public class ChatRoomService {
                 .orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         ChatRoom createdChatRoom = chatRoomCreateDto.toEntity();
 
-        // host를 모집방의 참여자로 추가
-        if (!createdChatRoom.isParticipant(host)) {
-            host.addChatRoom(createdChatRoom);
-            createdChatRoom.addParticipant(host);
-            createdChatRoom.addCurrentNum(); // 방장을 참여자로 추가
-        }
+        MemberChatRoom memberChatRoomInfo = new MemberChatRoom(host, createdChatRoom); // member-chatroom 매핑 정보 생성
+
+        host.addChatRoom(memberChatRoomInfo); // host 모집방 목록에 createdChatRoom 추가
+        createdChatRoom.addParticipant(memberChatRoomInfo); // createdChatRoom 참여자 목록에 host 추가
 
         chatRoomRepository.save(createdChatRoom);
         return new ChatRoomInfoDto(createdChatRoom);
@@ -58,15 +56,16 @@ public class ChatRoomService {
         Member joiner = memberRepository.findById(uid)
                 .orElseThrow(()-> new IllegalArgumentException("회원을 찾을 수 없습니다. 회원 UID: " + uid));
 
+        MemberChatRoom memberChatRoomInfo = new MemberChatRoom(joiner, chatRoom);
+
         if(chatRoom.getCurrentNum() < chatRoom.getTotal()){ // 참여 가능한 방인지 검사
             List<Long> currentChatRoomIdList = joiner.getJoiningRooms().stream().map(memberChatRoom -> memberChatRoom.getChatRoom().getChatRoomId()).collect(Collectors.toList());
             if (currentChatRoomIdList.contains(roomId)){ // 이미 참여한 방인지 검사
                 System.out.println("이미 가입한 모집방입니다");
                 result = false;
             }
-            chatRoom.addParticipant(joiner);
-            joiner.addChatRoom(chatRoom);
-            chatRoom.addCurrentNum(); // 참여 인원 ++
+            chatRoom.addParticipant(memberChatRoomInfo);
+            joiner.addChatRoom(memberChatRoomInfo);
             result = true;
         } else {
             System.out.println("모집 정원 초과입니다");

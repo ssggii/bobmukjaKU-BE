@@ -70,8 +70,7 @@ public class Member extends BaseTimeEntity {
 
     /* 연관관계 메서드 */
     // 참여 모집방 추가
-    public void addChatRoom(ChatRoom chatRoom) {
-        MemberChatRoom memberChatRoom = MemberChatRoom.builder().joiner(this).chatRoom(chatRoom).build();
+    public void addChatRoom(MemberChatRoom memberChatRoom) {
         JoiningRooms.add(memberChatRoom);
     }
 

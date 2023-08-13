@@ -125,13 +125,14 @@ public class ChatRoomControllerTest {
 
         // then
         assertThat(chatRoomRepository.findAll().size()).isEqualTo(1);
+        assertThat(memberChatRoomRepository.findAll().size()).isEqualTo(1);
+
         Long roomId = chatRoomRepository.findAll().get(0).getChatRoomId();
         System.out.println("생성된 roomId: " + roomId);
         ChatRoom findChatRoom = chatRoomRepository.findById(roomId).get();
         System.out.println( "참여자: "+ findChatRoom.getParticipants().size() + "명");
         System.out.println("<참여자 이메일>");
         findChatRoom.getParticipants().stream().map(r->r.getJoiner().getMemberEmail()).forEach(System.out::println);
-        assertThat(memberChatRoomRepository.findAll().size()).isEqualTo(2);
     }
 
     /*
@@ -307,7 +308,7 @@ public class ChatRoomControllerTest {
         // when, then
         assertThat(chatRoomRepository.findAll().size()).isEqualTo(4);
         assertThat(memberRepository.findAll().size()).isEqualTo(1);
-        assertThat(memberChatRoomRepository.findAll().size()).isEqualTo(6);
+        assertThat(memberChatRoomRepository.findAll().size()).isEqualTo(3);
 
         mockMvc.perform(
                 get("/chatRoom/info/2/" + uid)
@@ -439,9 +440,18 @@ public class ChatRoomControllerTest {
         chatRoomService.createChatRoom(chatRoomCreateDto2, username); // 모집방2 개설
         chatRoomService.createChatRoom(chatRoomCreateDto3, username); // 모집방3 개설
 
+        // when, then
+        mockMvc.perform(
+                        get("/chatRoom/info/2/" + member.getUid())
+                                .characterEncoding(StandardCharsets.UTF_8)
+                                .header(accessHeader, BEARER+accessToken)
+                )
+                .andDo(print())
+                .andExpect(status().isOk());
+
         assertThat(chatRoomRepository.findAll().size()).isEqualTo(3); // 모집방 3개인지 확인
         assertThat(memberRepository.findAll().size()).isEqualTo(1); // 회원 1명인지 확인
-        assertThat(memberChatRoomRepository.findAll().size()).isEqualTo(6); // 모집방 개설하면서 참여자 추가되었는지 확인
+        assertThat(memberChatRoomRepository.findAll().size()).isEqualTo(3); // 모집방 개설하면서 참여자 추가되었는지 확인
 
         // 회원 입장에서 모집방 목록 확인
         System.out.println("<joingRooms>");

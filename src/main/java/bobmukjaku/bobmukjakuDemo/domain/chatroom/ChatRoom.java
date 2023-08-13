@@ -54,9 +54,9 @@ public class ChatRoom extends BaseTimeEntity {
 
     /* 연관관계 메서드 */
     // 참여자 추가 메소드
-    public void addParticipant(Member participant) {
-        MemberChatRoom memberChatRoom = MemberChatRoom.builder().chatRoom(this).joiner(participant).build();
+    public void addParticipant(MemberChatRoom memberChatRoom) {
         participants.add(memberChatRoom);
+        addCurrentNum(); // 해당 방의 참여자 추가 시 현재 인원++
     }
 
     // 중복 참여자 확인
