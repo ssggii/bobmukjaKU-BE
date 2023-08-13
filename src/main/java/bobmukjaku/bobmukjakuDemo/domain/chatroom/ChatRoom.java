@@ -53,10 +53,17 @@ public class ChatRoom extends BaseTimeEntity {
     private int currentNum;
 
     /* 연관관계 메서드 */
-    // 참여자 추가 메소드
+    // 참여자 추가
     public void addParticipant(MemberChatRoom memberChatRoom) {
         participants.add(memberChatRoom);
         addCurrentNum(); // 해당 방의 참여자 추가 시 현재 인원++
+    }
+
+    // 참여자 삭제
+    public void deleteParticipant(MemberChatRoom memberChatRoom) {
+        Member member = memberChatRoom.getJoiner();
+        participants.removeIf(memberChatRoom1 -> memberChatRoom1.getJoiner().equals(member));
+        currentNum--;
     }
 
     // 중복 참여자 확인

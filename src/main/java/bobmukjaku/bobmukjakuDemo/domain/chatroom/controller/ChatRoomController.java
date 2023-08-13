@@ -1,10 +1,7 @@
 package bobmukjaku.bobmukjakuDemo.domain.chatroom.controller;
 
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.FilterInfo;
-import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.AddMemberDto;
-import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomCreateDto;
-import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomInfoDto;
-import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.FilterInfoDto;
+import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.*;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.service.ChatRoomService;
 import bobmukjaku.bobmukjakuDemo.domain.chatting.ChatModel;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberInfoDto;
@@ -118,6 +115,14 @@ public class ChatRoomController {
     public ResponseEntity getMyFilterInfo(HttpServletResponse response) throws Exception {
         List<FilterInfoDto> filterInfoList = chatRoomService.getMyFilterInfo();
         return new ResponseEntity(filterInfoList, HttpStatus.OK);
+    }
+
+    // 모집방 나가기
+    @PostMapping("/chatRoom/member/exit")
+    public ResponseEntity<Boolean> exitChatRoom(@RequestBody ChatRoomExitDto chatRoomExitDto) throws Exception {
+        Long roodId = chatRoomExitDto.roomId();
+        Long uid = chatRoomExitDto.uid();
+        return new ResponseEntity(chatRoomService.exitChatRoom(roodId, uid), HttpStatus.OK);
     }
 
 }

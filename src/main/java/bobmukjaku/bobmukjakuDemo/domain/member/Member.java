@@ -52,7 +52,7 @@ public class Member extends BaseTimeEntity {
     // member-chatroom 연관관계 매핑
     @Builder.Default
     @OneToMany(mappedBy = "joiner", cascade = ALL, orphanRemoval = true)
-    private List<MemberChatRoom> JoiningRooms = new ArrayList<>();
+    private List<MemberChatRoom> joiningRooms = new ArrayList<>();
 
     // member-filterInfo 연관관계 매핑
     @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
@@ -76,7 +76,13 @@ public class Member extends BaseTimeEntity {
     /* 연관관계 메서드 */
     // 참여 모집방 추가
     public void addChatRoom(MemberChatRoom memberChatRoom) {
-        JoiningRooms.add(memberChatRoom);
+        joiningRooms.add(memberChatRoom);
+    }
+
+    public void deleteChatRoom(MemberChatRoom memberChatRoom) {
+        ChatRoom chatRoom = memberChatRoom.getChatRoom();
+        joiningRooms.removeIf(memberChatRoom1 -> memberChatRoom1.getChatRoom().equals(chatRoom));
+        System.out.println(joiningRooms.size());
     }
 
     // 필터 추가

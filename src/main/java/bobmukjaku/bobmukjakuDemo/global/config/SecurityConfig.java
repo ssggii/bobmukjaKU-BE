@@ -51,7 +51,7 @@ public class SecurityConfig {
     private static final String[] USER_LIST = {
             "/message", "/filter/info",
             "/member/info", "/member/info/*",
-            "/chatRoom/member", "/chatRoom/info/*", "/chatRooms/info", "/chatRooms/filtered", "/chatRoom/filter/*", "/chatRoom/joiners"
+            "/chatRoom/member/*", "/chatRoom/member", "/chatRoom/info/*", "/chatRooms/info", "/chatRooms/filtered", "/chatRoom/joiners"
     };
 
     /* 특정 url 요청 무시 */

@@ -1,6 +1,7 @@
 package bobmukjaku.bobmukjakuDemo.domain.chatroom.service;
 
 import bobmukjaku.bobmukjakuDemo.domain.MemberChatRoom.MemberChatRoom;
+import bobmukjaku.bobmukjakuDemo.domain.MemberChatRoom.repository.MemberChatRoomRepository;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoom;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoomSpecification;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.FilterInfo;
@@ -34,6 +35,7 @@ public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final MemberRepository memberRepository;
+    private final MemberChatRoomRepository memberChatRoomRepository;
 
     // 모집방 개설
     public ChatRoomInfoDto createChatRoom(ChatRoomCreateDto chatRoomCreateDto, String username){
@@ -157,6 +159,21 @@ public class ChatRoomService {
         Member member = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         List<FilterInfoDto> filterList = member.getFilterList().stream().map(filterInfo -> filterInfo.toDto(filterInfo)).collect(Collectors.toList());
         return filterList;
+    }
+
+    // 모집방 나가기
+    public Boolean exitChatRoom(Long roodId, Long uid) throws Exception {
+        Boolean result = false;
+        Member member = memberRepository.findById(uid).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        ChatRoom chatRoom = chatRoomRepository.findById(roodId).orElseThrow(()->new RuntimeException("존재하지 않는 모집방입니다."));
+        MemberChatRoom memberChatRoom = memberChatRoomRepository.findMemberChatRoomByChatRoomAndAndJoiner(chatRoom, member).orElseThrow(()->new RuntimeException("잘못된 모집방 가입 정보입니다"));
+
+        if(memberChatRoom != null){
+            member.deleteChatRoom(memberChatRoom); // member의 참여 모집방 목록에서 해당 모집방 삭제
+            chatRoom.deleteParticipant(memberChatRoom); // chatRoom의 참여자 목록에서 해당 참여자 삭제
+            result = true;
+        }
+        return result;
     }
 
 }

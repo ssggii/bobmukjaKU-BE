@@ -479,4 +479,53 @@ public class ChatRoomControllerTest {
         assertThat(member.getFilterList().size()).isEqualTo(3);
     }
 
+    // 모집방 나가기
+    @Test
+    public void 모집방_나가기_성공() throws Exception {
+        // given
+        signUp();
+        String accessToken = login();
+
+        Member member = memberRepository.findAll().get(0);
+        ChatRoom chatRoom1 = ChatRoom.builder().roomName("모집방1").total(4).build();
+        ChatRoom chatRoom2 = ChatRoom.builder().roomName("모집방2").total(4).build();
+        chatRoomRepository.save(chatRoom1);
+        chatRoomRepository.save(chatRoom2);
+        chatRoomService.addMemberToChatRoom(chatRoom1.getChatRoomId(), member.getUid()); // 모집방1에 member 입장
+        chatRoomService.addMemberToChatRoom(chatRoom2.getChatRoomId(), member.getUid()); // 모집방2에 member 입장
+
+        assertThat(memberRepository.findAll().size()).isEqualTo(1);
+        assertThat(chatRoomRepository.findAll().size()).isEqualTo(2);
+        assertThat(memberChatRoomRepository.findAll().size()).isEqualTo(2);
+        assertThat(member.getJoiningRooms().size()).isEqualTo(2);
+        System.out.println("<모집방 나가기 전>");
+        member.getJoiningRooms().stream().map(memberChatRoom -> memberChatRoom.getChatRoom().getRoomName()).forEach(System.out::println);
+
+        Map<String, Long> map = new HashMap<>();
+        map.put("roomId", chatRoom2.getChatRoomId());
+        map.put("uid", member.getUid());
+        String data = objectMapper.writeValueAsString(map);
+//        System.out.println(data);
+
+        // when
+        mockMvc.perform(
+                post("/chatRoom/member/exit")
+                        .header(accessHeader, BEARER+accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(data)
+        )
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        // then
+        assertThat(memberRepository.findAll().size()).isEqualTo(1);
+        assertThat(chatRoomRepository.findAll().size()).isEqualTo(2);
+        assertThat(memberChatRoomRepository.findAll().size()).isEqualTo(1);
+        assertThat(member.getJoiningRooms().size()).isEqualTo(1);
+
+        System.out.println("<모집방 나간 후>");
+        member.getJoiningRooms().stream().map(memberChatRoom -> memberChatRoom.getChatRoom().getRoomName()).forEach(System.out::println);
+
+    }
+
 }
