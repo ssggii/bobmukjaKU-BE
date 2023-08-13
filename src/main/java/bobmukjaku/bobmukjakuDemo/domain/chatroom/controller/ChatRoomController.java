@@ -1,6 +1,5 @@
 package bobmukjaku.bobmukjakuDemo.domain.chatroom.controller;
 
-import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoom;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.FilterInfo;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.AddMemberDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomCreateDto;
@@ -71,12 +70,6 @@ public class ChatRoomController {
         return new ResponseEntity(joinerList, HttpStatus.OK);
     }
 
-/*    @GetMapping("/member/info/{uid}")
-    public ResponseEntity getInfo(@Valid @PathVariable("uid") Long id) throws Exception{
-        MemberInfoDto info = memberService.getInfo(id);
-        return new ResponseEntity(info, HttpStatus.OK);
-    }*/
-
     // uid로 참여 중인 모집방 조회
     @GetMapping("/chatRoom/info/2/{uid}")
     public ResponseEntity getChatRoomInfoByUid(@PathVariable("uid") Long uid) throws Exception {
@@ -123,7 +116,7 @@ public class ChatRoomController {
         return new ResponseEntity(chatRoomInfoDtoList, HttpStatus.OK);
     }
 
-    //파이어베이스로 메시지 전송
+    // 메시지 전송
     @PutMapping("/message")
     @ResponseBody
     public ResponseEntity<Object> sendMessageToFireBase(@RequestBody ChatModel md) throws Exception {

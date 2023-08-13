@@ -57,11 +57,10 @@ public class ChatRoomService {
                 .orElseThrow(()-> new IllegalArgumentException("모집방을 찾을 수 없습니다. 모집방 ID: " + roomId));
         Member joiner = memberRepository.findById(uid)
                 .orElseThrow(()-> new IllegalArgumentException("회원을 찾을 수 없습니다. 회원 UID: " + uid));
-        System.out.println("currentNum: " + chatRoom.getCurrentNum());
-        System.out.println("total: " + chatRoom.getTotal());
-        if(chatRoom.getCurrentNum() < chatRoom.getTotal()){
+
+        if(chatRoom.getCurrentNum() < chatRoom.getTotal()){ // 참여 가능한 방인지 검사
             List<Long> currentChatRoomIdList = joiner.getJoiningRooms().stream().map(memberChatRoom -> memberChatRoom.getChatRoom().getChatRoomId()).collect(Collectors.toList());
-            if (currentChatRoomIdList.contains(roomId)){
+            if (currentChatRoomIdList.contains(roomId)){ // 이미 참여한 방인지 검사
                 System.out.println("이미 가입한 모집방입니다");
                 result = false;
             }
@@ -101,8 +100,6 @@ public class ChatRoomService {
     // uid로 참여 중인 모집방 조회
     public List<ChatRoomInfoDto> getChatRoomInfoByUid(Long uid) throws Exception {
         Member member = memberRepository.findById(uid).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-
-
         List<ChatRoomInfoDto> chatRoomInfoDtoList = member.getJoiningRooms().stream()
                 .map(memberChatRoom -> new ChatRoomInfoDto(memberChatRoom.getChatRoom()))
                 .collect(Collectors.toList());

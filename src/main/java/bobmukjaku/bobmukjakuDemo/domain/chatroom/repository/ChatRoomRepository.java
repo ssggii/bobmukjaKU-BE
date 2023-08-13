@@ -12,4 +12,6 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long>, JpaSp
 
     List<ChatRoom> findAllByOrderByCreatedAtDesc(); // 최신 순 정렬
 
+    Optional<ChatRoom> findChatRoomByRoomName(String roomName); // 모집방 이름으로 검색
+
 }

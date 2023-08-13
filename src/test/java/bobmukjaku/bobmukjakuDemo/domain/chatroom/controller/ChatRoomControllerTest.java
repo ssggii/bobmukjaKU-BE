@@ -259,20 +259,20 @@ public class ChatRoomControllerTest {
         ChatRoom chatRoom = chatRoomCreateDto.toEntity();
         chatRoomRepository.save(chatRoom);
 
-        MemberChatRoom memberChatRoom1 = new MemberChatRoom(member1, chatRoom);
-        MemberChatRoom memberChatRoom2 = new MemberChatRoom(member2, chatRoom);
-//        MemberChatRoom memberChatRoom3 = new MemberChatRoom(member3, chatRoom);
+        MemberChatRoom memberChatRoom1 = new MemberChatRoom(member1, chatRoom); // member1 chatroom 입장
+        MemberChatRoom memberChatRoom2 = new MemberChatRoom(member2, chatRoom); // member2 chatroom 입장
+        MemberChatRoom memberChatRoom3 = new MemberChatRoom(member3, chatRoom); // member3 chatroom 입장
 
         assertThat(memberRepository.findAll().size()).isEqualTo(3);
-        assertThat(chatRoomRepository.findAll().get(0).getRoomName()).isEqualTo("모집방1");
+        assertThat(chatRoomRepository.findAll().size()).isEqualTo(1);
         System.out.println("현재 인원: " + chatRoomRepository.findAll().get(0).getCurrentNum() + "명");
         System.out.println("memberchatroom 테이블 행: " + memberChatRoomRepository.findAll().size() + "개");
 
         signUp();
         String accessToken = login();
         Long roomId = chatRoomRepository.findAll().get(0).getChatRoomId();
-        // when, then
 
+        // when, then
         mockMvc.perform(
                         get("/chatRoom/joiners/" + roomId)
                                 .header(accessHeader, BEARER+accessToken)
@@ -280,6 +280,7 @@ public class ChatRoomControllerTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk());
+
     }
 
     @Test
@@ -293,15 +294,20 @@ public class ChatRoomControllerTest {
 
         signUp();
         String accessToken = login();
-        Long uid = memberRepository.findByMemberEmail(username).get().getUid();
+        Member member = memberRepository.findByMemberEmail(username).get();
+        Long uid = member.getUid();
 
         chatRoomService.addMemberToChatRoom(chatRoom1.getChatRoomId(), uid);
         chatRoomService.addMemberToChatRoom(chatRoom2.getChatRoomId(), uid);
+        chatRoomService.addMemberToChatRoom(chatRoom3.getChatRoomId(), uid);
+
+        System.out.println("joiningRooms 개수: " + member.getJoiningRooms().size());
+        System.out.println("memberChatRoomRepository개수: " + memberChatRoomRepository.findAll().size());
 
         // when, then
-        assertThat(memberRepository.findAll().size()).isEqualTo(1);
         assertThat(chatRoomRepository.findAll().size()).isEqualTo(4);
-        assertThat(memberChatRoomRepository.findAll().size()).isEqualTo(4);
+        assertThat(memberRepository.findAll().size()).isEqualTo(1);
+        assertThat(memberChatRoomRepository.findAll().size()).isEqualTo(6);
 
         mockMvc.perform(
                 get("/chatRoom/info/2/" + uid)
@@ -416,6 +422,47 @@ public class ChatRoomControllerTest {
                         .content(new ObjectMapper().writeValueAsString(filters)))
                 .andDo(print())
                 .andExpect(status().isNotFound());
+
+    }
+
+    @Test
+    public void uid로_참여모집방_조회_디버깅() throws Exception {
+        // given
+        signUp();
+        String accessToken = login();
+        Member member = memberRepository.findByMemberEmail(username).get();
+
+        ChatRoomCreateDto chatRoomCreateDto1 = new ChatRoomCreateDto("모집방1", "2023-08-09", "17:00", "19:00", "한식", 4);
+        ChatRoomCreateDto chatRoomCreateDto2 = new ChatRoomCreateDto("모집방2", "2023-08-09", "17:00", "19:00", "한식", 4);
+        ChatRoomCreateDto chatRoomCreateDto3 = new ChatRoomCreateDto("모집방3", "2023-08-09", "17:00", "19:00", "한식", 4);
+        chatRoomService.createChatRoom(chatRoomCreateDto1, username); // 모집방1 개설
+        chatRoomService.createChatRoom(chatRoomCreateDto2, username); // 모집방2 개설
+        chatRoomService.createChatRoom(chatRoomCreateDto3, username); // 모집방3 개설
+
+        assertThat(chatRoomRepository.findAll().size()).isEqualTo(3); // 모집방 3개인지 확인
+        assertThat(memberRepository.findAll().size()).isEqualTo(1); // 회원 1명인지 확인
+        assertThat(memberChatRoomRepository.findAll().size()).isEqualTo(6); // 모집방 개설하면서 참여자 추가되었는지 확인
+
+        // 회원 입장에서 모집방 목록 확인
+        System.out.println("<joingRooms>");
+        member.getJoiningRooms().stream().map(memberChatRoom -> memberChatRoom.getChatRoom().getRoomName()).forEach(System.out::println);
+
+        // 모집방 입장에서 참여자 목록 확인
+        System.out.println("<모집방1의 participants>");
+        ChatRoom chatRoom1 = chatRoomRepository.findChatRoomByRoomName("모집방1").get();
+        System.out.println("participants 리스트 행 개수: " + chatRoom1.getParticipants().size());
+        chatRoom1.getParticipants().stream().map(memberChatRoom -> memberChatRoom.getJoiner().getMemberNickName()).forEach(System.out::println);
+
+        System.out.println("<모집방2의 participants>");
+        ChatRoom chatRoom2 = chatRoomRepository.findChatRoomByRoomName("모집방2").get();
+        System.out.println("participants 리스트 행 개수: " + chatRoom2.getParticipants().size());
+        chatRoom2.getParticipants().stream().map(memberChatRoom -> memberChatRoom.getJoiner().getMemberNickName()).forEach(System.out::println);
+
+        System.out.println("<모집방3의 participants>");
+        ChatRoom chatRoom3 = chatRoomRepository.findChatRoomByRoomName("모집방3").get();
+        System.out.println("participants 리스트 행 개수: " + chatRoom3.getParticipants().size());
+        chatRoom3.getParticipants().stream().map(memberChatRoom -> memberChatRoom.getJoiner().getMemberNickName()).forEach(System.out::println);
+
 
     }
 
