@@ -14,7 +14,7 @@ import static jakarta.persistence.FetchType.LAZY;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class TimeSlot extends BaseTimeEntity {
+public class TimeBlock extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,7 +31,7 @@ public class TimeSlot extends BaseTimeEntity {
     @JoinColumn(name = "uid")
     private Member member;
 
-    public TimeSlot(int dayOfWeek, LocalTime time){
+    public TimeBlock(int dayOfWeek, LocalTime time){
         this.dayOfWeek = dayOfWeek;
         this.time = time;
     }

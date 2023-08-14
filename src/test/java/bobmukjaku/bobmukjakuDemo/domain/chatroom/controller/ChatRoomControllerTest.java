@@ -1,5 +1,6 @@
 package bobmukjaku.bobmukjakuDemo.domain.chatroom.controller;
 
+import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.FilterInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.memberchatroom.MemberChatRoom;
 import bobmukjaku.bobmukjakuDemo.domain.memberchatroom.repository.MemberChatRoomRepository;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoom;
@@ -357,6 +358,8 @@ public class ChatRoomControllerTest {
                         .content(new ObjectMapper().writeValueAsString(filters)))
                 .andDo(print())
                 .andExpect(status().isOk());
+
+        memberRepository.findByMemberEmail(username).get().getFilterList().stream().map(filterInfo -> filterInfo.getFilterType()).forEach(System.out::println);
 
     }
     @Test

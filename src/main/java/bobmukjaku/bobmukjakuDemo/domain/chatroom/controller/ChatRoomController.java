@@ -84,6 +84,7 @@ public class ChatRoomController {
         List<ChatRoomInfoDto> chatRoomInfoDtoList = new ArrayList<>();
 
         if(filters != null && !filters.isEmpty()){
+            chatRoomService.saveFilterInfo(filters); // 필터링 호출 시 인자로 받은 리스트 저장
             chatRoomInfoDtoList = chatRoomService.getChatRoomsByFilterng(filters);
             if(chatRoomInfoDtoList == null){
                 return new ResponseEntity("검색 결과가 없습니다", HttpStatus.NOT_FOUND);
@@ -94,20 +95,6 @@ public class ChatRoomController {
 
         return new ResponseEntity(chatRoomInfoDtoList, HttpStatus.OK);
     }
-
-    /*// 메시지 전송
-    @PutMapping("/message")
-    @ResponseBody
-    public ResponseEntity<Object> sendMessageToFireBase(@RequestBody ChatModel md) throws Exception {
-        //플라스크에 요청을 보내서 메시지 욕설 여부 확인
-        String message = md.getMessage();
-        if(memberService.inspectBadWord(md.getMessage())){
-            System.out.println("욕설감지\n");
-            md.setMessage("##### " + message );
-        }
-        memberService.sendMessageToFireBase(md);
-        return ResponseEntity.ok().build();
-    }*/
 
     // 필터 조회
     @GetMapping("/filter/info")

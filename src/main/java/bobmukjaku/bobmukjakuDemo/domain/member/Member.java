@@ -55,12 +55,12 @@ public class Member extends BaseTimeEntity {
     private List<MemberChatRoom> joiningRooms = new ArrayList<>();
 
     // member-filterInfo 연관관계 매핑
-    @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "member", cascade = ALL) // orphanremoval 옵션 수정
     private List<FilterInfo> filterList = new ArrayList<>();
 
     // member-timeslot 연관관계 매핑
     @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
-    private List<TimeSlot> timeSlotList = new ArrayList<>();
+    private List<TimeBlock> timeSlotList = new ArrayList<>();
 
 
     // 회원 가입 시 USER 권한 부여
@@ -91,9 +91,14 @@ public class Member extends BaseTimeEntity {
         filterList.add(filterInfo);
     }
 
+    // 필터 변경
+    public void updateFilterInfo(List<FilterInfo> filterList) {
+        this.filterList = filterList;
+    }
+
     // 타임슬롯 추가
-    public void addTimeSlot(TimeSlot timeSlot) {
-        timeSlotList.add(timeSlot);
+    public void addTimeBlock(TimeBlock timeBlock) {
+        timeSlotList.add(timeBlock);
     }
 
     /* 회원 정보 수정 */
@@ -138,7 +143,7 @@ public class Member extends BaseTimeEntity {
         this.memberPassword = passwordEncoder.encode(memberPassword);
     }
 
-    /* 인증날짜, 평가 점수, 프로필 색상 기본값 설정 */
+    /* 기본값 설정 */
     @PrePersist
     public void defaultSetting(){
         this.certificatedAt = LocalDate.now(); // 인증 날짜 default = 회원가입 날짜

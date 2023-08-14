@@ -105,29 +105,6 @@ public class ChatRoomService {
         return chatRoomInfoDtoList;
     }
 
-    // 최신 순으로 정렬
-    public List<ChatRoomInfoDto> getChatRoomsByLatest() {
-        List<ChatRoom> sortedChatRooms = chatRoomRepository.findAllByOrderByCreatedAtDesc();
-        List<ChatRoomInfoDto> result = sortedChatRooms.stream().map(ChatRoomInfoDto::new).collect(Collectors.toList());
-        return result;
-    }
-
-    // 음식 분류로 모집방 조회
-    public List<ChatRoomInfoDto> getChatRoomsByFood(String kindOfFood) throws Exception {
-        Specification<ChatRoom> specification = ChatRoomSpecification.equalKindOfFood(kindOfFood);
-        List<ChatRoom> chatRooms = chatRoomRepository.findAll(specification);
-        List<ChatRoomInfoDto> chatRoomInfos = chatRooms.stream().map(ChatRoomInfoDto::new).collect(Collectors.toList());
-        return chatRoomInfos;
-    }
-
-    // 정원으로 모집방 조회
-    public List<ChatRoomInfoDto> getChatRoomsByTotal(int total) throws Exception {
-        Specification<ChatRoom> specification = ChatRoomSpecification.equalTotal(total);
-        List<ChatRoom> chatRooms = chatRoomRepository.findAll(specification);
-        List<ChatRoomInfoDto> chatRoomInfos = chatRooms.stream().map(ChatRoomInfoDto::new).collect(Collectors.toList());
-        return chatRoomInfos;
-    }
-
     // 필터링
     public List<ChatRoomInfoDto> getChatRoomsByFilterng(List<FilterInfo> filters) throws Exception {
 
@@ -155,6 +132,12 @@ public class ChatRoomService {
         Member member = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         List<FilterInfoDto> filterList = member.getFilterList().stream().map(filterInfo -> filterInfo.toDto(filterInfo)).collect(Collectors.toList());
         return filterList;
+    }
+
+    // 필터 저장
+    public void saveFilterInfo(List<FilterInfo> filters) throws Exception {
+        Member member = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        member.updateFilterInfo(filters);
     }
 
     // 모집방 나가기

@@ -1,28 +1,15 @@
 package bobmukjaku.bobmukjakuDemo.domain.member.service;
 
-import bobmukjaku.bobmukjakuDemo.domain.chatting.ChatModel;
-import bobmukjaku.bobmukjakuDemo.domain.chatting.ProfanityResponse;
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
-import bobmukjaku.bobmukjakuDemo.domain.member.dto.HashedAuthCodeDto;
-import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberInfoDto;
-import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberSignUpDto;
-import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberUpdateDto;
+import bobmukjaku.bobmukjakuDemo.domain.member.dto.*;
 import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberException;
 import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberExceptionType;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
-import bobmukjaku.bobmukjakuDemo.global.jwt.service.JwtService;
 import bobmukjaku.bobmukjakuDemo.global.utility.SecurityUtil;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -106,6 +93,11 @@ public class MemberServiceImpl implements MemberService{
         emailAuthService.sendMail(authcode, email);
         System.out.println("메일인증~~");
         return emailAuthService.hashAuthCode(authcode);
+    }
+
+    @Override
+    public void saveTimeBlock(List<TimeBlockCreateDto> timeBlockCreateDtoList) {
+        
     }
 
 }
