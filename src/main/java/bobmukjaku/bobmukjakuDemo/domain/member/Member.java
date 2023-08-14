@@ -1,7 +1,7 @@
 package bobmukjaku.bobmukjakuDemo.domain.member;
 
 import bobmukjaku.bobmukjakuDemo.BaseTimeEntity;
-import bobmukjaku.bobmukjakuDemo.domain.MemberChatRoom.MemberChatRoom;
+import bobmukjaku.bobmukjakuDemo.domain.memberchatroom.MemberChatRoom;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoom;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.FilterInfo;
 import jakarta.persistence.*;

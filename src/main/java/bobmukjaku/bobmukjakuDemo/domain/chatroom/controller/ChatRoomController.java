@@ -33,7 +33,6 @@ public class ChatRoomController {
      * */
 
     private final ChatRoomService chatRoomService;
-    private final MemberService memberService;
 
     // 모집방 개설
     @PostMapping("/chatRoom")
@@ -96,7 +95,7 @@ public class ChatRoomController {
         return new ResponseEntity(chatRoomInfoDtoList, HttpStatus.OK);
     }
 
-    // 메시지 전송
+    /*// 메시지 전송
     @PutMapping("/message")
     @ResponseBody
     public ResponseEntity<Object> sendMessageToFireBase(@RequestBody ChatModel md) throws Exception {
@@ -108,7 +107,7 @@ public class ChatRoomController {
         }
         memberService.sendMessageToFireBase(md);
         return ResponseEntity.ok().build();
-    }
+    }*/
 
     // 필터 조회
     @GetMapping("/filter/info")

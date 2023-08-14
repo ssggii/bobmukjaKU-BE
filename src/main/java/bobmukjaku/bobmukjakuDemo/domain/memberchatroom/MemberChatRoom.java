@@ -1,4 +1,4 @@
-package bobmukjaku.bobmukjakuDemo.domain.MemberChatRoom;
+package bobmukjaku.bobmukjakuDemo.domain.memberchatroom;
 
 import bobmukjaku.bobmukjakuDemo.BaseTimeEntity;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoom;

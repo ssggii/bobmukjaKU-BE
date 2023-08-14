@@ -1,6 +1,6 @@
-package bobmukjaku.bobmukjakuDemo.domain.MemberChatRoom.repository;
+package bobmukjaku.bobmukjakuDemo.domain.memberchatroom.repository;
 
-import bobmukjaku.bobmukjakuDemo.domain.MemberChatRoom.MemberChatRoom;
+import bobmukjaku.bobmukjakuDemo.domain.memberchatroom.MemberChatRoom;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoom;
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import org.springframework.data.jpa.repository.JpaRepository;

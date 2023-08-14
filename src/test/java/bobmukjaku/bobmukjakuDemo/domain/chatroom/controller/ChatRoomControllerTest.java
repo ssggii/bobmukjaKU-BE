@@ -1,16 +1,14 @@
 package bobmukjaku.bobmukjakuDemo.domain.chatroom.controller;
 
-import bobmukjaku.bobmukjakuDemo.domain.MemberChatRoom.MemberChatRoom;
-import bobmukjaku.bobmukjakuDemo.domain.MemberChatRoom.repository.MemberChatRoomRepository;
+import bobmukjaku.bobmukjakuDemo.domain.memberchatroom.MemberChatRoom;
+import bobmukjaku.bobmukjakuDemo.domain.memberchatroom.repository.MemberChatRoomRepository;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoom;
-import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoomSpecification;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.FilterInfo;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.AddMemberDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomCreateDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.repository.ChatRoomRepository;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.repository.FilterInfoRepository;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.service.ChatRoomService;
-import bobmukjaku.bobmukjakuDemo.domain.chatroom.service.ChatRoomServiceTest;
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberSignUpDto;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
@@ -22,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;

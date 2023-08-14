@@ -1,12 +1,11 @@
 package bobmukjaku.bobmukjakuDemo.domain.chatroom.service;
 
-import bobmukjaku.bobmukjakuDemo.domain.MemberChatRoom.MemberChatRoom;
-import bobmukjaku.bobmukjakuDemo.domain.MemberChatRoom.repository.MemberChatRoomRepository;
+import bobmukjaku.bobmukjakuDemo.domain.memberchatroom.MemberChatRoom;
+import bobmukjaku.bobmukjakuDemo.domain.memberchatroom.repository.MemberChatRoomRepository;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoom;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoomSpecification;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.FilterInfo;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomCreateDto;
-import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomFIlterDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.ChatRoomInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.FilterInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.repository.ChatRoomRepository;
@@ -18,14 +17,11 @@ import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
 import bobmukjaku.bobmukjakuDemo.global.utility.SecurityUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service

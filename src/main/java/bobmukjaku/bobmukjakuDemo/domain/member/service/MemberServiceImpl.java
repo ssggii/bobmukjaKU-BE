@@ -108,37 +108,4 @@ public class MemberServiceImpl implements MemberService{
         return emailAuthService.hashAuthCode(authcode);
     }
 
-    @Override
-    public void sendMessageToFireBase(ChatModel md) throws Exception {
-        DatabaseReference ref = FirebaseDatabase.getInstance()
-                .getReference("/chatRoom/"+md.getChatRoomId()+"/message");
-        ref.push().setValue(md, new DatabaseReference.CompletionListener() {
-            @Override
-            public void onComplete(DatabaseError error, DatabaseReference ref) {
-                System.out.println(md.getMessage());
-                System.out.println(error.getMessage());
-            }
-
-        });
-    }
-
-    @Override
-    public Boolean inspectBadWord(String message) throws Exception {
-        WebClient client = WebClient.builder()
-                .baseUrl("http://172.30.1.21:8080")
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .build();
-
-        String jsonBody = "{\"message\":\"" + message + "\"}";
-
-        ProfanityResponse resultBadWordInspection = client.post()
-                .uri("/check_profanity")
-                .body(BodyInserters.fromValue(jsonBody))
-                .retrieve()
-                .bodyToMono(ProfanityResponse.class)
-                .block();
-
-        return resultBadWordInspection.getProfanity();
-    }
-
 }
