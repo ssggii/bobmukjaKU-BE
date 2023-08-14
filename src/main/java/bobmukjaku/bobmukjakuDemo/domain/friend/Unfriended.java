@@ -1,16 +1,17 @@
-package bobmukjaku.bobmukjakuDemo.domain.member;
+package bobmukjaku.bobmukjakuDemo.domain.friend;
 
 import bobmukjaku.bobmukjakuDemo.BaseTimeEntity;
+import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Table(name = "friended")
+@Table(name = "unfriended")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity
 @Builder
-public class FriendedMember extends BaseTimeEntity {
+public class Unfriended extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,7 +21,7 @@ public class FriendedMember extends BaseTimeEntity {
     @JoinColumn(name = "member_id") // FK
     private Member member;
 
-    @Column(name = "friended_id")
-    private Long friendedId;
+    @Column(name = "unfriended_id")
+    private Long unfriendedId;
 
 }

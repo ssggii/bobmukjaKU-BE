@@ -58,9 +58,10 @@ public class Member extends BaseTimeEntity {
     @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
     private List<FilterInfo> filterList = new ArrayList<>();
 
-/*    // member-TimeTable 연관관계 매핑
-    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL)
-    private TimeTable timeTable;*/
+    // member-timeslot 연관관계 매핑
+    @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
+    private List<TimeSlot> timeSlotList = new ArrayList<>();
+
 
     // 회원 가입 시 USER 권한 부여
     public void giveUserAuthority(){
@@ -88,6 +89,11 @@ public class Member extends BaseTimeEntity {
     // 필터 추가
     public void addFilterInfo(FilterInfo filterInfo) {
         filterList.add(filterInfo);
+    }
+
+    // 타임슬롯 추가
+    public void addTimeSlot(TimeSlot timeSlot) {
+        timeSlotList.add(timeSlot);
     }
 
     /* 회원 정보 수정 */
@@ -139,5 +145,6 @@ public class Member extends BaseTimeEntity {
         this.rate = 45; // 평가 점수 default = 45
         this.profileColor = "bg1"; // 프로필 색상 default = bg1
         this.filterList = new ArrayList<>(8); // Member 생성 시 filterList 초기화
+        this.timeSlotList = new ArrayList<>(); // Member 생성 시 timeSlotList 초기화
     }
 }
