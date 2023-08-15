@@ -1,6 +1,5 @@
 package bobmukjaku.bobmukjakuDemo.domain.member.service;
 
-import bobmukjaku.bobmukjakuDemo.domain.chatting.ChatModel;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.*;
 
 import java.util.List;
@@ -16,6 +15,6 @@ public interface MemberService {
     MemberInfoDto getMyInfo() throws Exception; // 이메일로 조회
     List<MemberInfoDto> getAllMembers() throws Exception; // 전체 회원 조회
     public HashedAuthCodeDto mailAuth(String email) throws Exception; // 메일 인증
-    public void saveTimeBlock(List<TimeBlockCreateDto> timeBlockCreateDtoList); // 시간표 저장
+    public void updateTimeBlock(List<TimeBlockDto> timeBlockDtoList); // 시간표 수정
 
 }

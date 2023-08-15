@@ -1,10 +1,13 @@
 package bobmukjaku.bobmukjakuDemo.domain.member.controller;
 
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
+import bobmukjaku.bobmukjakuDemo.domain.member.TimeBlock;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberSignUpDto;
+import bobmukjaku.bobmukjakuDemo.domain.member.dto.TimeBlockDto;
 import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberException;
 import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberExceptionType;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
+import bobmukjaku.bobmukjakuDemo.domain.member.repository.TimeBlockRepository;
 import bobmukjaku.bobmukjakuDemo.domain.member.service.MemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -23,9 +26,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
+import java.sql.Time;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.springframework.http.RequestEntity.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -50,6 +53,9 @@ public class MemberControllerTest {
 
     @Autowired
     MemberRepository memberRepository;
+
+    @Autowired
+    TimeBlockRepository timeBlockRepository;
     ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
@@ -409,4 +415,85 @@ public class MemberControllerTest {
         assertThat(member).isNotNull();
     }
 
+    // 시간표 저장
+    @Test
+    public void 시간표_저장_성공() throws Exception {
+        // given
+        String signUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username,password,nickName));
+        signUp(signUpData);
+        String accessToken = getAccessToken();
+        Member member = memberRepository.findByMemberEmail(username).get();
+
+        TimeBlockDto timeBlockDto1 = new TimeBlockDto(1, "09:00");
+        TimeBlockDto timeBlockDto2 = new TimeBlockDto(2, "10:00");
+        TimeBlockDto timeBlockDto3 = new TimeBlockDto(3, "11:00");
+        List<TimeBlockDto> timeBlockDtoList = Arrays.asList(timeBlockDto1, timeBlockDto2, timeBlockDto3);
+        assertThat(member.getTimeBlockList().size()).isEqualTo(0); // 시간표 저장 전
+
+        // when
+        mockMvc.perform(
+                        MockMvcRequestBuilders.post("/member/info/timeBlock")
+                        .header(accessHeader, BEARER+accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(timeBlockDtoList))
+        )
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        // then
+        assertThat(member.getTimeBlockList().size()).isEqualTo(timeBlockDtoList.size()); // 시간표 저장 후
+        System.out.println("<시간표 저장 후>");
+        member.getTimeBlockList().stream().map(timeBlock -> timeBlock.getDayOfWeek()).forEach(System.out::println);
+        member.getTimeBlockList().stream().map(timeBlock -> timeBlock.getTime()).forEach(System.out::println);
+        member.getTimeBlockList().stream().map(timeBlock -> timeBlock.getTimeBlockId()).forEach(System.out::println);
+    }
+
+    @Test
+    public void 시간표_업데이트_성공() throws Exception {
+        // given
+        String signUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username,password,nickName));
+        signUp(signUpData);
+        String accessToken = getAccessToken();
+        Member member = memberRepository.findByMemberEmail(username).get();
+
+        TimeBlockDto timeBlockDto1 = new TimeBlockDto(1, "09:00");
+        TimeBlockDto timeBlockDto2 = new TimeBlockDto(2, "10:00");
+        TimeBlockDto timeBlockDto3 = new TimeBlockDto(3, "11:00");
+        List<TimeBlockDto> timeBlockDtoList1 = Arrays.asList(timeBlockDto1, timeBlockDto2, timeBlockDto3);
+
+        TimeBlockDto timeBlockDto4 = new TimeBlockDto(4, "09:00");
+        TimeBlockDto timeBlockDto5 = new TimeBlockDto(5, "10:00");
+        TimeBlockDto timeBlockDto6 = new TimeBlockDto(6, "11:00");
+        TimeBlockDto timeBlockDto7 = new TimeBlockDto(7, "12:00");
+        List<TimeBlockDto> timeBlockDtoList2 = Arrays.asList(timeBlockDto4, timeBlockDto5, timeBlockDto6, timeBlockDto7);
+
+        assertThat(member.getTimeBlockList().size()).isEqualTo(0); // 시간표 저장 전
+
+        // when
+        mockMvc.perform(
+                        MockMvcRequestBuilders.post("/member/info/timeBlock")
+                                .header(accessHeader, BEARER+accessToken)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(timeBlockDtoList1))
+                )
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        mockMvc.perform(
+                        MockMvcRequestBuilders.post("/member/info/timeBlock")
+                                .header(accessHeader, BEARER+accessToken)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(timeBlockDtoList2))
+                )
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        // then
+        assertThat(member.getTimeBlockList().size()).isEqualTo(timeBlockDtoList2.size()); // 시간표 저장 후
+        assertThat(timeBlockRepository.findAll().size()).isEqualTo(timeBlockDtoList2.size());
+        System.out.println("<시간표 저장 후>");
+        member.getTimeBlockList().stream().map(timeBlock -> timeBlock.getDayOfWeek()).forEach(System.out::println);
+        member.getTimeBlockList().stream().map(timeBlock -> timeBlock.getTime()).forEach(System.out::println);
+        member.getTimeBlockList().stream().map(timeBlock -> timeBlock.getTimeBlockId()).forEach(System.out::println);
+    }
 }

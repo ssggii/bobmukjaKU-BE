@@ -1,10 +1,12 @@
 package bobmukjaku.bobmukjakuDemo.domain.member.service;
 
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
+import bobmukjaku.bobmukjakuDemo.domain.member.TimeBlock;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.*;
 import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberException;
 import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberExceptionType;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
+import bobmukjaku.bobmukjakuDemo.domain.member.repository.TimeBlockRepository;
 import bobmukjaku.bobmukjakuDemo.global.utility.SecurityUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 public class MemberServiceImpl implements MemberService{
 
     private final MemberRepository memberRepository;
+    private final TimeBlockRepository timeBlockRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailAuthService emailAuthService;
 
@@ -96,8 +99,18 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
-    public void saveTimeBlock(List<TimeBlockCreateDto> timeBlockCreateDtoList) {
-        
+    public void updateTimeBlock(List<TimeBlockDto> timeBlockDtoList) {
+        Member member = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        List<TimeBlock> timeBlocks = timeBlockDtoList.stream().map(timeBlockDto -> timeBlockDto.toEntity(timeBlockDto)).collect(Collectors.toList());
+        timeBlockRepository.saveAll(timeBlocks);
+
+        List<Long> toDeleteIds = member.getTimeBlockList().stream().map(timeBlock -> timeBlock.getTimeBlockId()).collect(Collectors.toList());
+        if(toDeleteIds != null && !toDeleteIds.isEmpty()){
+            for(Long id : toDeleteIds)
+                timeBlockRepository.deleteById(id);
+        }
+
+        member.updateTimeBlockInfo(timeBlocks);
     }
 
 }

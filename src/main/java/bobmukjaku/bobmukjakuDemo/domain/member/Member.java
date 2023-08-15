@@ -58,9 +58,9 @@ public class Member extends BaseTimeEntity {
     @OneToMany(mappedBy = "member", cascade = ALL) // orphanremoval 옵션 수정
     private List<FilterInfo> filterList = new ArrayList<>();
 
-    // member-timeslot 연관관계 매핑
-    @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
-    private List<TimeBlock> timeSlotList = new ArrayList<>();
+    // member-timeblock 연관관계 매핑
+    @OneToMany(mappedBy = "member", cascade = ALL)
+    private List<TimeBlock> timeBlockList = new ArrayList<>();
 
 
     // 회원 가입 시 USER 권한 부여
@@ -96,11 +96,6 @@ public class Member extends BaseTimeEntity {
         this.filterList = filterList;
     }
 
-    // 타임슬롯 추가
-    public void addTimeBlock(TimeBlock timeBlock) {
-        timeSlotList.add(timeBlock);
-    }
-
     /* 회원 정보 수정 */
     // 닉네임 변경
     public void updateNickName(String nickName) {
@@ -128,6 +123,12 @@ public class Member extends BaseTimeEntity {
         this.profileColor = profileColor;
     }
 
+    // 시간표 정보 변경
+    public void updateTimeBlockInfo(List<TimeBlock> timeBlocks) {
+        this.timeBlockList = timeBlocks;
+    }
+
+
     // refreshToken 갱신
     public void updateRefreshToken(String refreshToken){
         this.refreshToken = refreshToken;
@@ -150,6 +151,6 @@ public class Member extends BaseTimeEntity {
         this.rate = 45; // 평가 점수 default = 45
         this.profileColor = "bg1"; // 프로필 색상 default = bg1
         this.filterList = new ArrayList<>(8); // Member 생성 시 filterList 초기화
-        this.timeSlotList = new ArrayList<>(); // Member 생성 시 timeSlotList 초기화
+        this.timeBlockList = new ArrayList<>(); // Member 생성 시 timeSlotList 초기화
     }
 }
