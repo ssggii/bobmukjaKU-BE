@@ -4,7 +4,9 @@ import bobmukjaku.bobmukjakuDemo.domain.chatroom.FilterInfo;
 
 public record FilterInfoDto(String filterType, String filterValue) {
 
-    public FilterInfo toEntity(FilterInfoDto filterInfoDto){
-        return FilterInfo.builder().filterType(filterInfoDto.filterType).filterValue(filterInfoDto.filterValue).build();
+    public FilterInfo toEntity() {
+        FilterInfo filterInfo = FilterInfo.builder().filterType(this.filterType).filterValue(this.filterValue).build();
+        return filterInfo;
     }
+
 }

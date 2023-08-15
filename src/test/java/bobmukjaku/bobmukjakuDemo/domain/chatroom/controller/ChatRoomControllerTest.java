@@ -343,13 +343,14 @@ public class ChatRoomControllerTest {
         chatRoomRepository.saveAll(initial);
 
         // 음식-한식, 정원-4를 필터링 조건으로 선택했을 때
-        List<FilterInfo> filters = new ArrayList<>();
-        filters.add(new FilterInfo("kindOfFood", "중식"));
-        filters.add(new FilterInfo("total", "4"));
-        filters.add(new FilterInfo("latest", ""));
+        List<FilterInfoDto> filters = new ArrayList<>();
+        filters.add(new FilterInfoDto("kindOfFood", "중식"));
+        filters.add(new FilterInfoDto("total", "4"));
+        filters.add(new FilterInfoDto("latest", ""));
 
         signUp();
         String accessToken = login();
+        Member member = memberRepository.findByMemberEmail(username).get();
 
         // when, then
         mockMvc.perform(post("/chatRooms/filtered")
@@ -360,8 +361,68 @@ public class ChatRoomControllerTest {
                 .andExpect(status().isOk());
 
         memberRepository.findByMemberEmail(username).get().getFilterList().stream().map(filterInfo -> filterInfo.getFilterType()).forEach(System.out::println);
-
+        memberRepository.findByMemberEmail(username).get().getFilterList().stream().map(filterInfo -> filterInfo.getFilterValue()).forEach(System.out::println);
+        memberRepository.findByMemberEmail(username).get().getFilterList().stream().map(filterInfo -> filterInfo.getFilterId()).forEach(System.out::println);
+        assertThat(filterInfoRepository.findAll().size()).isEqualTo(3);
     }
+
+    @Test
+    public void 필터링_하면_필터목록_자동저장_성공() throws Exception {
+        // given
+        // 모집방 1~6이 있고,
+        ChatRoomCreateDto chatRoomCreateDto1 = new ChatRoomCreateDto("모집방1", "2023-08-07", "17:30", "19:30", "한식", 2);
+        ChatRoomCreateDto chatRoomCreateDto2 = new ChatRoomCreateDto("모집방2", "2023-08-07", "17:30", "19:30", "한식", 3);
+        ChatRoomCreateDto chatRoomCreateDto3 = new ChatRoomCreateDto("모집방3", "2023-08-07", "17:30", "19:30", "일식", 4);
+        ChatRoomCreateDto chatRoomCreateDto4 = new ChatRoomCreateDto("모집방4", "2023-08-08", "17:30", "19:30", "중식", 4);
+        ChatRoomCreateDto chatRoomCreateDto5 = new ChatRoomCreateDto("모집방5", "2023-08-08", "17:30", "19:30", "중식", 4);
+        ChatRoomCreateDto chatRoomCreateDto6 = new ChatRoomCreateDto("모집방6", "2023-08-08", "17:30", "19:30", "일식", 3);
+        ChatRoom chatRoom1 = chatRoomCreateDto1.toEntity();
+        ChatRoom chatRoom2 = chatRoomCreateDto2.toEntity();
+        ChatRoom chatRoom3 = chatRoomCreateDto3.toEntity();
+        ChatRoom chatRoom4 = chatRoomCreateDto4.toEntity();
+        ChatRoom chatRoom5 = chatRoomCreateDto5.toEntity();
+        ChatRoom chatRoom6 = chatRoomCreateDto6.toEntity();
+        List<ChatRoom> initial = Arrays.asList(chatRoom1, chatRoom2, chatRoom3, chatRoom4, chatRoom5, chatRoom6);
+        chatRoomRepository.saveAll(initial);
+
+        signUp();
+        String accessToken = login();
+        Member member = memberRepository.findByMemberEmail(username).get();
+
+        // 음식-한식, 정원-4를 필터링 조건으로 선택했을 때
+        List<FilterInfoDto> filters1 = new ArrayList<>();
+        filters1.add(new FilterInfoDto("kindOfFood", "중식"));
+        filters1.add(new FilterInfoDto("total", "4"));
+        filters1.add(new FilterInfoDto("latest", ""));
+
+        List<FilterInfoDto> filters2 = new ArrayList<>();
+        filters2.add(new FilterInfoDto("latest", ""));
+        filters2.add(new FilterInfoDto("kindOfFood", "한식"));
+        filters2.add(new FilterInfoDto("total", "3"));
+
+        // when, then
+        mockMvc.perform(post("/chatRooms/filtered")
+                        .header(accessHeader, BEARER+accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(filters1)))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post("/chatRooms/filtered")
+                        .header(accessHeader, BEARER+accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(filters2)))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        memberRepository.findByMemberEmail(username).get().getFilterList().stream().map(filterInfo -> filterInfo.getFilterType()).forEach(System.out::println);
+        memberRepository.findByMemberEmail(username).get().getFilterList().stream().map(filterInfo -> filterInfo.getFilterValue()).forEach(System.out::println);
+        memberRepository.findByMemberEmail(username).get().getFilterList().stream().map(filterInfo -> filterInfo.getFilterId()).forEach(System.out::println);
+
+        assertThat(filterInfoRepository.findAll().size()).isEqualTo(member.getFilterList().size());
+    }
+
+
     @Test
     public void 필터링_조회결과_없음() throws Exception {
         // given

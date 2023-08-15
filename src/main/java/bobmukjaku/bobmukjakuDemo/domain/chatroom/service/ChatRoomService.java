@@ -1,5 +1,6 @@
 package bobmukjaku.bobmukjakuDemo.domain.chatroom.service;
 
+import bobmukjaku.bobmukjakuDemo.domain.chatroom.repository.FilterInfoRepository;
 import bobmukjaku.bobmukjakuDemo.domain.memberchatroom.MemberChatRoom;
 import bobmukjaku.bobmukjakuDemo.domain.memberchatroom.repository.MemberChatRoomRepository;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoom;
@@ -32,6 +33,7 @@ public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final MemberRepository memberRepository;
     private final MemberChatRoomRepository memberChatRoomRepository;
+    private final FilterInfoRepository filterInfoRepository;
 
     // 모집방 개설
     public ChatRoomInfoDto createChatRoom(ChatRoomCreateDto chatRoomCreateDto, String username){
@@ -106,7 +108,7 @@ public class ChatRoomService {
     }
 
     // 필터링
-    public List<ChatRoomInfoDto> getChatRoomsByFilterng(List<FilterInfo> filters) throws Exception {
+    public List<ChatRoomInfoDto> getChatRoomsFiltered(List<FilterInfo> filters) throws Exception {
 
         List<Specification<ChatRoom>> specifications = new ArrayList<>();
 
@@ -135,9 +137,14 @@ public class ChatRoomService {
     }
 
     // 필터 저장
-    public void saveFilterInfo(List<FilterInfo> filters) throws Exception {
+    public void updateFilterInfo(List<FilterInfo> filters) throws Exception {
         Member member = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-        member.updateFilterInfo(filters);
+        List<Long> toDeleteIds = member.getFilterList().stream().map(filterInfo -> filterInfo.getFilterId()).collect(Collectors.toList());
+        if(toDeleteIds != null && !toDeleteIds.isEmpty()){ // 기존에 필터 목록이 있다면
+            for(Long id : toDeleteIds)
+                filterInfoRepository.deleteById(id); // 이전 필터 정보 모두 삭제
+        }
+        member.updateFilterInfo(filters); // 새로운 필터 목록 저장
     }
 
     // 모집방 나가기

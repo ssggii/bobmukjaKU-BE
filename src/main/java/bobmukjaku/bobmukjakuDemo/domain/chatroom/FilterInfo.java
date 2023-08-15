@@ -6,17 +6,18 @@ import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static jakarta.persistence.FetchType.LAZY;
 
-@Table(name = "filter_info")
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Entity
-public class FilterInfo extends BaseTimeEntity {
+public class FilterInfo {
 
     @Id
     @Column(name = "id")

@@ -7,6 +7,7 @@ import bobmukjaku.bobmukjakuDemo.domain.chatting.ChatModel;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.member.service.MemberService;
 import bobmukjaku.bobmukjakuDemo.global.utility.SecurityUtil;
+import jakarta.servlet.Filter;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -79,13 +81,14 @@ public class ChatRoomController {
 
     // 종합 필터링
     @PostMapping("/chatRooms/filtered")
-    public ResponseEntity getFilteredChatRooms(@RequestBody List<FilterInfo> filters) throws Exception {
+    public ResponseEntity getFilteredChatRooms(@RequestBody List<FilterInfoDto> filters) throws Exception {
 
         List<ChatRoomInfoDto> chatRoomInfoDtoList = new ArrayList<>();
+        List<FilterInfo> filterInfoList = filters.stream().map(filterInfoDto -> filterInfoDto.toEntity()).collect(Collectors.toList());
 
         if(filters != null && !filters.isEmpty()){
-            chatRoomService.saveFilterInfo(filters); // 필터링 호출 시 인자로 받은 리스트 저장
-            chatRoomInfoDtoList = chatRoomService.getChatRoomsByFilterng(filters);
+            chatRoomService.updateFilterInfo(filterInfoList); // 인자로 받은 리스트를 현재 필터 목록으로 업데이트
+            chatRoomInfoDtoList = chatRoomService.getChatRoomsFiltered(filterInfoList); // 필터링 결과 반환
             if(chatRoomInfoDtoList == null){
                 return new ResponseEntity("검색 결과가 없습니다", HttpStatus.NOT_FOUND);
             }
