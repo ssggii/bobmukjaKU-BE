@@ -1,6 +1,7 @@
 package bobmukjaku.bobmukjakuDemo.domain.member;
 
 import bobmukjaku.bobmukjakuDemo.BaseTimeEntity;
+import bobmukjaku.bobmukjakuDemo.domain.member.dto.TimeBlockDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,5 +32,10 @@ public class TimeBlock {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "uid")
     private Member member;
+
+    public TimeBlockDto toDto(TimeBlock timeBlock){
+        TimeBlockDto dto = new TimeBlockDto(timeBlock.getDayOfWeek(), timeBlock.getTime().toString());
+        return dto;
+    }
 
 }

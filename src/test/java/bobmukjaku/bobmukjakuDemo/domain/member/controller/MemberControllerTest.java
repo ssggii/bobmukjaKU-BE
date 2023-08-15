@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.nio.charset.StandardCharsets;
 import java.sql.Time;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.*;
 
 import static org.springframework.http.RequestEntity.post;
@@ -495,5 +496,32 @@ public class MemberControllerTest {
         member.getTimeBlockList().stream().map(timeBlock -> timeBlock.getDayOfWeek()).forEach(System.out::println);
         member.getTimeBlockList().stream().map(timeBlock -> timeBlock.getTime()).forEach(System.out::println);
         member.getTimeBlockList().stream().map(timeBlock -> timeBlock.getTimeBlockId()).forEach(System.out::println);
+    }
+
+    @Test
+    public void 시간표_조회_성공() throws Exception {
+        // given
+        String signUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username,password,nickName));
+        signUp(signUpData);
+        String accessToken = getAccessToken();
+        Member member = memberRepository.findByMemberEmail(username).get();
+
+        TimeBlock timeBlock1 = TimeBlock.builder().dayOfWeek(1).time(LocalTime.parse("11:00")).build();
+        TimeBlock timeBlock2 = TimeBlock.builder().dayOfWeek(3).time(LocalTime.parse("12:00")).build();
+        TimeBlock timeBlock3 = TimeBlock.builder().dayOfWeek(4).time(LocalTime.parse("13:00")).build();
+        List<TimeBlock> list = Arrays.asList(timeBlock1, timeBlock2, timeBlock3);
+        timeBlockRepository.saveAll(list);
+        member.updateTimeBlockInfo(list);
+
+        // when
+        mockMvc.perform(
+                get("/timeTable")
+                        .header(accessHeader, BEARER+accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+        )
+                .andDo(print())
+                .andExpect(status().isOk());
+
     }
 }

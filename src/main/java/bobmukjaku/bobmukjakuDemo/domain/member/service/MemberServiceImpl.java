@@ -113,4 +113,11 @@ public class MemberServiceImpl implements MemberService{
         member.updateTimeBlockInfo(timeBlocks);
     }
 
+    @Override
+    public List<TimeBlockDto> getMyTimeBlocks() throws Exception {
+        Member member = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        List<TimeBlockDto> timeBlockDtoList = member.getTimeBlockList().stream().map(timeBlock -> timeBlock.toDto(timeBlock)).collect(Collectors.toList());
+        return timeBlockDtoList;
+    }
+
 }

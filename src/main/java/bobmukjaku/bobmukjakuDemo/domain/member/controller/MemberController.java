@@ -86,10 +86,16 @@ public class MemberController {
     }
 
     // 시간표 저장
-    @PostMapping("/member/info/timeBlock")
+    @PostMapping("/member/info/timeTable")
     @ResponseStatus(HttpStatus.OK)
     public void saveTimeBlock(@RequestBody List<TimeBlockDto> timeBlockDtoList) throws Exception {
         memberService.updateTimeBlock(timeBlockDtoList);
+    }
+
+    // 시간표 조회
+    @GetMapping("/timeTable")
+    public ResponseEntity getMyTimeTable(HttpServletResponse response) throws Exception {
+        return new ResponseEntity(memberService.getMyTimeBlocks(), HttpStatus.OK);
     }
 
 }
