@@ -433,7 +433,7 @@ public class MemberControllerTest {
 
         // when
         mockMvc.perform(
-                        MockMvcRequestBuilders.post("/member/info/timeBlock")
+                        MockMvcRequestBuilders.post("/member/info/timeTable")
                         .header(accessHeader, BEARER+accessToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(timeBlockDtoList))
@@ -472,7 +472,7 @@ public class MemberControllerTest {
 
         // when
         mockMvc.perform(
-                        MockMvcRequestBuilders.post("/member/info/timeBlock")
+                        MockMvcRequestBuilders.post("/member/info/timeTable")
                                 .header(accessHeader, BEARER+accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(timeBlockDtoList1))
@@ -481,7 +481,7 @@ public class MemberControllerTest {
                 .andExpect(status().isOk());
 
         mockMvc.perform(
-                        MockMvcRequestBuilders.post("/member/info/timeBlock")
+                        MockMvcRequestBuilders.post("/member/info/timeTable")
                                 .header(accessHeader, BEARER+accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(timeBlockDtoList2))
