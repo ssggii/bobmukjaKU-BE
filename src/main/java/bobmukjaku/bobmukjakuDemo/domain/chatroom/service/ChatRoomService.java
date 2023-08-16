@@ -137,14 +137,19 @@ public class ChatRoomService {
     }
 
     // 필터 저장
-    public void updateFilterInfo(List<FilterInfo> filters) throws Exception {
+    public List<FilterInfo> updateFilterInfo(List<FilterInfoDto> filters) throws Exception {
         Member member = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+
         List<Long> toDeleteIds = member.getFilterList().stream().map(filterInfo -> filterInfo.getFilterId()).collect(Collectors.toList());
         if(toDeleteIds != null && !toDeleteIds.isEmpty()){ // 기존에 필터 목록이 있다면
             for(Long id : toDeleteIds)
                 filterInfoRepository.deleteById(id); // 이전 필터 정보 모두 삭제
         }
-        member.updateFilterInfo(filters); // 새로운 필터 목록 저장
+
+        List<FilterInfo> filterInfoList = filters.stream().map(filterInfoDto -> filterInfoDto.toEntity(member)).collect(Collectors.toList());
+        member.updateFilterInfo(filterInfoList); // 새로운 필터 목록 저장
+
+        return filterInfoList;
     }
 
     // 모집방 나가기
