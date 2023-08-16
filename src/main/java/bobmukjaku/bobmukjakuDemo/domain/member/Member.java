@@ -55,10 +55,12 @@ public class Member extends BaseTimeEntity {
     private List<MemberChatRoom> joiningRooms = new ArrayList<>();
 
     // member-filterInfo 연관관계 매핑
+    @Builder.Default
     @OneToMany(mappedBy = "member", cascade = ALL) // orphanremoval 옵션 수정
     private List<FilterInfo> filterList = new ArrayList<>();
 
     // member-timeblock 연관관계 매핑
+    @Builder.Default
     @OneToMany(mappedBy = "member", cascade = ALL)
     private List<TimeBlock> timeBlockList = new ArrayList<>();
 
@@ -146,7 +148,7 @@ public class Member extends BaseTimeEntity {
 
     /* 기본값 설정 */
     @PrePersist
-    public void defaultSetting(){
+    public void setting(){
         this.certificatedAt = LocalDate.now(); // 인증 날짜 default = 회원가입 날짜
         this.rate = 45; // 평가 점수 default = 45
         this.profileColor = "bg1"; // 프로필 색상 default = bg1

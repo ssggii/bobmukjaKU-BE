@@ -18,7 +18,6 @@ public class ChatRoomSpecification {
     * - 참여 가능 여부로 검색
     * - 음식 종류로 검색
     * - 정원 수로 검색
-    * - 모임 시간으로 검색
     * - 시간표 데이터로 검색
     *
     *  2. 다중 조건 필터링
@@ -41,11 +40,6 @@ public class ChatRoomSpecification {
         };
     }
 
-    // 검색어로 필터링 (검색어를 포함하면 반환)
-    public static Specification<ChatRoom> containChatRoomName(String roomName){
-        return ((root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("roomName"), "%" + roomName + "%"));
-    }
-
     // 모임 날짜로 필터링
     public static Specification<ChatRoom> equalMeetingDate(LocalDate date){
         return ((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("meetingDate"), date));
@@ -66,6 +60,13 @@ public class ChatRoomSpecification {
         return ((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("total"), total));
     }
 
+    // 시간표 데이터로 필터링
+    /*public static Specification<ChatRoom> containTimeBlock() {
+        return (root, query, criteriaBuilder) -> {
+
+        };
+    }*/
+
     // FilterInfo 객체로부터 Specification 생성
     public static Specification<ChatRoom> createSpecification(FilterInfo filter) {
         String filterType = filter.getFilterType();
@@ -78,9 +79,6 @@ public class ChatRoomSpecification {
                 break;
             case "oldest":
                 specification = ChatRoomSpecification.orderByCreatedAtAsc();
-                break;
-            case "chatRoomName":
-                specification = ChatRoomSpecification.containChatRoomName(filterValue);
                 break;
             case "meetingDate":
                 specification = ChatRoomSpecification.equalMeetingDate(LocalDate.parse(filterValue));

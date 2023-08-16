@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 import static jakarta.persistence.FetchType.LAZY;
 
@@ -36,6 +37,11 @@ public class TimeBlock {
     public TimeBlockDto toDto(TimeBlock timeBlock){
         TimeBlockDto dto = new TimeBlockDto(timeBlock.getDayOfWeek(), timeBlock.getTime().toString());
         return dto;
+    }
+
+    @PrePersist
+    public void setting() {
+        this.time = LocalTime.parse(this.time.format(DateTimeFormatter.ofPattern("HH:mm")));
     }
 
 }

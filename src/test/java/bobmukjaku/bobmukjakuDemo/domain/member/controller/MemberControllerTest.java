@@ -524,4 +524,10 @@ public class MemberControllerTest {
                 .andExpect(status().isOk());
 
     }
+
+    @Test
+    public void 시간_포맷팅() throws Exception {
+        String time = "09:00";
+
+    }
 }
