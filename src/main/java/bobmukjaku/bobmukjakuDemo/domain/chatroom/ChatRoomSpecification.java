@@ -1,9 +1,13 @@
 package bobmukjaku.bobmukjakuDemo.domain.chatroom;
 
 import com.fasterxml.jackson.core.io.CharTypes;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 public class ChatRoomSpecification {
@@ -60,12 +64,45 @@ public class ChatRoomSpecification {
         return ((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("total"), total));
     }
 
-    // 시간표 데이터로 필터링
-    /*public static Specification<ChatRoom> containTimeBlock() {
-        return (root, query, criteriaBuilder) -> {
+    // 요일 필터링
+    public static Specification<ChatRoom> equalDayOfWeek(Integer dayOfWeek) {
+        return ((root, query, criteriaBuilder) -> criteriaBuilder.equal(
+                criteriaBuilder.function("weekday", Integer.class, root.get("meetingDate")), dayOfWeek-1
+        ));
+    }
 
+    // 시간 필터링
+    public static Specification<ChatRoom> betweenTime(LocalTime blockStartTime) {
+
+        // ChatRoom의 startTime 값이 inputTime ~ inputTime+30분 사이에 있으면 해당 chatroom 반환하는 조건
+        return (root, query, criteriaBuilder) -> {
+            LocalTime blockEndTime = blockStartTime.plusMinutes(30);
+            return criteriaBuilder.between(root.get("startTime"), blockStartTime, blockEndTime);
         };
-    }*/
+    }
+
+    public static Specification<ChatRoom> filteredByDayOfWeekAndTime(Integer dayOfWeek, LocalTime blockStartTime) {
+        return (root, query, criteriaBuilder) -> {
+            LocalTime blockEndTime = blockStartTime.plusMinutes(30);
+
+            // 요일 필터링 조건
+            Specification<ChatRoom> dayOfWeekSpec = equalDayOfWeek(dayOfWeek);
+            // 시간 필터링 조건
+            Specification<ChatRoom> timeSpec = betweenTime(blockStartTime);
+
+            // AND 연산으로 조건 합치기
+            return dayOfWeekSpec.and(timeSpec).toPredicate(root, query, criteriaBuilder);
+        };
+    }
+
+    // 시간표 데이터로 필터링
+    public static Specification<ChatRoom> filteredByTimeBlock(Integer dayOfWeek, LocalTime blockStartTime) {
+        Specification<ChatRoom> filteredSpec = filteredByDayOfWeekAndTime(dayOfWeek, blockStartTime);
+
+        Specification<ChatRoom> convertFilteredSpec = Specification.not(filteredSpec);
+
+        return convertFilteredSpec;
+    }
 
     // FilterInfo 객체로부터 Specification 생성
     public static Specification<ChatRoom> createSpecification(FilterInfo filter) {
