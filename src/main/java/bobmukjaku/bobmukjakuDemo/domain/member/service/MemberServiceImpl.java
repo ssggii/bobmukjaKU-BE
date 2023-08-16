@@ -101,8 +101,8 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public void updateTimeBlock(List<TimeBlockDto> timeBlockDtoList) {
         Member member = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-        List<TimeBlock> timeBlocks = timeBlockDtoList.stream().map(timeBlockDto -> timeBlockDto.toEntity(timeBlockDto)).collect(Collectors.toList());
-        timeBlockRepository.saveAll(timeBlocks);
+        List<TimeBlock> timeBlocks = timeBlockDtoList.stream().map(timeBlockDto -> timeBlockDto.toEntity(member)).collect(Collectors.toList());
+//        timeBlockRepository.saveAll(timeBlocks);
 
         List<Long> toDeleteIds = member.getTimeBlockList().stream().map(timeBlock -> timeBlock.getTimeBlockId()).collect(Collectors.toList());
         if(toDeleteIds != null && !toDeleteIds.isEmpty()){
