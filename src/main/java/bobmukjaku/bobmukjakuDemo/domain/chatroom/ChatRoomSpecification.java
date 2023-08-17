@@ -1,5 +1,6 @@
 package bobmukjaku.bobmukjakuDemo.domain.chatroom;
 
+import bobmukjaku.bobmukjakuDemo.domain.member.TimeBlock;
 import com.fasterxml.jackson.core.io.CharTypes;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
@@ -96,9 +97,11 @@ public class ChatRoomSpecification {
     }
 
     // 시간표 데이터로 필터링
-    public static Specification<ChatRoom> filteredByTimeBlock(Integer dayOfWeek, LocalTime blockStartTime) {
-        Specification<ChatRoom> filteredSpec = filteredByDayOfWeekAndTime(dayOfWeek, blockStartTime);
+    public static Specification<ChatRoom> filteredByTimeBlock(TimeBlock timeBlock) {
+        Integer dayOfWeek = timeBlock.getDayOfWeek();
+        LocalTime blockStartTime = timeBlock.getTime();
 
+        Specification<ChatRoom> filteredSpec = filteredByDayOfWeekAndTime(dayOfWeek, blockStartTime);
         Specification<ChatRoom> convertFilteredSpec = Specification.not(filteredSpec);
 
         return convertFilteredSpec;

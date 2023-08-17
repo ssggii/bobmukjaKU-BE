@@ -2,6 +2,7 @@ package bobmukjaku.bobmukjakuDemo.domain.chatroom.repository;
 
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoom;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoomSpecification;
+import bobmukjaku.bobmukjakuDemo.domain.member.TimeBlock;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -137,7 +138,8 @@ public class ChatRoomRepositoryTest {
         chatRoomRepository.save(ChatRoom.builder().roomName("모집방8").meetingDate(date4).startTime(time4).build());
 
         // startTime이 09:00 ~ 09:30 사이에 있고, 요일이 수요일인 모집방을 제외한 나머지 결과 검색
-        Specification<ChatRoom> specification = ChatRoomSpecification.filteredByTimeBlock(3, LocalTime.parse("09:00"));
+        TimeBlock timeBlock = TimeBlock.builder().dayOfWeek(3).time(LocalTime.parse("09:00")).build();
+        Specification<ChatRoom> specification = ChatRoomSpecification.filteredByTimeBlock(timeBlock);
 
         // When
         List<ChatRoom> filteredChatRooms;
