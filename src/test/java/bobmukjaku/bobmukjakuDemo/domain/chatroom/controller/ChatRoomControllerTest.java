@@ -1,6 +1,7 @@
 package bobmukjaku.bobmukjakuDemo.domain.chatroom.controller;
 
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.FilterInfoDto;
+import bobmukjaku.bobmukjakuDemo.domain.member.TimeBlock;
 import bobmukjaku.bobmukjakuDemo.domain.memberchatroom.MemberChatRoom;
 import bobmukjaku.bobmukjakuDemo.domain.memberchatroom.repository.MemberChatRoomRepository;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoom;
@@ -194,13 +195,7 @@ public class ChatRoomControllerTest {
     * 모집방_방id로_참여자_조회_실패_권한없음
     * 모집방_방id로_참여자_조회_실패_없는방임
     * uid로_참여중인_모집방_조회_성공 (완료)
-    * 모집방_최신순으로_정렬_조회_성공
-    * 모집방_음식종류로_조회_성공 (완료)
-    * 모집방_음식종류로_조회_실패_권한없음
-    * 모집방_음식종류로_조회_실패_없는카테고리
-    * 모집방_정원으로_조회_성공 (완료)
-    * 모집방_정원으로_조회_실패_범위에없는정원값
-    * 모집방_정원으로_조회_실패_권한없음
+    * 전체_필터링_성공 (완료)
     * */
 
     @Test
@@ -258,16 +253,17 @@ public class ChatRoomControllerTest {
         memberRepository.save(member2);
         memberRepository.save(member3);
 
-        ChatRoomCreateDto chatRoomCreateDto = new ChatRoomCreateDto("모집방1", "2023-08-07", "17:30", "19:30", "한식", 4);
-        ChatRoom chatRoom = chatRoomCreateDto.toEntity();
+        ChatRoom chatRoom = ChatRoom.builder().roomName("모집방1").total(4).build();
         chatRoomRepository.save(chatRoom);
 
-        MemberChatRoom memberChatRoom1 = new MemberChatRoom(member1, chatRoom); // member1 chatroom 입장
-        MemberChatRoom memberChatRoom2 = new MemberChatRoom(member2, chatRoom); // member2 chatroom 입장
-        MemberChatRoom memberChatRoom3 = new MemberChatRoom(member3, chatRoom); // member3 chatroom 입장
+        chatRoomService.addMemberToChatRoom(chatRoom.getChatRoomId(), member1.getUid());
+        chatRoomService.addMemberToChatRoom(chatRoom.getChatRoomId(), member2.getUid());
+        chatRoomService.addMemberToChatRoom(chatRoom.getChatRoomId(), member3.getUid());
 
         assertThat(memberRepository.findAll().size()).isEqualTo(3);
         assertThat(chatRoomRepository.findAll().size()).isEqualTo(1);
+        assertThat(memberChatRoomRepository.findAll().size()).isEqualTo(3);
+
         System.out.println("현재 인원: " + chatRoomRepository.findAll().get(0).getCurrentNum() + "명");
         System.out.println("memberchatroom 테이블 행: " + memberChatRoomRepository.findAll().size() + "개");
 
@@ -584,6 +580,52 @@ public class ChatRoomControllerTest {
         assertThat(memberChatRoomRepository.findAll().size()).isEqualTo(1); // 모집방2 가입정보 삭제되어야 함
         assertThat(member.getJoiningRooms().size()).isEqualTo(1); // 모집방2가 joiningRooms 리스트에 없어야 함
         member.getJoiningRooms().stream().map(memberChatRoom -> memberChatRoom.getChatRoom().getRoomName()).forEach(System.out::println);
+    }
+
+    @Test
+    public void 전체_필터링_성공() throws Exception {
+        // given
+        signUp();
+        String accessToken = login();
+        Member member = memberRepository.findByMemberEmail(username).get();
+        String uid = String.valueOf(member.getUid());
+
+        // 모집방 1~6 생성, 시간표 정보 저장
+        ChatRoomCreateDto chatRoomCreateDto1 = new ChatRoomCreateDto("모집방1", "2023-08-17", "17:20", "19:30", "한식", 4);
+        ChatRoomCreateDto chatRoomCreateDto2 = new ChatRoomCreateDto("모집방2", "2023-08-17", "17:30", "19:30", "한식", 4);
+        ChatRoomCreateDto chatRoomCreateDto3 = new ChatRoomCreateDto("모집방3", "2023-08-17", "18:30", "19:30", "일식", 4);
+        ChatRoomCreateDto chatRoomCreateDto4 = new ChatRoomCreateDto("모집방4", "2023-08-08", "17:30", "19:30", "한식", 4);
+        ChatRoomCreateDto chatRoomCreateDto5 = new ChatRoomCreateDto("모집방5", "2023-08-08", "17:30", "19:30", "한식", 3);
+        ChatRoomCreateDto chatRoomCreateDto6 = new ChatRoomCreateDto("모집방6", "2023-08-08", "17:30", "19:30", "일식", 3);
+        ChatRoom chatRoom1 = chatRoomCreateDto1.toEntity();
+        ChatRoom chatRoom2 = chatRoomCreateDto2.toEntity();
+        ChatRoom chatRoom3 = chatRoomCreateDto3.toEntity();
+        ChatRoom chatRoom4 = chatRoomCreateDto4.toEntity();
+        ChatRoom chatRoom5 = chatRoomCreateDto5.toEntity();
+        ChatRoom chatRoom6 = chatRoomCreateDto6.toEntity();
+        List<ChatRoom> initial = Arrays.asList(chatRoom1, chatRoom2, chatRoom3, chatRoom4, chatRoom5, chatRoom6);
+        chatRoomRepository.saveAll(initial);
+
+        List<TimeBlock> timeBlockList = new ArrayList<>();
+        member.getTimeBlockList().add(TimeBlock.builder().dayOfWeek(4).time(LocalTime.parse("17:00")).build());
+
+        // 음식-한식, 정원-4, 시간표 ON를 필터링 조건으로 선택했을 때
+        List<FilterInfoDto> filters = new ArrayList<>();
+        filters.add(new FilterInfoDto("kindOfFood", "한식"));
+        filters.add(new FilterInfoDto("total", "4"));
+        filters.add(new FilterInfoDto("timeTable", uid));
+
+
+
+        // when, then
+        mockMvc.perform(post("/chatRooms/filtered")
+                        .header(accessHeader, BEARER+accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(filters)))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        assertThat(filterInfoRepository.findAll().size()).isEqualTo(3);
     }
 
 }

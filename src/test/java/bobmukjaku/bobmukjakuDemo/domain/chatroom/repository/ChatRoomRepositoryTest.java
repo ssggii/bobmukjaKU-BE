@@ -2,7 +2,9 @@ package bobmukjaku.bobmukjakuDemo.domain.chatroom.repository;
 
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoom;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoomSpecification;
+import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import bobmukjaku.bobmukjakuDemo.domain.member.TimeBlock;
+import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,6 +26,9 @@ public class ChatRoomRepositoryTest {
 
     @Autowired
     private ChatRoomRepository chatRoomRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Test
     public void 요일_필터링_성공() {
@@ -119,7 +124,7 @@ public class ChatRoomRepositoryTest {
     }
 
     @Test
-    public void 시간표_필터링_성공() {
+    public void TimeBlock_필터링_성공() {
         // Given
         LocalDate date1 = LocalDate.parse("2023-08-16");
         LocalTime time1 = LocalTime.parse("09:10");
@@ -140,6 +145,43 @@ public class ChatRoomRepositoryTest {
         // startTime이 09:00 ~ 09:30 사이에 있고, 요일이 수요일인 모집방을 제외한 나머지 결과 검색
         TimeBlock timeBlock = TimeBlock.builder().dayOfWeek(3).time(LocalTime.parse("09:00")).build();
         Specification<ChatRoom> specification = ChatRoomSpecification.filteredByTimeBlock(timeBlock);
+
+        // When
+        List<ChatRoom> filteredChatRooms;
+        filteredChatRooms = chatRoomRepository.findAll(specification);
+
+        // Then
+        filteredChatRooms.stream().map(chatRoom -> chatRoom.getRoomName()).forEach(System.out::println);
+        assertThat(filteredChatRooms.size()).isEqualTo(2);
+
+    }
+
+    @Test
+    public void 시간표_필터링_성공() {
+        // Given
+        LocalDate date1 = LocalDate.parse("2023-08-16");
+        LocalTime time1 = LocalTime.parse("09:10");
+        chatRoomRepository.save(ChatRoom.builder().roomName("모집방5").meetingDate(date1).startTime(time1).build());
+
+        LocalDate date2 = LocalDate.parse("2023-08-16");
+        LocalTime time2 = LocalTime.parse("09:20");
+        chatRoomRepository.save(ChatRoom.builder().roomName("모집방6").meetingDate(date2).startTime(time2).build());
+
+        LocalDate date3 = LocalDate.parse("2023-08-18");
+        LocalTime time3 = LocalTime.parse("10:20");
+        chatRoomRepository.save(ChatRoom.builder().roomName("모집방7").meetingDate(date3).startTime(time3).build());
+
+        LocalDate date4 = LocalDate.parse("2023-08-19");
+        LocalTime time4 = LocalTime.parse("11:20");
+        chatRoomRepository.save(ChatRoom.builder().roomName("모집방8").meetingDate(date4).startTime(time4).build());
+
+        memberRepository.save(Member.builder().memberNickName("ssggii").memberEmail("ssggii@konkuk.ac.kr").memberPassword("password!@").build());
+
+        // startTime이 09:00 ~ 09:30 사이에 있고, 요일이 수요일인 모집방을 제외한 나머지 결과 검색
+        TimeBlock timeBlock = TimeBlock.builder().dayOfWeek(3).time(LocalTime.parse("09:00")).build();
+        Member member = memberRepository.findByMemberEmail("ssggii@konkuk.ac.kr").get();
+        member.getTimeBlockList().add(timeBlock);
+        Specification<ChatRoom> specification = ChatRoomSpecification.filteredByTimeTable(memberRepository, member.getUid());
 
         // When
         List<ChatRoom> filteredChatRooms;

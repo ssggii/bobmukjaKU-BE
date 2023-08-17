@@ -119,7 +119,7 @@ public class ChatRoomService {
         List<Specification<ChatRoom>> specifications = new ArrayList<>();
 
         for (FilterInfo filter : filters) {
-            Specification<ChatRoom> specification = ChatRoomSpecification.createSpecification(filter);
+            Specification<ChatRoom> specification = ChatRoomSpecification.createSpecification(filter, memberRepository);
             if (specification != null)
                 specifications.add(specification);
             else

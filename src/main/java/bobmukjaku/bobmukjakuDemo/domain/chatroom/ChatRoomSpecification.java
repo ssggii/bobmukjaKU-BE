@@ -1,8 +1,12 @@
 package bobmukjaku.bobmukjakuDemo.domain.chatroom;
 
+import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import bobmukjaku.bobmukjakuDemo.domain.member.TimeBlock;
+import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
+import bobmukjaku.bobmukjakuDemo.global.utility.SecurityUtil;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.sql.Time;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -93,7 +97,7 @@ public class ChatRoomSpecification {
         };
     }
 
-    // 시간표 데이터로 필터링
+    // TimeBlock으로 필터링
     public static Specification<ChatRoom> filteredByTimeBlock(TimeBlock timeBlock) {
         Integer dayOfWeek = timeBlock.getDayOfWeek();
         LocalTime blockStartTime = timeBlock.getTime();
@@ -104,8 +108,21 @@ public class ChatRoomSpecification {
         return convertFilteredSpec;
     }
 
+    // 시간표로 필터링
+    public static Specification<ChatRoom> filteredByTimeTable(MemberRepository memberRepository, Long uid){
+        Member member = memberRepository.findById(uid).get();
+        List<TimeBlock> timeBlockList = member.getTimeBlockList();
+        Specification<ChatRoom> specification = Specification.where(null);
+
+        for(TimeBlock timeBlock : timeBlockList){
+            specification = specification.and(filteredByTimeBlock(timeBlock));
+        }
+
+        return specification;
+    }
+
     // FilterInfo 객체로부터 Specification 생성
-    public static Specification<ChatRoom> createSpecification(FilterInfo filter) {
+    public static Specification<ChatRoom> createSpecification(FilterInfo filter, MemberRepository memberRepository) {
         String filterType = filter.getFilterType();
         String filterValue = filter.getFilterValue();
         Specification<ChatRoom> specification = null;
@@ -126,6 +143,8 @@ public class ChatRoomSpecification {
             case "total":
                 specification = ChatRoomSpecification.equalTotal(Integer.parseInt(filterValue));
                 break;
+            case "timeTable":
+                specification = ChatRoomSpecification.filteredByTimeTable(memberRepository, Long.valueOf(filterValue));
             default:
                 break; // 유효한 필터 타입이 아닐 경우 null 반환
         }
