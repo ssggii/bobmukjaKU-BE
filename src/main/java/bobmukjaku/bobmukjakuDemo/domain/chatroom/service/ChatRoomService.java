@@ -16,13 +16,15 @@ import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberException;
 import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberExceptionType;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
 import bobmukjaku.bobmukjakuDemo.global.utility.SecurityUtil;
+import com.google.firebase.messaging.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,7 +38,7 @@ public class ChatRoomService {
     private final FilterInfoRepository filterInfoRepository;
 
     // 모집방 개설
-    public ChatRoomInfoDto createChatRoom(ChatRoomCreateDto chatRoomCreateDto, String username){
+    public ChatRoomInfoDto createChatRoom(ChatRoomCreateDto chatRoomCreateDto, String username) throws Exception {
         Member host = memberRepository.findByMemberEmail(username)
                 .orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         ChatRoom createdChatRoom = chatRoomCreateDto.toEntity();
@@ -46,7 +48,11 @@ public class ChatRoomService {
         host.addChatRoom(memberChatRoomInfo); // host 모집방 목록에 createdChatRoom 추가
         createdChatRoom.addParticipant(memberChatRoomInfo); // createdChatRoom 참여자 목록에 host 추가
 
-        chatRoomRepository.save(createdChatRoom);
+        ChatRoom savedEntity = chatRoomRepository.save(createdChatRoom);
+        //참가자들에게 보낼 메시지를 예약한다.
+        System.out.println("방id  :   " + savedEntity.getChatRoomId() + "\n\n\n");
+        reserveNotification(savedEntity.getChatRoomId(), savedEntity.getMeetingDate(), savedEntity.getEndTime());
+
         return new ChatRoomInfoDto(createdChatRoom);
     }
 
@@ -167,4 +173,33 @@ public class ChatRoomService {
         return result;
     }
 
+    //종료시간에 참여자들에게 알림을 보내도록 예약
+    public void reserveNotification(Long roomId, LocalDate date, LocalTime time) throws Exception{
+
+
+        Calendar endAt = Calendar.getInstance();
+        //endAt.set(date.getYear(), date.getMonth().getValue()-1, date.getDayOfMonth(), time.getHour(), time.getMinute());
+        endAt.set(2023,7,17,0,56);
+        Date taskTime = new Date(endAt.getTimeInMillis());
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                //종료시간에 모집방id를 주제로 메시지(알림)을 전송하도록 작업 예약
+                String topic = roomId.toString();
+                Message message = Message.builder()
+                        .setNotification(Notification.builder().setTitle("제목" + topic).setBody("내용이다.").build())
+                        .setAndroidConfig(AndroidConfig.builder().setNotification(AndroidNotification.builder().setClickAction("FCM_EXE_ACTIVITY").build()).build())
+                        .putData("click_action", "FCM_EXE_ACTIVITY")
+                        .setTopic(topic)
+                        .build();
+
+                try{
+                    FirebaseMessaging.getInstance().send(message);
+                }catch (FirebaseMessagingException e){
+                    throw new RuntimeException(e);
+                }
+            }
+        }, taskTime);
+    }
 }
