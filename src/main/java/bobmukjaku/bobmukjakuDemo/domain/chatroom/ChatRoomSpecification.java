@@ -1,9 +1,6 @@
 package bobmukjaku.bobmukjakuDemo.domain.chatroom;
 
 import bobmukjaku.bobmukjakuDemo.domain.member.TimeBlock;
-import com.fasterxml.jackson.core.io.CharTypes;
-import jakarta.persistence.criteria.Expression;
-import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.DayOfWeek;

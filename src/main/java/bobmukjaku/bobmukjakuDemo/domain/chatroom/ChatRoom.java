@@ -66,13 +66,6 @@ public class ChatRoom extends BaseTimeEntity {
         currentNum--;
     }
 
-    // 중복 참여자 확인
-    public boolean isParticipant(Member member) {
-        return participants.stream()
-                .map(MemberChatRoom::getJoiner)
-                .anyMatch(joiner -> joiner.equals(member));
-    }
-
     // 참여 인원 증가
     public void addCurrentNum(){
         this.currentNum++;

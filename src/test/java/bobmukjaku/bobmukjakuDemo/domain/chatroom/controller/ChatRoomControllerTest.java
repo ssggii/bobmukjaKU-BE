@@ -566,7 +566,6 @@ public class ChatRoomControllerTest {
         map.put("roomId", chatRoom2.getChatRoomId());
         map.put("uid", member.getUid());
         String data = objectMapper.writeValueAsString(map);
-//        System.out.println(data);
 
         // when
         mockMvc.perform(
@@ -580,13 +579,11 @@ public class ChatRoomControllerTest {
 
         // then
         assertThat(memberRepository.findAll().size()).isEqualTo(1);
-        assertThat(chatRoomRepository.findAll().size()).isEqualTo(2);
-        assertThat(memberChatRoomRepository.findAll().size()).isEqualTo(1);
-        assertThat(member.getJoiningRooms().size()).isEqualTo(1);
-
-        System.out.println("<모집방 나간 후>");
+        assertThat(chatRoomRepository.findAll().size()).isEqualTo(1); // 모집방2 삭제되어야함
+        chatRoomRepository.findAll().stream().map(chatRoom -> chatRoom.getRoomName()).forEach(System.out::println);
+        assertThat(memberChatRoomRepository.findAll().size()).isEqualTo(1); // 모집방2 가입정보 삭제되어야 함
+        assertThat(member.getJoiningRooms().size()).isEqualTo(1); // 모집방2가 joiningRooms 리스트에 없어야 함
         member.getJoiningRooms().stream().map(memberChatRoom -> memberChatRoom.getChatRoom().getRoomName()).forEach(System.out::println);
-
     }
 
 }

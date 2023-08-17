@@ -49,6 +49,7 @@ public class ChatRoomService {
         createdChatRoom.addParticipant(memberChatRoomInfo); // createdChatRoom 참여자 목록에 host 추가
 
         ChatRoom savedEntity = chatRoomRepository.save(createdChatRoom);
+
         //참가자들에게 보낼 메시지를 예약한다.
         System.out.println("방id  :   " + savedEntity.getChatRoomId() + "\n\n\n");
         reserveNotification(savedEntity.getChatRoomId(), savedEntity.getMeetingDate(), savedEntity.getEndTime());
@@ -115,7 +116,6 @@ public class ChatRoomService {
 
     // 필터링
     public List<ChatRoomInfoDto> getChatRoomsFiltered(List<FilterInfo> filters) throws Exception {
-
         List<Specification<ChatRoom>> specifications = new ArrayList<>();
 
         for (FilterInfo filter : filters) {
@@ -132,7 +132,6 @@ public class ChatRoomService {
             return null;
         }
         return chatRooms.stream().map(ChatRoomInfoDto::new).collect(Collectors.toList());
-
     }
 
     // 필터 조회
@@ -168,18 +167,20 @@ public class ChatRoomService {
         if(memberChatRoom != null){
             member.deleteChatRoom(memberChatRoom); // member의 참여 모집방 목록에서 해당 모집방 삭제
             chatRoom.deleteParticipant(memberChatRoom); // chatRoom의 참여자 목록에서 해당 참여자 삭제
+            if(chatRoom.getCurrentNum() == 0) {
+                chatRoomRepository.delete(chatRoom); // 마지막 참여자인 경우 모집방 삭제
+            }
             result = true;
         }
+
         return result;
     }
 
     //종료시간에 참여자들에게 알림을 보내도록 예약
     public void reserveNotification(Long roomId, LocalDate date, LocalTime time) throws Exception{
-
-
         Calendar endAt = Calendar.getInstance();
-        //endAt.set(date.getYear(), date.getMonth().getValue()-1, date.getDayOfMonth(), time.getHour(), time.getMinute());
-        endAt.set(2023,7,17,0,56);
+        endAt.set(date.getYear(), date.getMonth().getValue()-1, date.getDayOfMonth(), time.getHour(), time.getMinute());
+        //endAt.set(2023,7,17,0,56);
         Date taskTime = new Date(endAt.getTimeInMillis());
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
