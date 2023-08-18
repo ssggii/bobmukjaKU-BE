@@ -4,6 +4,8 @@ import bobmukjaku.bobmukjakuDemo.BaseTimeEntity;
 import bobmukjaku.bobmukjakuDemo.domain.memberchatroom.MemberChatRoom;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoom;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.FilterInfo;
+import bobmukjaku.bobmukjakuDemo.domain.place.Review;
+import bobmukjaku.bobmukjakuDemo.domain.place.Scrap;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -64,6 +66,15 @@ public class Member extends BaseTimeEntity {
     @OneToMany(mappedBy = "member", cascade = ALL)
     private List<TimeBlock> timeBlockList = new ArrayList<>();
 
+    // member-review 연관관계 매핑
+    @Builder.Default
+    @OneToMany(mappedBy = "writer", cascade = ALL)
+    private List<Review> reviewList = new ArrayList<>();
+
+    // member-scrap 연관관계 매핑
+    @Builder.Default
+    @OneToMany(mappedBy = "member", cascade = ALL)
+    private List<Scrap> scrapList = new ArrayList<>();
 
     // 회원 가입 시 USER 권한 부여
     public void giveUserAuthority(){
