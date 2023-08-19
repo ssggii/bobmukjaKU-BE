@@ -35,3 +35,7 @@ logging:
       apache:
         coyote:
           http11: debug
+
+
+app:
+  firebase-bucket: bobmukjaku.appspot.com
