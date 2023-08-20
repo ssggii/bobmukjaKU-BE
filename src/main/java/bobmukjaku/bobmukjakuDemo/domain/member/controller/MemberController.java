@@ -1,5 +1,6 @@
 package bobmukjaku.bobmukjakuDemo.domain.member.controller;
 
+import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.*;
 import bobmukjaku.bobmukjakuDemo.domain.member.service.MemberService;
 import bobmukjaku.bobmukjakuDemo.global.utility.SecurityUtil;
@@ -96,6 +97,14 @@ public class MemberController {
     @GetMapping("/timeTable")
     public ResponseEntity getMyTimeTable(HttpServletResponse response) throws Exception {
         return new ResponseEntity(memberService.getMyTimeBlocks(), HttpStatus.OK);
+    }
+
+    //rate 업데이트
+    @PutMapping("/member/info/rate")
+    @ResponseStatus(HttpStatus.OK)
+    public void rateUpdate(@RequestBody RateUpdateDto rateUpdateDto) throws Exception {
+        System.out.println("\n\n\n" + rateUpdateDto.uid() + "\n" + rateUpdateDto.score() + "\n\n");
+        memberService.rateUpdate(rateUpdateDto.uid(), rateUpdateDto.score());
     }
 
 }

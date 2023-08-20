@@ -120,4 +120,13 @@ public class MemberServiceImpl implements MemberService{
         return timeBlockDtoList;
     }
 
+    @Override
+    public void rateUpdate(Long id, Integer score) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        if((member.getRate() == 100 && score == 1)
+        || (member.getRate() == 0 && score == -1))return;
+        member.updateRate(member.getRate() + score);
+    }
+
 }
