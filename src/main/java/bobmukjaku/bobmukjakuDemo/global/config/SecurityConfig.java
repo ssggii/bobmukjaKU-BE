@@ -49,18 +49,11 @@ public class SecurityConfig {
 
     // USER 권한으로 접근 가능
     private static final String[] USER_LIST = {
-            "/message", "/filter/info/*", "/filter/info", "/member/info/rate",
-            "/member/info/*", "/member/info", "/timeTable",
-            "/chatRoom/member/*", "/chatRoom/member", "/chatRoom/info/*", "/chatRooms/info", "/chatRooms/filtered", "/chatRoom/joiners"
+            "/message",
+            "/member/info/*", "/member/info", "/timeTable", "/filter/info/*", "/filter/info",
+            "/chatRoom/member/*", "/chatRoom/member", "/chatRoom/info/*", "/chatRooms/info", "/chatRooms/filtered", "/chatRoom/joiners",
+            "/place/*"
     };
-
-    /* 특정 url 요청 무시 */
-/*
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers(WHITE_LIST);
-    }
-*/
 
     /* 세부적인 보안 기능 설정 (authorization, authentication) */
     @Bean

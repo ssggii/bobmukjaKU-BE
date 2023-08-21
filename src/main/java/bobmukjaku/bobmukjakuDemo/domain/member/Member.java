@@ -109,6 +109,11 @@ public class Member extends BaseTimeEntity {
         this.filterList = filterList;
     }
 
+    // 스크랩 추가
+    public void addScrap(Scrap scrap) {
+        scrapList.add(scrap);
+    }
+
     /* 회원 정보 수정 */
     // 닉네임 변경
     public void updateNickName(String nickName) {
