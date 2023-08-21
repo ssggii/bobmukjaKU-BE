@@ -52,7 +52,7 @@ public class SecurityConfig {
             "/message",
             "/member/info/*", "/member/info", "/timeTable", "/filter/info/*", "/filter/info",
             "/chatRoom/member/*", "/chatRoom/member", "/chatRoom/info/*", "/chatRooms/info", "/chatRooms/filtered", "/chatRoom/joiners",
-            "/place/*"
+            "/files", "/place/*"
     };
 
     /* 세부적인 보안 기능 설정 (authorization, authentication) */

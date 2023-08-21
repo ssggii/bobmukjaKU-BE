@@ -4,16 +4,21 @@ import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberException;
 import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberExceptionType;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
+import bobmukjaku.bobmukjakuDemo.domain.place.Review;
 import bobmukjaku.bobmukjakuDemo.domain.place.Scrap;
+import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewCreateDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.ScrapCreateDto;
-import com.google.cloud.storage.Blob;
-import com.google.cloud.storage.BlobId;
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
+import com.google.cloud.storage.*;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.cloud.StorageClient;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
 @Service
 @RequiredArgsConstructor
@@ -25,8 +30,16 @@ public class PlaceService {
 
     private final MemberRepository memberRepository;
 
-    // 이미지 다운로드 (미완)
-    public byte[] downloadImage(String imagePath) {
+    // 이미지 업로드
+    public String uploadFile(MultipartFile file, String fileName) throws Exception, FirebaseAuthException {
+        Bucket bucket = StorageClient.getInstance().bucket(fireBaseBucket);
+        InputStream content = new ByteArrayInputStream(file.getBytes());
+        Blob blob = bucket.create(fileName.toString(), content, file.getContentType());
+        return blob.getMediaLink();
+    }
+
+    // 이미지 다운로드
+    public byte[] downloadFile(String imagePath) {
         try {
             // Firebase Storage 클라이언트 초기화
             Storage storage = StorageOptions.getDefaultInstance().getService();
@@ -45,6 +58,13 @@ public class PlaceService {
             e.printStackTrace();
             return null;
         }
+    }
+
+    // 리뷰 등록
+    public void createReview(ReviewCreateDto reviewCreateDto) {
+        Member member = memberRepository.findById(reviewCreateDto.getUid()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        Review review = reviewCreateDto.toEntity(member);
+        member.addReview(review);
     }
 
     // 스크랩 등록

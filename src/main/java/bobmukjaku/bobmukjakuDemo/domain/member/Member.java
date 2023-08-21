@@ -109,6 +109,11 @@ public class Member extends BaseTimeEntity {
         this.filterList = filterList;
     }
 
+    // 리뷰 추가
+    public void addReview(Review review) {
+        reviewList.add(review);
+    }
+
     // 스크랩 추가
     public void addScrap(Scrap scrap) {
         scrapList.add(scrap);
