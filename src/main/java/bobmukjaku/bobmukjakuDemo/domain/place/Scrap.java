@@ -1,6 +1,7 @@
 package bobmukjaku.bobmukjakuDemo.domain.place;
 
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
+import bobmukjaku.bobmukjakuDemo.domain.place.dto.ScrapInfoDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,5 +25,9 @@ public class Scrap {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "uid")
     private Member member; // 스크랩한 회원
+
+    public ScrapInfoDto toDto(Scrap scrap) {
+        return new ScrapInfoDto(placeId, member.getUid());
+    }
 
 }

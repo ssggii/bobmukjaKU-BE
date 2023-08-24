@@ -9,6 +9,7 @@ import bobmukjaku.bobmukjakuDemo.domain.place.Scrap;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewCreateDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.ScrapCreateDto;
+import bobmukjaku.bobmukjakuDemo.domain.place.dto.ScrapInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.repository.ReviewRepository;
 import bobmukjaku.bobmukjakuDemo.domain.place.repository.ScrapRepository;
 import com.google.cloud.storage.*;
@@ -64,8 +65,7 @@ public class PlaceService {
     // uid로 리뷰 조회
     public List<ReviewInfoDto> getReviewInfoByUid(Long uid) throws Exception {
         Member member = memberRepository.findById(uid).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-        List<ReviewInfoDto> reviewInfoDtoList = member.getReviewList().stream().map(review -> review.toDto(review)).collect(Collectors.toList());
-        return reviewInfoDtoList;
+        return member.getReviewList().stream().map(review -> review.toDto(review)).collect(Collectors.toList());
     }
 
     // 음식점 id로 리뷰 조회
@@ -89,6 +89,12 @@ public class PlaceService {
         Scrap scrap = scrapRepository.findById(scrapId).orElseThrow(()->new RuntimeException("해당하는 스크랩 정보가 없습니다"));
         scrap.getMember().deleteScrap(scrap);
         scrapRepository.delete(scrap);
+    }
+
+    // uid로 스크랩 조회
+    public List<ScrapInfoDto> getScrapInfoByUid(Long uid) throws Exception {
+        Member member = memberRepository.findById(uid).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        return member.getScrapList().stream().map(scrap -> scrap.toDto(scrap)).collect(Collectors.toList());
     }
 
 }

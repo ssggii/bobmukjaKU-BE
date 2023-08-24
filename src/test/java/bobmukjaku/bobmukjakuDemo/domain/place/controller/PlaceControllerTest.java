@@ -265,4 +265,29 @@ public class PlaceControllerTest {
         assertThat(member.getScrapList().size()).isEqualTo(1);
 
     }
+
+    // uid로 스크랩 조회
+    @Test
+    public void uid로_스크랩_조회_성공() throws Exception {
+        // given
+        signUp();
+        String accessToken = login();
+        Member member = memberRepository.findByMemberEmail(username).get();
+
+        Scrap scrap1 = Scrap.builder().placeId("음식점1").member(member).build();
+        Scrap scrap2 = Scrap.builder().placeId("음식점2").member(member).build();
+        member.addScrap(scrap1);
+        member.addScrap(scrap2);
+
+        assertThat(member.getScrapList().size()).isEqualTo(2);
+        assertThat(scrapRepository.findAll().size()).isEqualTo(2);
+
+        // when, then
+        mockMvc.perform(
+                        get("/place/scrap/info/1/" + member.getUid())
+                                .header(accessHeader, BEARER+accessToken)
+                )
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
 }

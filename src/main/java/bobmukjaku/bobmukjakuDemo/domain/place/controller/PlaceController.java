@@ -1,9 +1,6 @@
 package bobmukjaku.bobmukjakuDemo.domain.place.controller;
 
-import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewCreateDto;
-import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewDeleteDto;
-import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewInfoDto;
-import bobmukjaku.bobmukjakuDemo.domain.place.dto.ScrapCreateDto;
+import bobmukjaku.bobmukjakuDemo.domain.place.dto.*;
 import bobmukjaku.bobmukjakuDemo.domain.place.service.PlaceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -71,5 +68,11 @@ public class PlaceController {
         placeService.deleteScrap(scrapId);
     }
 
+    // uid로 스크랩 조회
+    @GetMapping("/place/scrap/info/1/{uid}")
+    public ResponseEntity getScrapInfoByUid(@PathVariable Long uid) throws Exception {
+        List<ScrapInfoDto> result = placeService.getScrapInfoByUid(uid);
+        return new ResponseEntity(result, HttpStatus.OK);
+    }
 
 }
