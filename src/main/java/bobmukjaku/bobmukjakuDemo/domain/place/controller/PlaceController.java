@@ -75,4 +75,14 @@ public class PlaceController {
         return new ResponseEntity(result, HttpStatus.OK);
     }
 
+    // 음식점 id로 스크랩 조회
+    @GetMapping("/place/scrap/info/2/{placeId}")
+    public ResponseEntity getScrapInfoByPlaceId(@PathVariable String placeId) throws Exception {
+        List<ScrapInfoDto> result = placeService.getScrapInfoByPlaceId(placeId);
+        if(result != null)
+            return new ResponseEntity(result, HttpStatus.OK);
+        else
+            return new ResponseEntity<>("해당 음식점 정보가 없습니다.", HttpStatus.NOT_FOUND); // 음식점 id가 없어진 경우
+    }
+
 }

@@ -97,4 +97,13 @@ public class PlaceService {
         return member.getScrapList().stream().map(scrap -> scrap.toDto(scrap)).collect(Collectors.toList());
     }
 
+    // 음식점 id로 스크랩 조회
+    public List<ScrapInfoDto> getScrapInfoByPlaceId(String placeId) throws Exception {
+        List<Scrap> scrapList = scrapRepository.findAllByPlaceId(placeId);
+        if(scrapList != null && !scrapList.isEmpty())
+            return scrapRepository.findAllByPlaceId(placeId).stream().map(scrap -> scrap.toDto(scrap)).collect(Collectors.toList());
+        else
+            return null;
+    }
+
 }
