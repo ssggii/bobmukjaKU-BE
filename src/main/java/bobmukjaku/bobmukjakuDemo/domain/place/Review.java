@@ -1,6 +1,7 @@
 package bobmukjaku.bobmukjakuDemo.domain.place;
 
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
+import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewInfoDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,5 +31,9 @@ public class Review {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "uid")
     private Member writer; // 작성자
+
+    public ReviewInfoDto toDto(Review review){
+        return ReviewInfoDto.builder().contents(review.contents).imageUrl(imageUrl).build();
+    }
 
 }

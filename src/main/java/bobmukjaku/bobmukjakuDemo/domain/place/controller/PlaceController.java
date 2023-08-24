@@ -2,14 +2,18 @@ package bobmukjaku.bobmukjakuDemo.domain.place.controller;
 
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewCreateDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewDeleteDto;
+import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.ScrapCreateDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.service.PlaceService;
 import jakarta.validation.Valid;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,6 +47,11 @@ public class PlaceController {
     }
 
     // 리뷰 조회
+    @GetMapping("/place/review/info/{uid}")
+    public ResponseEntity getReviewInfoByUid(@PathVariable Long uid) throws Exception {
+        List<ReviewInfoDto> result = placeService.getReviewInfoByUid(uid);
+        return new ResponseEntity(result, HttpStatus.OK);
+    }
 
     // 스크랩 등록
     @PostMapping("/place/scrap")

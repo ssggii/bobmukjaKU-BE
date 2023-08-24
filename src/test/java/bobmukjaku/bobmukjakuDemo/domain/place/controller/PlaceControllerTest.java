@@ -29,8 +29,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -155,6 +154,32 @@ public class PlaceControllerTest {
 
         // then
         assertThrows(Exception.class, ()->reviewRepository.findById(review1.getReviewId()).orElseThrow(()->new Exception("존재하지 않는 리뷰입니다")));
+
+    }
+
+    // uid로 리뷰 조회
+    @Test
+    public void uid로_리뷰_조회_성공() throws Exception {
+        // given
+        signUp();
+        String accessToken = login();
+        Member member = memberRepository.findByMemberEmail(username).get();
+
+        Review review1 = Review.builder().placeId("음식점1").contents("너모 맛있어요").imageUrl("리뷰사진1 링크").writer(member).build();
+        Review review2 = Review.builder().placeId("음식점2").contents("너모 맛있어요2").imageUrl("리뷰사진2 링크").writer(member).build();
+        reviewRepository.save(review1);
+        reviewRepository.save(review2);
+        member.addReview(review1);
+        member.addReview(review2);
+
+        // when, then
+        mockMvc.perform(
+                get("/place/review/info/" + member.getUid())
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .header(accessHeader, BEARER+accessToken)
+        )
+                .andDo(print())
+                .andExpect(status().isOk());
 
     }
 

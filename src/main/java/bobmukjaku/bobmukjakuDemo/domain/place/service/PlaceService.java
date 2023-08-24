@@ -7,6 +7,7 @@ import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
 import bobmukjaku.bobmukjakuDemo.domain.place.Review;
 import bobmukjaku.bobmukjakuDemo.domain.place.Scrap;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewCreateDto;
+import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.ScrapCreateDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.repository.ReviewRepository;
 import com.google.cloud.storage.*;
@@ -15,6 +16,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -53,6 +57,13 @@ public class PlaceService {
         Review review = reviewRepository.findById(reviewId).orElseThrow(()->new RuntimeException("해당하는 리뷰 정보가 없습니다"));
         review.getWriter().removeReview(review); // 리뷰 작성자의 리뷰 리스트에서 해당 리뷰 삭제
         reviewRepository.delete(review); // 리뷰 테이블에서 해당 리뷰 삭제
+    }
+
+    // uid로 리뷰 조회
+    public List<ReviewInfoDto> getReviewInfoByUid(Long uid) throws Exception {
+        Member member = memberRepository.findById(uid).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        List<ReviewInfoDto> reviewInfoDtoList = member.getReviewList().stream().map(review -> review.toDto(review)).collect(Collectors.toList());
+        return reviewInfoDtoList;
     }
 
     // 스크랩 등록
