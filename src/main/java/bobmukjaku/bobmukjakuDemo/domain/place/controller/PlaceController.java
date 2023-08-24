@@ -6,12 +6,10 @@ import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.ScrapCreateDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.service.PlaceService;
 import jakarta.validation.Valid;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -46,10 +44,17 @@ public class PlaceController {
         placeService.deleteReview(reviewDeleteDto.reviewId());
     }
 
-    // 리뷰 조회
-    @GetMapping("/place/review/info/{uid}")
+    // uid로 리뷰 조회
+    @GetMapping("/place/review/info/1/{uid}")
     public ResponseEntity getReviewInfoByUid(@PathVariable Long uid) throws Exception {
         List<ReviewInfoDto> result = placeService.getReviewInfoByUid(uid);
+        return new ResponseEntity(result, HttpStatus.OK);
+    }
+
+    // 음식점 id로 리뷰 조회
+    @GetMapping("/place/review/info/2/{placeId}")
+    public ResponseEntity getReviewInfoByPlaceId(@PathVariable String placeId) throws Exception {
+        List<ReviewInfoDto> result = placeService.getReviewInfoByPlaceId(placeId);
         return new ResponseEntity(result, HttpStatus.OK);
     }
 

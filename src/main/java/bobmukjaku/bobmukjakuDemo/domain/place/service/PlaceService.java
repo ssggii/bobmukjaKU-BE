@@ -66,6 +66,15 @@ public class PlaceService {
         return reviewInfoDtoList;
     }
 
+    // 음식점 id로 리뷰 조회
+    public List<ReviewInfoDto> getReviewInfoByPlaceId(String placeId) throws Exception {
+        List<Review> reviewList = reviewRepository.findAllByPlaceId(placeId);
+        if(reviewList != null && !reviewList.isEmpty()){
+            return reviewList.stream().map(review -> review.toDto(review)).collect(Collectors.toList());
+        }
+        return null;
+    }
+
     // 스크랩 등록
     public void createScrap(ScrapCreateDto scrapCreateDto) throws Exception {
         Member member = memberRepository.findById(scrapCreateDto.uid()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));

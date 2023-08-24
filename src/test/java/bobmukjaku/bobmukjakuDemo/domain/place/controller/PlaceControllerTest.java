@@ -16,14 +16,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -174,13 +170,41 @@ public class PlaceControllerTest {
 
         // when, then
         mockMvc.perform(
-                get("/place/review/info/" + member.getUid())
+                get("/place/review/info/1/" + member.getUid())
                         .characterEncoding(StandardCharsets.UTF_8)
                         .header(accessHeader, BEARER+accessToken)
         )
                 .andDo(print())
                 .andExpect(status().isOk());
 
+    }
+
+    // 음식점 id로 리뷰 조회
+    @Test
+    public void 음식점id로_리뷰_조회_성공() throws Exception {
+        // given
+        signUp();
+        String accessToken = login();
+        Member member = memberRepository.findByMemberEmail(username).get();
+
+        Review review1 = Review.builder().placeId("음식점1").contents("너모 맛있어요1").imageUrl("리뷰사진1 링크").writer(member).build();
+        Review review2 = Review.builder().placeId("음식점1").contents("너모 맛있어요2").imageUrl("리뷰사진2 링크").writer(member).build();
+        Review review3 = Review.builder().placeId("음식점2").contents("너모 맛없어요").imageUrl("리뷰사진3 링크").writer(member).build();
+        reviewRepository.save(review1);
+        reviewRepository.save(review2);
+        reviewRepository.save(review3);
+        member.addReview(review1);
+        member.addReview(review1);
+        member.addReview(review3);
+
+        // when, then
+        mockMvc.perform(
+                        get("/place/review/info/2/음식점1")
+                                .characterEncoding(StandardCharsets.UTF_8)
+                                .header(accessHeader, BEARER+accessToken)
+                )
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     // 스크랩 등록
