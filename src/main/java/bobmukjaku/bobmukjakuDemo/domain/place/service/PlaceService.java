@@ -8,6 +8,7 @@ import bobmukjaku.bobmukjakuDemo.domain.place.Review;
 import bobmukjaku.bobmukjakuDemo.domain.place.Scrap;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewCreateDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.ScrapCreateDto;
+import bobmukjaku.bobmukjakuDemo.domain.place.repository.ReviewRepository;
 import com.google.cloud.storage.*;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.cloud.StorageClient;
@@ -29,6 +30,7 @@ public class PlaceService {
     private String fireBaseBucket;
 
     private final MemberRepository memberRepository;
+    private final ReviewRepository reviewRepository;
 
     // 이미지 업로드
     public String uploadFile(MultipartFile file, String fileName) throws Exception, FirebaseAuthException {
@@ -61,10 +63,17 @@ public class PlaceService {
     }
 
     // 리뷰 등록
-    public void createReview(ReviewCreateDto reviewCreateDto) {
+    public void createReview(ReviewCreateDto reviewCreateDto) throws Exception {
         Member member = memberRepository.findById(reviewCreateDto.getUid()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         Review review = reviewCreateDto.toEntity(member);
         member.addReview(review);
+    }
+
+    // 리뷰 삭제
+    public void deleteReview(Long reviewId) throws Exception {
+        Review review = reviewRepository.findById(reviewId).orElseThrow(()->new RuntimeException("해당하는 리뷰 정보가 없습니다"));
+        review.getWriter().removeReview(review); // 리뷰 작성자의 리뷰 리스트에서 해당 리뷰 삭제
+        reviewRepository.delete(review); // 리뷰 테이블에서 해당 리뷰 삭제
     }
 
     // 스크랩 등록

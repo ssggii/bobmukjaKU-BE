@@ -1,12 +1,12 @@
 package bobmukjaku.bobmukjakuDemo.domain.place.controller;
 
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewCreateDto;
+import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewDeleteDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.ScrapCreateDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.service.PlaceService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,25 +36,17 @@ public class PlaceController {
         return placeService.uploadFile(file, fileName);
     }
 
-/*    // 이미지 다운로드
-    @GetMapping(value = "/{imagePath}", produces = MediaType.IMAGE_JPEG_VALUE)
-    public ResponseEntity<byte[]> getImage(@PathVariable String imagePath) {
-        byte[] imageBytes = placeService.downloadFile(imagePath);
-
-        if (imageBytes != null) {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.IMAGE_JPEG);
-            headers.setContentLength(imageBytes.length);
-            return new ResponseEntity<>(imageBytes, headers, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }*/
-
     // 리뷰 등록
     @PostMapping("/place/review")
     public void createReview(@RequestBody ReviewCreateDto reviewCreateDto) throws Exception {
         placeService.createReview(reviewCreateDto);
+    }
+
+    // 리뷰 삭제
+    @DeleteMapping("/place/review/info")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteReview(@Valid @RequestBody ReviewDeleteDto reviewDeleteDto) throws Exception {
+        placeService.deleteReview(reviewDeleteDto.reviewId());
     }
 
     // 스크랩 등록

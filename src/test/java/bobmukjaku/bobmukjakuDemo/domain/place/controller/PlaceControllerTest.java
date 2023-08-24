@@ -3,6 +3,7 @@ package bobmukjaku.bobmukjakuDemo.domain.place.controller;
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberSignUpDto;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
+import bobmukjaku.bobmukjakuDemo.domain.place.Review;
 import bobmukjaku.bobmukjakuDemo.domain.place.repository.ReviewRepository;
 import bobmukjaku.bobmukjakuDemo.domain.place.repository.ScrapRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,12 +21,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -137,8 +141,43 @@ public class PlaceControllerTest {
                 .andExpect(status().isOk());
 
         // then
+        assertThat(reviewRepository.findAll().size()).isEqualTo(1);
         assertThat(member.getReviewList().size()).isEqualTo(1);
+    }
+
+    // 리뷰 삭제
+    @Test
+    public void 리뷰_삭제_성공() throws Exception {
+        // given
+        signUp();
+        String accessToken = login();
+        Member member = memberRepository.findByMemberEmail(username).get();
+
+        Review review1 = Review.builder().placeId("음식점1").contents("너모 맛있어요").imageName("리뷰사진1.jpg").writer(member).build();
+        Review review2 = Review.builder().placeId("음식점2").contents("너모 맛있어요2").imageName("리뷰사진2.jpg").build();
+        reviewRepository.save(review1);
+        reviewRepository.save(review2);
+        member.addReview(review1);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("reviewId", review1.getReviewId());
+
+        assertThat(reviewRepository.findAll().size()).isEqualTo(2);
         assertThat(member.getReviewList().size()).isEqualTo(1);
+
+        // when
+        mockMvc.perform(
+                delete("/place/review/info")
+                        .header(accessHeader, BEARER+accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(map))
+                )
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        // then
+        assertThrows(Exception.class, ()->reviewRepository.findById(review1.getReviewId()).orElseThrow(()->new Exception("존재하지 않는 리뷰입니다")));
+
     }
 
     // 스크랩 등록
