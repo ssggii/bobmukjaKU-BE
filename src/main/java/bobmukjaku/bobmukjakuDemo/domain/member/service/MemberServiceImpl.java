@@ -99,7 +99,7 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
-    public void updateTimeBlock(List<TimeBlockDto> timeBlockDtoList) {
+    public void updateTimeBlock(List<TimeBlockDto> timeBlockDtoList) throws Exception {
         Member member = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         List<TimeBlock> timeBlocks = timeBlockDtoList.stream().map(timeBlockDto -> timeBlockDto.toEntity(member)).collect(Collectors.toList());
 //        timeBlockRepository.saveAll(timeBlocks);
@@ -121,7 +121,7 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
-    public void rateUpdate(Long id, Integer score) {
+    public void rateUpdate(Long id, Integer score) throws Exception {
         Member member = memberRepository.findById(id)
                 .orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         if((member.getRate() == 100 && score == 1)

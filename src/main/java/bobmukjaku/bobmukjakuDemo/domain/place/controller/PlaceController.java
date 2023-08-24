@@ -19,8 +19,8 @@ public class PlaceController {
     *
     * <맛지도 API>
     * 리뷰 등록
-    * 리뷰 조회 - uid로 리뷰 조회, 음식점 id로 리뷰 조회
     * 리뷰 삭제
+    * 리뷰 조회 - uid로 리뷰 조회, 음식점 id로 리뷰 조회
     * 스크랩 등록
     * 스크랩 해제
     * 스크랩 조회 - uid로 스크랩 정보 조회, 음식점 id로 스크랩 정보 조회(uid 같이 반환)
@@ -28,13 +28,6 @@ public class PlaceController {
     * */
 
     private final PlaceService placeService;
-
-    // 이미지 storage에 업로드
-    @PostMapping("/files")
-    public String uploadFile(@RequestParam("file") MultipartFile file, String fileName) throws Exception {
-        if(file.isEmpty()) return "빈 파일입니다";
-        return placeService.uploadFile(file, fileName);
-    }
 
     // 리뷰 등록
     @PostMapping("/place/review")
@@ -48,6 +41,8 @@ public class PlaceController {
     public void deleteReview(@Valid @RequestBody ReviewDeleteDto reviewDeleteDto) throws Exception {
         placeService.deleteReview(reviewDeleteDto.reviewId());
     }
+
+    // 리뷰 조회
 
     // 스크랩 등록
     @PostMapping("/place/scrap")

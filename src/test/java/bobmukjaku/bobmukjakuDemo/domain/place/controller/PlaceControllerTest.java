@@ -94,28 +94,6 @@ public class PlaceControllerTest {
         return result.getResponse().getHeader(accessHeader);
     }
 
-    // 이미지 업로드
-    @Test
-    public void 이미지_업로드_성공() throws Exception {
-        // given
-        signUp();
-        String accessToken = login();
-
-        // 테스트할 이미지 파일 생성
-        byte[] imageBytes = Files.readAllBytes(Paths.get("D:/2023 2학기/test.jpg"));
-        MockMultipartFile file = new MockMultipartFile("file", "test.jpg", "image/jpeg", imageBytes);
-        String fileName = "test.jpg";
-
-        // when, then
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.multipart("/files")
-                        .file(file)
-                        .header(accessHeader, BEARER+accessToken)
-                        .param("fileName", fileName))
-                .andExpect(status().isOk())
-                .andReturn();
-
-    }
-
     // 리뷰 등록
     @Test
     public void 리뷰_등록_성공() throws Exception {
@@ -127,7 +105,7 @@ public class PlaceControllerTest {
         Map<String, Object> map = new HashMap<>();
         map.put("placeId", "음식점1");
         map.put("contents", "너모 맛있어요");
-        map.put("imageName", "리뷰사진1.jpg");
+        map.put("imageUrl", "리뷰사진1 링크");
         map.put("uid", member.getUid());
 
         // when
@@ -153,8 +131,8 @@ public class PlaceControllerTest {
         String accessToken = login();
         Member member = memberRepository.findByMemberEmail(username).get();
 
-        Review review1 = Review.builder().placeId("음식점1").contents("너모 맛있어요").imageName("리뷰사진1.jpg").writer(member).build();
-        Review review2 = Review.builder().placeId("음식점2").contents("너모 맛있어요2").imageName("리뷰사진2.jpg").build();
+        Review review1 = Review.builder().placeId("음식점1").contents("너모 맛있어요").imageUrl("리뷰사진1 링크").writer(member).build();
+        Review review2 = Review.builder().placeId("음식점2").contents("너모 맛있어요2").imageUrl("리뷰사진2 링크").build();
         reviewRepository.save(review1);
         reviewRepository.save(review2);
         member.addReview(review1);

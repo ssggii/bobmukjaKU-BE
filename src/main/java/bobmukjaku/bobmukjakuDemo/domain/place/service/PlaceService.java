@@ -11,15 +11,10 @@ import bobmukjaku.bobmukjakuDemo.domain.place.dto.ScrapCreateDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.repository.ReviewRepository;
 import com.google.cloud.storage.*;
 import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.cloud.StorageClient;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 
 @Service
 @RequiredArgsConstructor
@@ -32,30 +27,14 @@ public class PlaceService {
     private final MemberRepository memberRepository;
     private final ReviewRepository reviewRepository;
 
-    // 이미지 업로드
-    public String uploadFile(MultipartFile file, String fileName) throws Exception, FirebaseAuthException {
-        Bucket bucket = StorageClient.getInstance().bucket(fireBaseBucket);
-        InputStream content = new ByteArrayInputStream(file.getBytes());
-        Blob blob = bucket.create(fileName.toString(), content, file.getContentType());
-        return blob.getMediaLink();
-    }
-
-    // 이미지 다운로드
-    public byte[] downloadFile(String imagePath) {
+    // 이미지 url 생성
+    public String getImageUrl(String imageFileName) throws Exception, FirebaseAuthException {
         try {
-            // Firebase Storage 클라이언트 초기화
-            Storage storage = StorageOptions.getDefaultInstance().getService();
-
-            // 이미지의 BlobId 생성
-            BlobId blobId = BlobId.of(fireBaseBucket, imagePath);
-
-            // Blob 가져오기
-            Blob blob = storage.get(blobId);
-
-            // Blob을 바이트 배열로 읽기
-            byte[] content = blob.getContent();
-
-            return content;
+            Storage storage = StorageOptions.getDefaultInstance().getService(); // Firebase Storage 클라이언트 초기화
+            BlobId blobId = BlobId.of(fireBaseBucket, imageFileName); // 이미지의 BlobId 생성
+            Blob blob = storage.get(blobId); // Blob 가져오기
+            String imageUrl = blob.getMediaLink(); // 이미지의 다운로드 URL 가져오기
+            return imageUrl;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -77,7 +56,7 @@ public class PlaceService {
     }
 
     // 스크랩 등록
-    public void createScrap(ScrapCreateDto scrapCreateDto) {
+    public void createScrap(ScrapCreateDto scrapCreateDto) throws Exception {
         Member member = memberRepository.findById(scrapCreateDto.uid()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         Scrap scrap = scrapCreateDto.toEntity(member);
         member.addScrap(scrap);

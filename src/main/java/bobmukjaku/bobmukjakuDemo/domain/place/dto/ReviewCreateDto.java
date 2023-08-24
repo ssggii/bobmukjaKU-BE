@@ -13,14 +13,14 @@ public class ReviewCreateDto {
     private String placeId;
     @Column(columnDefinition = "TEXT")
     private String contents;
-    private String imageName;
+    private String imageUrl;
     private Long uid;
 
     public Review toEntity(Member member) {
         return Review.builder()
                 .placeId(placeId)
                 .contents(contents)
-                .imageName(imageName)
+                .imageUrl(imageUrl)
                 .writer(member)
                 .build();
     }

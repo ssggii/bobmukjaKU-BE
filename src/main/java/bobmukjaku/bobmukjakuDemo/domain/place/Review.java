@@ -24,8 +24,8 @@ public class Review {
     @Column(name = "contents", columnDefinition = "TEXT")
     private String contents; // 리뷰 내용
 
-    @Column(name = "image")
-    private String imageName; // 리뷰 사진 이름
+    @Column(name = "image_Url")
+    private String imageUrl; // 리뷰 사진 링크
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "uid")

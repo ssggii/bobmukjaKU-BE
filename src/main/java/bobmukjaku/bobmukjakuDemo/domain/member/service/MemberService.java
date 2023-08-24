@@ -17,5 +17,5 @@ public interface MemberService {
     public HashedAuthCodeDto mailAuth(String email) throws Exception; // 메일 인증
     public void updateTimeBlock(List<TimeBlockDto> timeBlockDtoList) throws Exception; // 시간표 저장
     public List<TimeBlockDto> getMyTimeBlocks() throws Exception; // 시간표 조회
-    public void rateUpdate(Long id, Integer score);// rate 업데이트
+    public void rateUpdate(Long id, Integer score) throws Exception;// rate 업데이트
 }
