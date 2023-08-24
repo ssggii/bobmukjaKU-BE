@@ -10,6 +10,7 @@ import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewCreateDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.ScrapCreateDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.repository.ReviewRepository;
+import bobmukjaku.bobmukjakuDemo.domain.place.repository.ScrapRepository;
 import com.google.cloud.storage.*;
 import com.google.firebase.auth.FirebaseAuthException;
 import jakarta.transaction.Transactional;
@@ -30,6 +31,7 @@ public class PlaceService {
 
     private final MemberRepository memberRepository;
     private final ReviewRepository reviewRepository;
+    private final ScrapRepository scrapRepository;
 
     // 이미지 url 생성
     public String getImageUrl(String imageFileName) throws Exception, FirebaseAuthException {
@@ -55,8 +57,8 @@ public class PlaceService {
     // 리뷰 삭제
     public void deleteReview(Long reviewId) throws Exception {
         Review review = reviewRepository.findById(reviewId).orElseThrow(()->new RuntimeException("해당하는 리뷰 정보가 없습니다"));
-        review.getWriter().removeReview(review); // 리뷰 작성자의 리뷰 리스트에서 해당 리뷰 삭제
-        reviewRepository.delete(review); // 리뷰 테이블에서 해당 리뷰 삭제
+        review.getWriter().removeReview(review);
+        reviewRepository.delete(review);
     }
 
     // uid로 리뷰 조회
@@ -80,6 +82,13 @@ public class PlaceService {
         Member member = memberRepository.findById(scrapCreateDto.uid()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         Scrap scrap = scrapCreateDto.toEntity(member);
         member.addScrap(scrap);
+    }
+
+    // 스크랩 해제
+    public void deleteScrap(Long scrapId) throws Exception {
+        Scrap scrap = scrapRepository.findById(scrapId).orElseThrow(()->new RuntimeException("해당하는 스크랩 정보가 없습니다"));
+        scrap.getMember().deleteScrap(scrap);
+        scrapRepository.delete(scrap);
     }
 
 }

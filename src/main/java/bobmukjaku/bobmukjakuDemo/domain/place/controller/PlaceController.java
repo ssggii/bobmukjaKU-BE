@@ -64,11 +64,12 @@ public class PlaceController {
         placeService.createScrap(scrapCreateDto);
     }
 
-/*    // 스크랩 해제
+    // 스크랩 해제
     @DeleteMapping("/place/scrap/{scrapId}")
+    @ResponseStatus(HttpStatus.OK)
     public void deleteScrap(@PathVariable Long scrapId) throws Exception {
         placeService.deleteScrap(scrapId);
-    }*/
+    }
 
 
 }

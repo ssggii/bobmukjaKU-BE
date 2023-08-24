@@ -124,6 +124,11 @@ public class Member extends BaseTimeEntity {
         scrapList.add(scrap);
     }
 
+    // 스크랩 삭제
+    public void deleteScrap(Scrap scrap) {
+        scrapList.remove(scrap);
+    }
+
     /* 회원 정보 수정 */
     // 닉네임 변경
     public void updateNickName(String nickName) {

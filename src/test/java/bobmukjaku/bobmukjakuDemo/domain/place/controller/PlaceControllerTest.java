@@ -4,6 +4,7 @@ import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberSignUpDto;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
 import bobmukjaku.bobmukjakuDemo.domain.place.Review;
+import bobmukjaku.bobmukjakuDemo.domain.place.Scrap;
 import bobmukjaku.bobmukjakuDemo.domain.place.repository.ReviewRepository;
 import bobmukjaku.bobmukjakuDemo.domain.place.repository.ScrapRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -226,6 +227,36 @@ public class PlaceControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(String.valueOf(objectMapper.writeValueAsString(map)))
         )
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        // then
+        assertThat(scrapRepository.findAll().size()).isEqualTo(1);
+        assertThat(member.getScrapList().size()).isEqualTo(1);
+
+    }
+
+    // 스크랩 해제
+    @Test
+    public void 스크랩_해제_성공() throws Exception {
+        // given
+        signUp();
+        String accessToken = login();
+        Member member = memberRepository.findByMemberEmail(username).get();
+
+        Scrap scrap1 = Scrap.builder().placeId("음식점1").member(member).build();
+        Scrap scrap2 = Scrap.builder().placeId("음식점2").member(member).build();
+        member.addScrap(scrap1);
+        member.addScrap(scrap2);
+
+        assertThat(member.getScrapList().size()).isEqualTo(2);
+        assertThat(scrapRepository.findAll().size()).isEqualTo(2);
+
+        // when
+        mockMvc.perform(
+                        delete("/place/scrap/" + scrap1.getScrapId())
+                                .header(accessHeader, BEARER+accessToken)
+                )
                 .andDo(print())
                 .andExpect(status().isOk());
 
