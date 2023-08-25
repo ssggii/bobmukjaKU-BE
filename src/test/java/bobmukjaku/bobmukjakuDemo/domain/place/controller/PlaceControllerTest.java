@@ -249,13 +249,19 @@ public class PlaceControllerTest {
         member.addScrap(scrap1);
         member.addScrap(scrap2);
 
+        Map<String, Object> map = new HashMap<>();
+        map.put("uid", member.getUid());
+        map.put("placeId", scrap1.getPlaceId());
+
         assertThat(member.getScrapList().size()).isEqualTo(2);
         assertThat(scrapRepository.findAll().size()).isEqualTo(2);
 
         // when
         mockMvc.perform(
-                        delete("/place/scrap/" + scrap1.getScrapId())
+                        post("/place/scrap/remove")
                                 .header(accessHeader, BEARER+accessToken)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(map))
                 )
                 .andDo(print())
                 .andExpect(status().isOk());

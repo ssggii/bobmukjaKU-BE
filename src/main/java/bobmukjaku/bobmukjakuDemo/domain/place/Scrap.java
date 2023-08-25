@@ -27,7 +27,7 @@ public class Scrap {
     private Member member; // 스크랩한 회원
 
     public ScrapInfoDto toDto(Scrap scrap) {
-        return new ScrapInfoDto(placeId, member.getUid());
+        return new ScrapInfoDto(member.getUid(), placeId);
     }
 
 }

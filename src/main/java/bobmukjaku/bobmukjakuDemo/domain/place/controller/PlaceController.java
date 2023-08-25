@@ -57,15 +57,14 @@ public class PlaceController {
 
     // 스크랩 등록
     @PostMapping("/place/scrap")
-    public void createScrap(@RequestBody ScrapCreateDto scrapCreateDto) throws Exception {
-        placeService.createScrap(scrapCreateDto);
+    public void createScrap(@RequestBody ScrapInfoDto scrapInfoDto) throws Exception {
+        placeService.createScrap(scrapInfoDto);
     }
 
     // 스크랩 해제
-    @DeleteMapping("/place/scrap/{scrapId}")
-    @ResponseStatus(HttpStatus.OK)
-    public void deleteScrap(@PathVariable Long scrapId) throws Exception {
-        placeService.deleteScrap(scrapId);
+    @PostMapping("/place/scrap/remove")
+    public void removeScrap(@RequestBody ScrapInfoDto scrapInfoDto) throws Exception {
+        placeService.deleteScrap(scrapInfoDto);
     }
 
     // uid로 스크랩 조회

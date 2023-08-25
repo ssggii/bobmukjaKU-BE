@@ -8,7 +8,6 @@ import bobmukjaku.bobmukjakuDemo.domain.place.Review;
 import bobmukjaku.bobmukjakuDemo.domain.place.Scrap;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewCreateDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewInfoDto;
-import bobmukjaku.bobmukjakuDemo.domain.place.dto.ScrapCreateDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.ScrapInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.repository.ReviewRepository;
 import bobmukjaku.bobmukjakuDemo.domain.place.repository.ScrapRepository;
@@ -78,17 +77,22 @@ public class PlaceService {
     }
 
     // 스크랩 등록
-    public void createScrap(ScrapCreateDto scrapCreateDto) throws Exception {
-        Member member = memberRepository.findById(scrapCreateDto.uid()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-        Scrap scrap = scrapCreateDto.toEntity(member);
+    public void createScrap(ScrapInfoDto scrapInfoDto) throws Exception {
+        Member member = memberRepository.findById(scrapInfoDto.uid()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        Scrap scrap = scrapInfoDto.toEntity(member);
         member.addScrap(scrap);
     }
 
     // 스크랩 해제
-    public void deleteScrap(Long scrapId) throws Exception {
-        Scrap scrap = scrapRepository.findById(scrapId).orElseThrow(()->new RuntimeException("해당하는 스크랩 정보가 없습니다"));
-        scrap.getMember().deleteScrap(scrap);
-        scrapRepository.delete(scrap);
+    public void deleteScrap(ScrapInfoDto scrapInfoDto) throws Exception {
+        Member member = memberRepository.findById(scrapInfoDto.uid()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        member.getScrapList().stream()
+                .filter(scrap -> scrap.getPlaceId().equals(scrapInfoDto.placeId()))
+                .findFirst()
+                .ifPresent(scrap -> {
+                    scrap.getMember().deleteScrap(scrap);
+                    scrapRepository.delete(scrap);
+                });
     }
 
     // uid로 스크랩 조회
