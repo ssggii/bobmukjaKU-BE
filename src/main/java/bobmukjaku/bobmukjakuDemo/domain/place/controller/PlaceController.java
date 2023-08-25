@@ -84,4 +84,10 @@ public class PlaceController {
             return new ResponseEntity<>("해당 음식점 정보가 없습니다.", HttpStatus.NOT_FOUND); // 음식점 id가 없어진 경우
     }
 
+    // 음식점 스크랩 수 조회
+    @GetMapping("/place/scrap/count/{placeId}")
+    public ResponseEntity<Long> getScrapCountsOfPlace(@PathVariable String placeId) throws Exception {
+        return new ResponseEntity<>(placeService.getScrapCountsOfPlace(placeId), HttpStatus.OK);
+    }
+
 }

@@ -110,4 +110,9 @@ public class PlaceService {
             return null;
     }
 
+    // 음식점 스크랩 수 조회
+    public Long getScrapCountsOfPlace(String placeId) throws Exception {
+        return scrapRepository.countByPlaceId(placeId);
+    }
+
 }

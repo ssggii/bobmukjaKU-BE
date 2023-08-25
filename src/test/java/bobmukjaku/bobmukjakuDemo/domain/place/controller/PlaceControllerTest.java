@@ -324,4 +324,30 @@ public class PlaceControllerTest {
                 .andExpect(status().isOk());
 
     }
+
+    // 음식점 스크랩 수 조회
+    @Test
+    public void 음식점_스크랩_수_조회() throws Exception {
+        // given
+        signUp();
+        String accessToken = login();
+        Member member1 = memberRepository.findByMemberEmail(username).get();
+        Member member2 = Member.builder().memberEmail("member2@konkuk.ac.kr").memberNickName("nick2").memberPassword("password2!").build();
+        memberRepository.save(member2);
+
+        Scrap scrap1 = Scrap.builder().placeId("음식점1").member(member1).build();
+        Scrap scrap2 = Scrap.builder().placeId("음식점1").member(member2).build();
+        scrapRepository.save(scrap1);
+        scrapRepository.save(scrap2);
+
+        // when, then
+        mockMvc.perform(
+                get("/place/scrap/count/음식점1")
+                        .header(accessHeader, BEARER+accessToken)
+                        .characterEncoding(StandardCharsets.UTF_8)
+        )
+                .andDo(print())
+                .andExpect(status().isOk());
+
+    }
 }
