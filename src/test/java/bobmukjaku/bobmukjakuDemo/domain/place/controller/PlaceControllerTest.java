@@ -99,7 +99,8 @@ public class PlaceControllerTest {
         Member member = memberRepository.findByMemberEmail(username).get();
 
         Map<String, Object> map = new HashMap<>();
-        map.put("placeId", "음식점1");
+        map.put("placeId", "음식점1_id");
+        map.put("placeName", "음식점1");
         map.put("contents", "너모 맛있어요");
         map.put("imageUrl", "리뷰사진1 링크");
         map.put("uid", member.getUid());

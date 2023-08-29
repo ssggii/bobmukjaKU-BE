@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 public class ReviewCreateDto {
 
     private String placeId;
+    private String placeName;
     @Column(columnDefinition = "TEXT")
     private String contents;
     private String imageUrl;
@@ -19,6 +20,7 @@ public class ReviewCreateDto {
     public Review toEntity(Member member) {
         return Review.builder()
                 .placeId(placeId)
+                .placeName(placeName)
                 .contents(contents)
                 .imageUrl(imageUrl)
                 .writer(member)

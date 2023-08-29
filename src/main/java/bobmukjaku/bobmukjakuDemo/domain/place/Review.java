@@ -22,6 +22,9 @@ public class Review {
     @Column(name = "place_id")
     private String placeId; // 음식점 id
 
+    @Column(name = "place_name")
+    private String placeName;
+
     @Column(name = "contents", columnDefinition = "TEXT")
     private String contents; // 리뷰 내용
 
