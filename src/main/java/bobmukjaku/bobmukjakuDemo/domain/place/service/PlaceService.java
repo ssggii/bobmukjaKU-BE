@@ -6,9 +6,8 @@ import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberExceptionType;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
 import bobmukjaku.bobmukjakuDemo.domain.place.Review;
 import bobmukjaku.bobmukjakuDemo.domain.place.Scrap;
-import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewCreateDto;
-import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewDeleteDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewInfoDto;
+import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewDeleteDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.ScrapInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.repository.ReviewRepository;
 import bobmukjaku.bobmukjakuDemo.domain.place.repository.ScrapRepository;
@@ -49,9 +48,9 @@ public class PlaceService {
     }
 
     // 리뷰 등록
-    public void createReview(ReviewCreateDto reviewCreateDto) throws Exception {
-        Member member = memberRepository.findById(reviewCreateDto.getUid()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-        Review review = reviewCreateDto.toEntity(member);
+    public void createReview(ReviewInfoDto reviewInfoDto) throws Exception {
+        Member member = memberRepository.findById(reviewInfoDto.getUid()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        Review review = reviewInfoDto.toEntity(member);
         member.addReview(review);
     }
 

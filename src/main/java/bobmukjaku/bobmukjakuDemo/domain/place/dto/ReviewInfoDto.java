@@ -1,19 +1,32 @@
 package bobmukjaku.bobmukjakuDemo.domain.place.dto;
 
-import jakarta.persistence.Column;
+import bobmukjaku.bobmukjakuDemo.domain.member.Member;
+import bobmukjaku.bobmukjakuDemo.domain.place.Review;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
+@AllArgsConstructor
 public class ReviewInfoDto {
 
+    private String placeId;
+    private String placeName;
     @Column(columnDefinition = "TEXT")
-    private String contents; // 리뷰 내용
+    private String contents;
+    private String imageUrl;
+    private Long uid;
 
-    private String imageUrl; // 이미지 링크
+    public Review toEntity(Member member) {
+        return Review.builder()
+                .placeId(placeId)
+                .placeName(placeName)
+                .contents(contents)
+                .imageUrl(imageUrl)
+                .writer(member)
+                .build();
+    }
 
-    /*
-    * 필요에 맞춰 수정 예정
-    * */
 }

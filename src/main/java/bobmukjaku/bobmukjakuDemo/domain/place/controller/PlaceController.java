@@ -2,7 +2,6 @@ package bobmukjaku.bobmukjakuDemo.domain.place.controller;
 
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.*;
 import bobmukjaku.bobmukjakuDemo.domain.place.service.PlaceService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,8 +29,8 @@ public class PlaceController {
 
     // 리뷰 등록
     @PostMapping("/place/review")
-    public void createReview(@RequestBody ReviewCreateDto reviewCreateDto) throws Exception {
-        placeService.createReview(reviewCreateDto);
+    public void createReview(@RequestBody ReviewInfoDto reviewInfoDto) throws Exception {
+        placeService.createReview(reviewInfoDto);
     }
 
     // 리뷰 삭제

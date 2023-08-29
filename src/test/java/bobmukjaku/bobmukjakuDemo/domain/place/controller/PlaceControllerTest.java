@@ -165,8 +165,8 @@ public class PlaceControllerTest {
         String accessToken = login();
         Member member = memberRepository.findByMemberEmail(username).get();
 
-        Review review1 = Review.builder().placeId("음식점1").contents("너모 맛있어요").imageUrl("리뷰사진1 링크").writer(member).build();
-        Review review2 = Review.builder().placeId("음식점2").contents("너모 맛있어요2").imageUrl("리뷰사진2 링크").writer(member).build();
+        Review review1 = Review.builder().placeId("음식점1_id").placeName("음식점1").contents("너모 맛있어요").imageUrl("리뷰사진1 링크").writer(member).build();
+        Review review2 = Review.builder().placeId("음식점2_id").placeName("음식점2").contents("너모 맛있어요2").imageUrl("리뷰사진2 링크").writer(member).build();
         reviewRepository.save(review1);
         reviewRepository.save(review2);
         member.addReview(review1);

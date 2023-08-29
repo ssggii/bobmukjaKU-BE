@@ -36,7 +36,7 @@ public class Review {
     private Member writer; // 작성자
 
     public ReviewInfoDto toDto(Review review){
-        return ReviewInfoDto.builder().contents(review.contents).imageUrl(imageUrl).build();
+        return ReviewInfoDto.builder().uid(writer.getUid()).placeId(placeId).placeName(placeName).contents(contents).imageUrl(imageUrl).build();
     }
 
 }
