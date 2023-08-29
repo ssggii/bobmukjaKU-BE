@@ -221,7 +221,8 @@ public class PlaceControllerTest {
 
         Map<String, Object> map = new HashMap<>();
         map.put("uid", member.getUid());
-        map.put("placeId", "음식점1");
+        map.put("placeName", "음식점1");
+        map.put("placeId", "음식점1_id");
 
         // when
         mockMvc.perform(
