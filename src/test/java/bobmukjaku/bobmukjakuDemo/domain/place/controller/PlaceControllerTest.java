@@ -284,8 +284,8 @@ public class PlaceControllerTest {
         String accessToken = login();
         Member member = memberRepository.findByMemberEmail(username).get();
 
-        Scrap scrap1 = Scrap.builder().placeId("음식점1").member(member).build();
-        Scrap scrap2 = Scrap.builder().placeId("음식점2").member(member).build();
+        Scrap scrap1 = Scrap.builder().placeName("음식점1").placeId("음식점1_id").member(member).build();
+        Scrap scrap2 = Scrap.builder().placeName("음식점2").placeId("음식점2_id").member(member).build();
         member.addScrap(scrap1);
         member.addScrap(scrap2);
 
