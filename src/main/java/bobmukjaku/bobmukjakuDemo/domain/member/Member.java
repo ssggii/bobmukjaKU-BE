@@ -115,7 +115,7 @@ public class Member extends BaseTimeEntity {
     }
 
     // 리뷰 삭제
-    public void removeReview(Review review) {
+    public void deleteReview(Review review) {
         reviewList.remove(review);
     }
 

@@ -35,10 +35,9 @@ public class PlaceController {
     }
 
     // 리뷰 삭제
-    @DeleteMapping("/place/review/info")
-    @ResponseStatus(HttpStatus.OK)
-    public void deleteReview(@Valid @RequestBody ReviewDeleteDto reviewDeleteDto) throws Exception {
-        placeService.deleteReview(reviewDeleteDto.reviewId());
+    @PostMapping("/place/review/info")
+    public void deleteReview(@RequestBody ReviewDeleteDto reviewDeleteDto) throws Exception {
+        placeService.deleteReview(reviewDeleteDto);
     }
 
     // uid로 리뷰 조회

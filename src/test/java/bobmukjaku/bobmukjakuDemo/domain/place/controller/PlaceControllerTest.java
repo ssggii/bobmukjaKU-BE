@@ -128,21 +128,22 @@ public class PlaceControllerTest {
         String accessToken = login();
         Member member = memberRepository.findByMemberEmail(username).get();
 
-        Review review1 = Review.builder().placeId("음식점1").contents("너모 맛있어요").imageUrl("리뷰사진1 링크").writer(member).build();
-        Review review2 = Review.builder().placeId("음식점2").contents("너모 맛있어요2").imageUrl("리뷰사진2 링크").build();
+        Review review1 = Review.builder().placeId("음식점1_id").placeName("음식점1").contents("너모 맛있어요").imageUrl("리뷰사진1 링크").writer(member).build();
+        Review review2 = Review.builder().placeId("음식점2_id").placeName("음식점2").contents("너모 맛있어요2").imageUrl("리뷰사진2 링크").build();
         reviewRepository.save(review1);
         reviewRepository.save(review2);
         member.addReview(review1);
 
         Map<String, Object> map = new HashMap<>();
-        map.put("reviewId", review1.getReviewId());
+        map.put("uid", member.getUid());
+        map.put("placeId", review1.getPlaceId());
 
         assertThat(reviewRepository.findAll().size()).isEqualTo(2);
         assertThat(member.getReviewList().size()).isEqualTo(1);
 
         // when
         mockMvc.perform(
-                delete("/place/review/info")
+                post("/place/review/info")
                         .header(accessHeader, BEARER+accessToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(map))
@@ -151,7 +152,8 @@ public class PlaceControllerTest {
                 .andExpect(status().isOk());
 
         // then
-        assertThrows(Exception.class, ()->reviewRepository.findById(review1.getReviewId()).orElseThrow(()->new Exception("존재하지 않는 리뷰입니다")));
+        assertThat(reviewRepository.findAll().size()).isEqualTo(1);
+        assertThat(member.getReviewList().size()).isEqualTo(0);
 
     }
 

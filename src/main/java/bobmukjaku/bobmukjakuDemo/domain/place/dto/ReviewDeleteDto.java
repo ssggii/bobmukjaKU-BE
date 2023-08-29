@@ -2,5 +2,5 @@ package bobmukjaku.bobmukjakuDemo.domain.place.dto;
 
 import jakarta.validation.constraints.NotNull;
 
-public record ReviewDeleteDto(@NotNull Long reviewId) {
+public record ReviewDeleteDto(Long uid, String placeId) {
 }

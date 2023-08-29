@@ -7,6 +7,7 @@ import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
 import bobmukjaku.bobmukjakuDemo.domain.place.Review;
 import bobmukjaku.bobmukjakuDemo.domain.place.Scrap;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewCreateDto;
+import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewDeleteDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.ScrapInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.repository.ReviewRepository;
@@ -55,10 +56,15 @@ public class PlaceService {
     }
 
     // 리뷰 삭제
-    public void deleteReview(Long reviewId) throws Exception {
-        Review review = reviewRepository.findById(reviewId).orElseThrow(()->new RuntimeException("해당하는 리뷰 정보가 없습니다"));
-        review.getWriter().removeReview(review);
-        reviewRepository.delete(review);
+    public void deleteReview(ReviewDeleteDto reviewDeleteDto) throws Exception {
+        Member member = memberRepository.findById(reviewDeleteDto.uid()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        member.getReviewList().stream()
+                .filter(review -> review.getPlaceId().equals(reviewDeleteDto.placeId()))
+                .findFirst()
+                .ifPresent(review -> {
+                    review.getWriter().deleteReview(review);
+                    reviewRepository.delete(review);
+                });
     }
 
     // uid로 리뷰 조회
