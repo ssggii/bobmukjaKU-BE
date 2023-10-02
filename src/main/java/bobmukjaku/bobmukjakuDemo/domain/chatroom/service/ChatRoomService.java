@@ -179,8 +179,8 @@ public class ChatRoomService {
     //종료시간에 참여자들에게 알림을 보내도록 예약
     public void reserveNotification(Long roomId, LocalDate date, LocalTime time) throws Exception{
         Calendar endAt = Calendar.getInstance();
-        endAt.set(date.getYear(), date.getMonth().getValue()-1, date.getDayOfMonth(), time.getHour(), time.getMinute());
-        //endAt.set(2023,7,17,0,56);
+        //endAt.set(date.getYear(), date.getMonth().getValue()-1, date.getDayOfMonth(), time.getHour(), time.getMinute());
+        endAt.set(2023,9,2,18,2);
         Date taskTime = new Date(endAt.getTimeInMillis());
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -189,9 +189,10 @@ public class ChatRoomService {
                 //종료시간에 모집방id를 주제로 메시지(알림)을 전송하도록 작업 예약
                 String topic = roomId.toString();
                 Message message = Message.builder()
-                        .setNotification(Notification.builder().setTitle("제목" + topic).setBody("내용이다.").build())
-                        .setAndroidConfig(AndroidConfig.builder().setNotification(AndroidNotification.builder().setClickAction("FCM_EXE_ACTIVITY").build()).build())
-                        .putData("click_action", "FCM_EXE_ACTIVITY")
+                        //.setNotification(Notification.builder().setTitle("제목" + topic).setBody("내용이다.").build())
+                        //.setAndroidConfig(AndroidConfig.builder().setNotification(AndroidNotification.builder().setClickAction("FCM_EXE_ACTIVITY").build()).build())
+                        //.putData("click_action", "FCM_EXE_ACTIVITY")
+                        .putData("roomId", roomId.toString())
                         .setTopic(topic)
                         .build();
 
