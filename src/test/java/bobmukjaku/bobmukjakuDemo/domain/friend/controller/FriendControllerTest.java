@@ -130,6 +130,41 @@ public class FriendControllerTest {
         assertThat(memberRepository.findAll().size()).isEqualTo(2);
         assertThat(member.getFriendList().size()).isEqualTo(1);
         assertThat(member.getFriendList().get(0).getFriendId()).isEqualTo(friend.getUid());
+        assertThat(member.getFriendList().get(0).getIsBlock()).isEqualTo(false);
+
+    }
+
+    @Test
+    public void 차단_등록_성공() throws Exception {
+
+        // given
+        String signUpData = objectMapper.writeValueAsString(new MemberSignUpDto("username2@konkuk.ac.kr", "password2!@#", "ssggii2"));
+        mockMvc.perform(
+                        MockMvcRequestBuilders.post("/signUp")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(signUpData))
+                .andExpect(status().isOk());
+
+        signUp();
+        String accessToken = login();
+
+        Member member = memberRepository.findByMemberEmail(username).get();
+        Member friend = memberRepository.findByMemberEmail("username2@konkuk.ac.kr").get();
+        FriendUpdateDto friendUpdateDto = new FriendUpdateDto(friend.getUid());
+
+        // when
+        mockMvc.perform(post("/block/registering")
+                        .header(accessHeader, BEARER + accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(friendUpdateDto)))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        // then
+        assertThat(memberRepository.findAll().size()).isEqualTo(2);
+        assertThat(member.getFriendList().size()).isEqualTo(1);
+        assertThat(member.getFriendList().get(0).getFriendId()).isEqualTo(friend.getUid());
+        assertThat(member.getFriendList().get(0).getIsBlock()).isEqualTo(true);
 
     }
 }

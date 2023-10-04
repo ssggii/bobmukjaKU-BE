@@ -30,14 +30,14 @@ public class FriendController {
 
     // 친구 등록
     @PostMapping("/friend/registering")
-    public void createFriend(@RequestBody FriendUpdateDto friendInfoDto) throws Exception {
-        friendService.createFriend(friendInfoDto);
+    public void createFriend(@RequestBody FriendUpdateDto friendUpdateDto) throws Exception {
+        friendService.createFriend(friendUpdateDto);
     }
 
     // 친구 해제
     @PostMapping("/friend/removing")
-    public void deleteFriend(@RequestBody FriendUpdateDto friendInfoDto) throws Exception {
-        friendService.deleteFriend(friendInfoDto);
+    public void deleteFriend(@RequestBody FriendUpdateDto friendUpdateDto) throws Exception {
+        friendService.deleteFriend(friendUpdateDto);
     }
 
     // 내 친구 목록 조회
@@ -53,14 +53,14 @@ public class FriendController {
 
     // 차단 등록
     @PostMapping("/block/registering")
-    public void createBlock(@RequestBody FriendUpdateDto friendInfoDto) throws Exception {
-        friendService.createBlock(friendInfoDto);
+    public void createBlock(@RequestBody FriendUpdateDto friendUpdateDto) throws Exception {
+        friendService.createBlock(friendUpdateDto);
     }
 
     // 차단 해제
     @PostMapping("/block/removing")
-    public void deleteBlock(@RequestBody FriendUpdateDto friendInfoDto) throws Exception {
-        friendService.deleteBlock(friendInfoDto);
+    public void deleteBlock(@RequestBody FriendUpdateDto friendUpdateDto) throws Exception {
+        friendService.deleteBlock(friendUpdateDto);
     }
 
     // 내 차단 목록 조회
