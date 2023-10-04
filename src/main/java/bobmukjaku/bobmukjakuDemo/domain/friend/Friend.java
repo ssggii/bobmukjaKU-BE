@@ -5,23 +5,32 @@ import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Table(name = "friended")
+import static jakarta.persistence.FetchType.LAZY;
+
+@Table(name = "friend")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity
 @Builder
-public class Friended extends BaseTimeEntity {
+public class Friend extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // PK
+    private Long Id; // PK
 
-    @ManyToOne
-    @JoinColumn(name = "member_id") // FK
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "uid")
     private Member member;
 
-    @Column(name = "friended_id")
-    private Long friendedId;
+    @Column(name = "friend_id")
+    private Long friendId;
 
+    @Column(name = "is_block")
+    private Boolean isBlock; // 차단 - true, 친구 - false
+
+    // 친구 또는 차단 설정
+    public void setIsBlock(Boolean isBlock) {
+        this.isBlock = isBlock;
+    }
 }
