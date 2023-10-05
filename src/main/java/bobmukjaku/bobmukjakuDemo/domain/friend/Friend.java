@@ -24,7 +24,7 @@ public class Friend extends BaseTimeEntity {
     private Member member;
 
     @Column(name = "friend_id")
-    private Long friendId;
+    private Long friendUid;
 
     @Column(name = "is_block")
     private Boolean isBlock; // 차단 - true, 친구 - false

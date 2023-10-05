@@ -23,11 +23,12 @@ import java.util.stream.Collectors;
 public class FriendService {
 
     private final MemberRepository memberRepository;
+    private final FriendRepository friendRepository;
 
     // 친구 등록
     public void createFriend(FriendUpdateDto friendUpdateDto) throws Exception {
         Member member = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-        Friend friend = Friend.builder().member(member).friendId(friendUpdateDto.friendId()).build();
+        Friend friend = Friend.builder().member(member).friendUid(friendUpdateDto.friendUid()).build();
         friend.setIsBlock(false);
         member.addFriend(friend);
     }
@@ -36,13 +37,12 @@ public class FriendService {
     public void deleteFriend(FriendUpdateDto friendUpdateDto) throws Exception {
         Member member = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         Optional<Friend> friendToRemove = member.getFriendList().stream()
-                .filter(friend -> friend.getId().equals(friendUpdateDto.friendId()))
+                .filter(friend -> friend.getFriendUid().equals(friendUpdateDto.friendUid()))
                 .findFirst();
         if (friendToRemove.isPresent()) {
-            Friend friend = friendToRemove.get();
-            member.deleteFriend(friend);
+            member.deleteFriend(friendToRemove.get());
         } else {
-            throw new Exception("Friend not found with ID: " + friendUpdateDto.friendId());
+            throw new Exception("Friend not found with ID: " + friendUpdateDto.friendUid());
         }
     }
 
@@ -51,7 +51,7 @@ public class FriendService {
         Member member = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         List<Long> friendIdList = member.getFriendList().stream()
                 .filter(friend -> friend.getIsBlock().equals(false))
-                .map(friend -> friend.getFriendId()).collect(Collectors.toList());
+                .map(friend -> friend.getFriendUid()).collect(Collectors.toList());
 
         if(!friendIdList.isEmpty()){
             return friendIdList;
@@ -63,7 +63,7 @@ public class FriendService {
     // 차단 등록
     public void createBlock(FriendUpdateDto friendUpdateDto) throws Exception {
         Member member = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-        Friend block = Friend.builder().member(member).friendId(friendUpdateDto.friendId()).build();
+        Friend block = Friend.builder().member(member).friendUid(friendUpdateDto.friendUid()).build();
         block.setIsBlock(true);
         member.addFriend(block);
     }
@@ -72,12 +72,12 @@ public class FriendService {
     public void deleteBlock(FriendUpdateDto friendUpdateDto) throws Exception {
         Member member = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         Optional<Friend> blockToRemove = member.getFriendList().stream()
-                .filter(friend -> friend.getFriendId().equals(friendUpdateDto.friendId())).findFirst();
+                .filter(friend -> friend.getFriendUid().equals(friendUpdateDto.friendUid())).findFirst();
         if(blockToRemove.isPresent()){
             Friend block = blockToRemove.get();
             member.deleteFriend(block);
         } else {
-            throw new Exception("Blocked friend not found with ID: " + friendUpdateDto.friendId());
+            throw new Exception("Blocked friend not found with ID: " + friendUpdateDto.friendUid());
         }
     }
 
@@ -86,7 +86,7 @@ public class FriendService {
         Member member = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         List<Long> blockIdList = member.getFriendList().stream()
                 .filter(block -> block.getIsBlock().equals(true))
-                .map(block -> block.getFriendId()).collect(Collectors.toList());
+                .map(block -> block.getFriendUid()).collect(Collectors.toList());
 
         if(!blockIdList.isEmpty()){
             return blockIdList;

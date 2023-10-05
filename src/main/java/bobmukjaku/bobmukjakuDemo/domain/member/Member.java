@@ -79,7 +79,7 @@ public class Member extends BaseTimeEntity {
 
     // member-friend 연관관계 매핑
     @Builder.Default
-    @OneToMany(mappedBy = "member", cascade = ALL)
+    @OneToMany(mappedBy = "member")
     private List<Friend> friendList = new ArrayList<>();
 
     // 회원 가입 시 USER 권한 부여
@@ -142,7 +142,7 @@ public class Member extends BaseTimeEntity {
 
     // 친구(또는 차단) 해제
     public void deleteFriend(Friend friend) {
-        reviewList.remove(friend);
+        friendList.remove(friend);
     }
 
     /* 회원 정보 수정 */

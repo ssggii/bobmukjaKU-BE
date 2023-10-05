@@ -129,8 +129,41 @@ public class FriendControllerTest {
         // then
         assertThat(memberRepository.findAll().size()).isEqualTo(2);
         assertThat(member.getFriendList().size()).isEqualTo(1);
-        assertThat(member.getFriendList().get(0).getFriendId()).isEqualTo(friend.getUid());
+        assertThat(member.getFriendList().get(0).getFriendUid()).isEqualTo(friend.getUid());
         assertThat(member.getFriendList().get(0).getIsBlock()).isEqualTo(false);
+
+    }
+
+    @Test
+    public void 친구_해제_성공() throws Exception {
+
+        // given
+        signUp();
+        String accessToken = login();
+
+        String signUpData = objectMapper.writeValueAsString(new MemberSignUpDto("username2@konkuk.ac.kr", "password2!@#", "ssggii2"));
+        mockMvc.perform(
+                        MockMvcRequestBuilders.post("/signUp")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(signUpData))
+                .andExpect(status().isOk());
+
+        Member member1 = memberRepository.findByMemberEmail(username).get();
+        Member member2 = memberRepository.findByMemberEmail("username2@konkuk.ac.kr").get();
+        Friend friend = Friend.builder().member(member1).friendUid(member2.getUid()).isBlock(false).build();
+        member1.addFriend(friend);
+
+        // when
+        mockMvc.perform(post("/friend/removing")
+                        .header(accessHeader, BEARER + accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(new FriendUpdateDto(member2.getUid()))))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        // then
+        assertThat(memberRepository.findAll().size()).isEqualTo(2);
+        assertThat(member1.getFriendList().size()).isEqualTo(0);
 
     }
 
@@ -163,7 +196,7 @@ public class FriendControllerTest {
         // then
         assertThat(memberRepository.findAll().size()).isEqualTo(2);
         assertThat(member.getFriendList().size()).isEqualTo(1);
-        assertThat(member.getFriendList().get(0).getFriendId()).isEqualTo(friend.getUid());
+        assertThat(member.getFriendList().get(0).getFriendUid()).isEqualTo(friend.getUid());
         assertThat(member.getFriendList().get(0).getIsBlock()).isEqualTo(true);
 
     }
