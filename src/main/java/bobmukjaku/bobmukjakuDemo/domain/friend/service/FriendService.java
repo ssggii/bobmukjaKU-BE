@@ -28,8 +28,7 @@ public class FriendService {
     // 친구 등록
     public void createFriend(FriendUpdateDto friendUpdateDto) throws Exception {
         Member member = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-        Friend friend = Friend.builder().member(member).friendUid(friendUpdateDto.friendUid()).build();
-        friend.setIsBlock(false);
+        Friend friend = Friend.builder().member(member).friendUid(friendUpdateDto.friendUid()).isBlock(false).build();
         member.addFriend(friend);
     }
 
@@ -63,8 +62,7 @@ public class FriendService {
     // 차단 등록
     public void createBlock(FriendUpdateDto friendUpdateDto) throws Exception {
         Member member = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-        Friend block = Friend.builder().member(member).friendUid(friendUpdateDto.friendUid()).build();
-        block.setIsBlock(true);
+        Friend block = Friend.builder().member(member).friendUid(friendUpdateDto.friendUid()).isBlock(true).build();
         member.addFriend(block);
     }
 
