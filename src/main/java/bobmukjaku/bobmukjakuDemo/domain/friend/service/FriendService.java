@@ -46,14 +46,15 @@ public class FriendService {
     }
 
     // 내 친구 목록 조회
-    public List<Long> getMyFriends() throws Exception {
+    public List<FriendInfoDto> getMyFriends() throws Exception {
         Member member = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-        List<Long> friendIdList = member.getFriendList().stream()
+        List<FriendInfoDto> friendInfoList = member.getFriendList().stream()
                 .filter(friend -> friend.getIsBlock().equals(false))
-                .map(friend -> friend.getFriendUid()).collect(Collectors.toList());
+                .map(FriendInfoDto::toDto)
+                .collect(Collectors.toList());
 
-        if(!friendIdList.isEmpty()){
-            return friendIdList;
+        if(!friendInfoList.isEmpty()){
+            return friendInfoList;
         } else {
             return null;
         }

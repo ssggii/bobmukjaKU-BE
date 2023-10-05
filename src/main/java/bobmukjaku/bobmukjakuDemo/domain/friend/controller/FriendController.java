@@ -1,5 +1,6 @@
 package bobmukjaku.bobmukjakuDemo.domain.friend.controller;
 
+import bobmukjaku.bobmukjakuDemo.domain.friend.dto.FriendInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.friend.dto.FriendUpdateDto;
 import bobmukjaku.bobmukjakuDemo.domain.friend.service.FriendService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -43,9 +44,9 @@ public class FriendController {
     // 내 친구 목록 조회
     @GetMapping("/friend/all")
     public ResponseEntity getMyFriends(HttpServletResponse response) throws Exception {
-        List<Long> friendIdList = friendService.getMyFriends();
-        if(friendIdList != null && !friendIdList.isEmpty()){
-            return new ResponseEntity(friendIdList, HttpStatus.OK);
+        List<FriendInfoDto> friendInfoList = friendService.getMyFriends();
+        if(friendInfoList != null && !friendInfoList.isEmpty()){
+            return new ResponseEntity(friendInfoList, HttpStatus.OK);
         } else {
             return new ResponseEntity("등록된 친구가 없습니다", HttpStatus.OK);
         }

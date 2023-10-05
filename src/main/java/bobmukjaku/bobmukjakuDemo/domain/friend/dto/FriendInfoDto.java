@@ -13,10 +13,18 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class FriendInfoDto {
 
-    private Long id;
-    private Member member;
-    private Long friendId;
-    private Boolean isBlock;
+    private Long friendUid;
+    private String friendNickname;
+    private Integer friendRate;
+    private String friendProfileColor;
 
-    // 필요없을수도?
+    public static FriendInfoDto toDto(Friend friend) {
+        return FriendInfoDto.builder()
+                .friendUid(friend.getFriendUid())
+                .friendNickname(friend.getMember().getMemberNickName())
+                .friendRate(friend.getMember().getRate())
+                .friendProfileColor(friend.getMember().getProfileColor())
+                .build();
+    }
+
 }
