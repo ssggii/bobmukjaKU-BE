@@ -1,6 +1,7 @@
 package bobmukjaku.bobmukjakuDemo.domain.friend.service;
 
 import bobmukjaku.bobmukjakuDemo.domain.friend.Friend;
+import bobmukjaku.bobmukjakuDemo.domain.friend.dto.BlockInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.friend.dto.FriendInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.friend.dto.FriendUpdateDto;
 import bobmukjaku.bobmukjakuDemo.domain.friend.repository.FriendRepository;
@@ -48,13 +49,16 @@ public class FriendService {
     // 내 친구 목록 조회
     public List<FriendInfoDto> getMyFriends() throws Exception {
         Member member = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-        List<FriendInfoDto> friendInfoList = member.getFriendList().stream()
+        List<Member> friendMembers = member.getFriendList().stream()
                 .filter(friend -> friend.getIsBlock().equals(false))
-                .map(FriendInfoDto::toDto)
-                .collect(Collectors.toList());
+                .map(friend -> memberRepository.findById(friend.getFriendUid())
+                        .orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER)))
+                .toList();
 
-        if(!friendInfoList.isEmpty()){
-            return friendInfoList;
+        if(!friendMembers.isEmpty()){
+            return friendMembers.stream()
+                    .map(FriendInfoDto::toDto)
+                    .collect(Collectors.toList());
         } else {
             return null;
         }
@@ -81,14 +85,18 @@ public class FriendService {
     }
 
     // 내 차단 목록 조회
-    public List<Long> getMyBlocks() throws Exception {
+    public List<BlockInfoDto> getMyBlocks() throws Exception {
         Member member = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-        List<Long> blockIdList = member.getFriendList().stream()
-                .filter(block -> block.getIsBlock().equals(true))
-                .map(block -> block.getFriendUid()).collect(Collectors.toList());
+        List<Member> blockMembers = member.getFriendList().stream()
+                .filter(friend -> friend.getIsBlock().equals(true))
+                .map(friend -> memberRepository.findById(friend.getFriendUid())
+                        .orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER)))
+                .toList();
 
-        if(!blockIdList.isEmpty()){
-            return blockIdList;
+        if(!blockMembers.isEmpty()){
+            return blockMembers.stream()
+                    .map(BlockInfoDto::toDto)
+                    .collect(Collectors.toList());
         } else {
             return null;
         }

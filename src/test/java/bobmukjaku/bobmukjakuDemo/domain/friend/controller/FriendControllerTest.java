@@ -25,11 +25,13 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -135,40 +137,6 @@ public class FriendControllerTest {
     }
 
     @Test
-    public void 친구_해제_성공() throws Exception {
-
-        // given
-        signUp();
-        String accessToken = login();
-
-        String signUpData = objectMapper.writeValueAsString(new MemberSignUpDto("username2@konkuk.ac.kr", "password2!@#", "ssggii2"));
-        mockMvc.perform(
-                        MockMvcRequestBuilders.post("/signUp")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(signUpData))
-                .andExpect(status().isOk());
-
-        Member member1 = memberRepository.findByMemberEmail(username).get();
-        Member member2 = memberRepository.findByMemberEmail("username2@konkuk.ac.kr").get();
-        Friend friend = Friend.builder().member(member1).friendUid(member2.getUid()).isBlock(false).build();
-        member1.addFriend(friend);
-        System.out.println("친구 해제 전 friendList 요소 개수 : " + member1.getFriendList().size());
-
-        // when
-        mockMvc.perform(post("/friend/removing")
-                        .header(accessHeader, BEARER + accessToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(new FriendUpdateDto(member2.getUid()))))
-                .andDo(print())
-                .andExpect(status().isOk());
-
-        // then
-        assertThat(memberRepository.findAll().size()).isEqualTo(2);
-        assertThat(member1.getFriendList().size()).isEqualTo(0);
-
-    }
-
-    @Test
     public void 차단_등록_성공() throws Exception {
 
         // given
@@ -203,6 +171,40 @@ public class FriendControllerTest {
     }
 
     @Test
+    public void 친구_해제_성공() throws Exception {
+
+        // given
+        signUp();
+        String accessToken = login();
+
+        String signUpData = objectMapper.writeValueAsString(new MemberSignUpDto("username2@konkuk.ac.kr", "password2!@#", "ssggii2"));
+        mockMvc.perform(
+                        MockMvcRequestBuilders.post("/signUp")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(signUpData))
+                .andExpect(status().isOk());
+
+        Member member1 = memberRepository.findByMemberEmail(username).get();
+        Member member2 = memberRepository.findByMemberEmail("username2@konkuk.ac.kr").get();
+        Friend friend = Friend.builder().member(member1).friendUid(member2.getUid()).isBlock(false).build();
+        member1.addFriend(friend);
+        System.out.println("친구 해제 전 friendList 요소 개수 : " + member1.getFriendList().size());
+
+        // when
+        mockMvc.perform(post("/friend/removing")
+                        .header(accessHeader, BEARER + accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(new FriendUpdateDto(member2.getUid()))))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        // then
+        assertThat(memberRepository.findAll().size()).isEqualTo(2);
+        assertThat(member1.getFriendList().size()).isEqualTo(0);
+
+    }
+
+    @Test
     public void 차단_해제_성공() throws Exception {
 
         // given
@@ -233,6 +235,94 @@ public class FriendControllerTest {
         // then
         assertThat(memberRepository.findAll().size()).isEqualTo(2);
         assertThat(member1.getFriendList().size()).isEqualTo(0);
+
+    }
+
+    @Test
+    public void 친구_목록_조회_성공() throws Exception {
+
+        // given
+        String signUpData = objectMapper.writeValueAsString(new MemberSignUpDto("username2@konkuk.ac.kr", "password2!@#", "ssggii2"));
+        mockMvc.perform(
+                        MockMvcRequestBuilders.post("/signUp")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(signUpData))
+                .andExpect(status().isOk());
+
+        String signUpData2 = objectMapper.writeValueAsString(new MemberSignUpDto("username3@konkuk.ac.kr", "password2!@#", "ssggii3"));
+        mockMvc.perform(
+                        MockMvcRequestBuilders.post("/signUp")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(signUpData2))
+                .andExpect(status().isOk());
+
+        signUp();
+        String accessToken = login();
+
+        Member member1 = memberRepository.findByMemberEmail(username).get();
+        Member member2 = memberRepository.findByMemberEmail("username2@konkuk.ac.kr").get();
+        Member member3 = memberRepository.findByMemberEmail("username3@konkuk.ac.kr").get();
+
+        Friend friend1 = Friend.builder().friendUid(member2.getUid()).member(member1).isBlock(false).build();
+        Friend friend2 = Friend.builder().friendUid(member3.getUid()).member(member1).isBlock(false).build();
+        member1.addFriend(friend1);
+        member1.addFriend(friend2);
+
+        assertThat(memberRepository.findAll().size()).isEqualTo(3);
+        assertThat(member1.getFriendList().size()).isEqualTo(2);
+
+        // when
+        mockMvc.perform(
+                get("/friend/all")
+                        .header(accessHeader, BEARER + accessToken)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+    }
+
+    @Test
+    public void 차단_목록_조회_성공() throws Exception {
+
+        // given
+        String signUpData = objectMapper.writeValueAsString(new MemberSignUpDto("username2@konkuk.ac.kr", "password2!@#", "ssggii2"));
+        mockMvc.perform(
+                        MockMvcRequestBuilders.post("/signUp")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(signUpData))
+                .andExpect(status().isOk());
+
+        String signUpData2 = objectMapper.writeValueAsString(new MemberSignUpDto("username3@konkuk.ac.kr", "password2!@#", "ssggii3"));
+        mockMvc.perform(
+                        MockMvcRequestBuilders.post("/signUp")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(signUpData2))
+                .andExpect(status().isOk());
+
+        signUp();
+        String accessToken = login();
+
+        Member member1 = memberRepository.findByMemberEmail(username).get();
+        Member member2 = memberRepository.findByMemberEmail("username2@konkuk.ac.kr").get();
+        Member member3 = memberRepository.findByMemberEmail("username3@konkuk.ac.kr").get();
+
+        Friend friend1 = Friend.builder().friendUid(member2.getUid()).member(member1).isBlock(true).build();
+        Friend friend2 = Friend.builder().friendUid(member3.getUid()).member(member1).isBlock(true).build();
+        member1.addFriend(friend1);
+        member1.addFriend(friend2);
+
+        assertThat(memberRepository.findAll().size()).isEqualTo(3);
+        assertThat(member1.getFriendList().size()).isEqualTo(2);
+
+        // when
+        mockMvc.perform(
+                        get("/block/all")
+                                .header(accessHeader, BEARER + accessToken)
+                                .characterEncoding(StandardCharsets.UTF_8)
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
 
     }
 }

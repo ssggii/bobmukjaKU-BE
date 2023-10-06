@@ -29,8 +29,4 @@ public class Friend extends BaseTimeEntity {
     @Column(name = "is_block")
     private Boolean isBlock; // 차단 - true, 친구 - false
 
-    // 친구 또는 차단 설정
-    public void setIsBlock(Boolean isBlock) {
-        this.isBlock = isBlock;
-    }
 }

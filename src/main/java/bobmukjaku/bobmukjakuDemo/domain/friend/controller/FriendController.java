@@ -1,5 +1,6 @@
 package bobmukjaku.bobmukjakuDemo.domain.friend.controller;
 
+import bobmukjaku.bobmukjakuDemo.domain.friend.dto.BlockInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.friend.dto.FriendInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.friend.dto.FriendUpdateDto;
 import bobmukjaku.bobmukjakuDemo.domain.friend.service.FriendService;
@@ -67,11 +68,11 @@ public class FriendController {
     // 내 차단 목록 조회
     @GetMapping("/block/all")
     public ResponseEntity getMyBlocks(HttpServletResponse response) throws Exception {
-        List<Long> blockIdList = friendService.getMyBlocks();
-        if(blockIdList != null && !blockIdList.isEmpty()){
-            return new ResponseEntity(blockIdList, HttpStatus.OK);
+        List<BlockInfoDto> blockInfoList = friendService.getMyBlocks();
+        if(blockInfoList != null && !blockInfoList.isEmpty()){
+            return new ResponseEntity(blockInfoList, HttpStatus.OK);
         } else {
-            return new ResponseEntity("등록된 친구가 없습니다", HttpStatus.OK);
+            return new ResponseEntity("차단한 사용자가 없습니다", HttpStatus.OK);
         }
     }
 }
