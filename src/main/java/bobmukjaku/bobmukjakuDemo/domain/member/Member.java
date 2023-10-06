@@ -1,6 +1,7 @@
 package bobmukjaku.bobmukjakuDemo.domain.member;
 
 import bobmukjaku.bobmukjakuDemo.BaseTimeEntity;
+import bobmukjaku.bobmukjakuDemo.domain.friend.Friend;
 import bobmukjaku.bobmukjakuDemo.domain.memberchatroom.MemberChatRoom;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoom;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.FilterInfo;
@@ -58,7 +59,7 @@ public class Member extends BaseTimeEntity {
 
     // member-filterInfo 연관관계 매핑
     @Builder.Default
-    @OneToMany(mappedBy = "member", cascade = ALL) // orphanremoval 옵션 수정
+    @OneToMany(mappedBy = "member", cascade = ALL)
     private List<FilterInfo> filterList = new ArrayList<>();
 
     // member-timeblock 연관관계 매핑
@@ -75,6 +76,11 @@ public class Member extends BaseTimeEntity {
     @Builder.Default
     @OneToMany(mappedBy = "member", cascade = ALL)
     private List<Scrap> scrapList = new ArrayList<>();
+
+    // member-friend 연관관계 매핑
+    @Builder.Default
+    @OneToMany(mappedBy = "member")
+    private List<Friend> friendList = new ArrayList<>();
 
     // 회원 가입 시 USER 권한 부여
     public void giveUserAuthority(){
@@ -127,6 +133,16 @@ public class Member extends BaseTimeEntity {
     // 스크랩 삭제
     public void deleteScrap(Scrap scrap) {
         scrapList.remove(scrap);
+    }
+
+    // 친구(또는 차단) 등록
+    public void addFriend(Friend friend) {
+        friendList.add(friend);
+    }
+
+    // 친구(또는 차단) 해제
+    public void deleteFriend(Friend friend) {
+        friendList.remove(friend);
     }
 
     /* 회원 정보 수정 */

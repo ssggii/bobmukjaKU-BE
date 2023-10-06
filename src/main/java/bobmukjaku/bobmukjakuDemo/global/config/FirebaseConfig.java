@@ -19,7 +19,6 @@ public class FirebaseConfig {
             FileInputStream serviceAccount = new FileInputStream(
                     //파이어베이스에서 발급받은 json파일의 경로를 명시
                     "D:/tools/spring/projects/bobmukjakuDemo/src/main/resources/serviceAccountKey.json"
-//                    "D:/home/study/bobmukjaKU-spring/bobmukjaKU-BE/serviceAccountKey.json"
             );
 
             FirebaseOptions options = new FirebaseOptions.Builder()

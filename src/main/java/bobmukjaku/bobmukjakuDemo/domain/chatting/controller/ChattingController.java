@@ -23,7 +23,7 @@ public class ChattingController {
         String message = md.getMessage();
         if(chattingService.inspectBadWord(md.getMessage())){
             System.out.println("욕설감지\n");
-            md.setMessage("##### " + message );
+            md.setMessage("부적절한 표현이 감지되었습니다");
         }
         chattingService.sendMessageToFireBase(md);
         return ResponseEntity.ok().build();
