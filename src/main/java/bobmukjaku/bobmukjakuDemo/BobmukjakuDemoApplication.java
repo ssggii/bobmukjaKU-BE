@@ -13,5 +13,4 @@ public class BobmukjakuDemoApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(BobmukjakuDemoApplication.class, args);
 	}
-
 }

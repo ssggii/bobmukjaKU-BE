@@ -19,11 +19,14 @@ public class ChattingController {
     @PutMapping("/message")
     @ResponseBody
     public ResponseEntity<Object> sendMessageToFireBase(@RequestBody ChatModel md) throws Exception {
-        //플라스크에 요청을 보내서 메시지 욕설 여부 확인
-        String message = md.getMessage();
-        if(chattingService.inspectBadWord(md.getMessage())){
-            System.out.println("욕설감지\n");
-            md.setMessage("부적절한 표현이 감지되었습니다");
+        if(!md.getShareMessage()) {
+            //플라스크에 요청을 보내서 메시지 욕설 여부 확인
+            /*String message = md.getMessage();
+            if (chattingService.inspectBadWord(md.getMessage())) {
+                System.out.println("욕설감지\n");
+                md.setMessage("##### " + message);
+            }*/
+            System.out.println("일반메시지\n");
         }
         chattingService.sendMessageToFireBase(md);
         return ResponseEntity.ok().build();
