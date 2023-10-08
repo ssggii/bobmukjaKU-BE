@@ -90,13 +90,14 @@ public class ChatRoomController {
             filterInfoList = chatRoomService.updateFilterInfo(filters); // 인자로 받은 리스트를 현재 필터 목록으로 업데이트
             chatRoomInfoDtoList = chatRoomService.getChatRoomsFiltered(filterInfoList); // 필터링 결과 반환
             if(chatRoomInfoDtoList == null || chatRoomInfoDtoList.isEmpty()){
-                return new ResponseEntity("검색 결과가 없습니다", HttpStatus.NOT_FOUND);
+                return new ResponseEntity("검색 결과가 없습니다", HttpStatus.OK);
             }
         } else {
             return new ResponseEntity("인자가 null 또는 빈 리스트입니다.", HttpStatus.BAD_REQUEST);
         }
 
         return new ResponseEntity(chatRoomInfoDtoList, HttpStatus.OK);
+
     }
 
     // 필터 조회

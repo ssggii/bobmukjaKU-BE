@@ -32,6 +32,8 @@ public class ChatRoomSpecification {
     * - 음식 종류로 검색
     * - 정원 수로 검색
     * - 시간표 데이터로 검색
+    * - 친구가 참여 중인 모집방 검색
+    * - 차단한 사용자가 참여 중인 모집방 검색
     *
     * 2. 다중 조건 필터링
     * - 필터링 (최종)
@@ -115,8 +117,8 @@ public class ChatRoomSpecification {
     }
 
     // 시간표로 필터링
-    public static Specification<ChatRoom> filteredByTimeTable(MemberRepository memberRepository, Long uid){
-        Member member = memberRepository.findById(uid).get();
+    public static Specification<ChatRoom> filteredByTimeTable(MemberRepository memberRepository, Long uid) {
+        Member member = memberRepository.findById(uid).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         List<TimeBlock> timeBlockList = member.getTimeBlockList();
         Specification<ChatRoom> specification = Specification.where(null);
 
@@ -128,13 +130,15 @@ public class ChatRoomSpecification {
     }
 
     // 친구가 참여 중인 모집방 필터링
-    public static Specification<ChatRoom> filteredByFriend() {
-        /*Member member = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-        List<Long> friendIdList = member.getFriendList().stream().map(Friend::getFriendUid).toList(); // 사용자의 친구 uid 추출
-        for(Long friendUid : friendIdList){
-            chatRoomRepository.find
-        }*/
-        return null;
+    public static Specification<ChatRoom> filteredByFriend(MemberRepository memberRepository, Long uid) {
+        Member member = memberRepository.findById(uid).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        List<Long> friendUidList = member.getFriendList().stream().map(Friend::getFriendUid).toList(); // 사용자의 친구 uid 추출
+
+        Specification<ChatRoom> specification = Specification.where(null);
+        for(Long friendUid : friendUidList){
+            specification = specification.or(filteredByParticipantUid(friendUid));
+        }
+        return specification;
     }
 
     // 사용자의 uid로 참여 중인 모집방 필터링
@@ -179,7 +183,7 @@ public class ChatRoomSpecification {
                 specification = ChatRoomSpecification.filteredByTimeTable(memberRepository, Long.valueOf(filterValue));
                 break;
             case "friend":
-                specification = ChatRoomSpecification.filteredByFriend();
+                specification = ChatRoomSpecification.filteredByFriend(memberRepository, Long.valueOf(filterValue));
                 break;
             case "block":
                 specification = ChatRoomSpecification.filteredByBlock();
