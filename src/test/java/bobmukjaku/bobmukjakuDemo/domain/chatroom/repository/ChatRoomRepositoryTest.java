@@ -5,6 +5,8 @@ import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoomSpecification;
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import bobmukjaku.bobmukjakuDemo.domain.member.TimeBlock;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
+import bobmukjaku.bobmukjakuDemo.domain.memberchatroom.MemberChatRoom;
+import bobmukjaku.bobmukjakuDemo.domain.memberchatroom.repository.MemberChatRoomRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,6 +21,7 @@ import java.util.List;
 import static bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoomSpecification.betweenTime;
 import static bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoomSpecification.equalDayOfWeek;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @Transactional
@@ -29,6 +32,9 @@ public class ChatRoomRepositoryTest {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private MemberChatRoomRepository memberChatRoomRepository;
 
     @Test
     public void 요일_필터링_성공() {
@@ -191,5 +197,34 @@ public class ChatRoomRepositoryTest {
         filteredChatRooms.stream().map(chatRoom -> chatRoom.getRoomName()).forEach(System.out::println);
         assertThat(filteredChatRooms.size()).isEqualTo(2);
 
+    }
+
+    @Test
+    public void 참여자_uid로_모집방_필터링() throws Exception {
+
+        // given
+        Member member = Member.builder().memberEmail("username@konkuk.ac.kr").memberPassword("password1!@").memberNickName("ssggii").build();
+        ChatRoom chatRoom1 = ChatRoom.builder().roomName("모집방1").build();
+        ChatRoom chatRoom2 = ChatRoom.builder().roomName("모집방2").build();
+        ChatRoom chatRoom3 = ChatRoom.builder().roomName("모집방3").build();
+        MemberChatRoom memberChatRoom2 = new MemberChatRoom(member, chatRoom2);
+        MemberChatRoom memberChatRoom3 = new MemberChatRoom(member, chatRoom3);
+
+        memberRepository.save(member);
+        chatRoomRepository.save(chatRoom1);
+        chatRoomRepository.save(chatRoom2);
+        chatRoomRepository.save(chatRoom3);
+
+        chatRoom2.addParticipant(memberChatRoom2);
+        chatRoom3.addParticipant(memberChatRoom3);
+        member.addChatRoom(memberChatRoom2);
+        member.addChatRoom(memberChatRoom3);
+
+        // when
+        List<ChatRoom> filteredChatRooms = chatRoomRepository.findAll(ChatRoomSpecification.filteredByParticipantUid(member.getUid()));
+
+        // then
+        assertEquals(2, filteredChatRooms.size());
+        filteredChatRooms.stream().map(ChatRoom::getRoomName).forEach(System.out::println);
     }
 }

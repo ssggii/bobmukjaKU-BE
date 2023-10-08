@@ -1,15 +1,22 @@
 package bobmukjaku.bobmukjakuDemo.domain.chatroom;
 
+import bobmukjaku.bobmukjakuDemo.domain.friend.Friend;
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import bobmukjaku.bobmukjakuDemo.domain.member.TimeBlock;
+import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberException;
+import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberExceptionType;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
+import bobmukjaku.bobmukjakuDemo.domain.memberchatroom.MemberChatRoom;
+import bobmukjaku.bobmukjakuDemo.domain.memberchatroom.repository.MemberChatRoomRepository;
 import bobmukjaku.bobmukjakuDemo.global.utility.SecurityUtil;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.sql.Time;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ChatRoomSpecification {
@@ -26,7 +33,7 @@ public class ChatRoomSpecification {
     * - 정원 수로 검색
     * - 시간표 데이터로 검색
     *
-    *  2. 다중 조건 필터링
+    * 2. 다중 조건 필터링
     * - 필터링 (최종)
     * */
 
@@ -75,7 +82,6 @@ public class ChatRoomSpecification {
 
     // 시간 필터링
     public static Specification<ChatRoom> betweenTime(LocalTime blockStartTime) {
-
         // ChatRoom의 startTime 값이 inputTime ~ inputTime+30분 사이에 있으면 해당 chatroom 반환하는 조건
         return (root, query, criteriaBuilder) -> {
             LocalTime blockEndTime = blockStartTime.plusMinutes(30);
@@ -121,6 +127,32 @@ public class ChatRoomSpecification {
         return specification;
     }
 
+    // 친구가 참여 중인 모집방 필터링
+    public static Specification<ChatRoom> filteredByFriend() {
+        /*Member member = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        List<Long> friendIdList = member.getFriendList().stream().map(Friend::getFriendUid).toList(); // 사용자의 친구 uid 추출
+        for(Long friendUid : friendIdList){
+            chatRoomRepository.find
+        }*/
+        return null;
+    }
+
+    // 사용자의 uid로 참여 중인 모집방 필터링
+    public static Specification<ChatRoom> filteredByParticipantUid(Long uid) {
+        return (root, query, criteriaBuilder) -> {
+            root.join("participants"); // ChatRoom 엔티티와 MemberChatRoom 엔티티 조인
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(criteriaBuilder.equal(root.get("participants").get("joiner").get("uid"), uid)); // 참여자 uid와 일치하는 ChatRoom 필터링
+            Predicate[] predicateArray = predicates.toArray(predicates.toArray(new Predicate[0])); // OR 조건으로 Predicate 결합
+            return criteriaBuilder.or(predicateArray);
+        };
+    }
+
+    // 차단한 사용자가 참여 중인 모집방 필터링
+    public static Specification<ChatRoom> filteredByBlock() {
+        return null;
+    }
+
     // FilterInfo 객체로부터 Specification 생성
     public static Specification<ChatRoom> createSpecification(FilterInfo filter, MemberRepository memberRepository) {
         String filterType = filter.getFilterType();
@@ -145,6 +177,13 @@ public class ChatRoomSpecification {
                 break;
             case "timeTable":
                 specification = ChatRoomSpecification.filteredByTimeTable(memberRepository, Long.valueOf(filterValue));
+                break;
+            case "friend":
+                specification = ChatRoomSpecification.filteredByFriend();
+                break;
+            case "block":
+                specification = ChatRoomSpecification.filteredByBlock();
+                break;
             default:
                 break; // 유효한 필터 타입이 아닐 경우 null 반환
         }

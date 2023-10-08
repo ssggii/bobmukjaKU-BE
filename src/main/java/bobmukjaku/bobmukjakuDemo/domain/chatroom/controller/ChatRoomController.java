@@ -27,7 +27,7 @@ public class ChatRoomController {
      * 모집방 개설
      * 모집방 참여자 추가
      * 모집방 조회 - 전체 조회, 방 id로 모집방 조회, 방 id로 참여자 조회, uid로 참여 중인 모집방 조회
-     * 모집방 필터링 - 종합 필터링
+     * 모집방 필터링
      * 모집방 삭제 - 자동 종료, 모집방 나가기
      * 메시지 전송
      * 필터목록 조회
@@ -83,8 +83,8 @@ public class ChatRoomController {
     @PostMapping("/chatRooms/filtered")
     public ResponseEntity getFilteredChatRooms(@RequestBody List<FilterInfoDto> filters) throws Exception {
 
-        List<FilterInfo> filterInfoList = new ArrayList<>();
-        List<ChatRoomInfoDto> chatRoomInfoDtoList = new ArrayList<>();
+        List<FilterInfo> filterInfoList;
+        List<ChatRoomInfoDto> chatRoomInfoDtoList;
 
         if(filters != null && !filters.isEmpty()){
             filterInfoList = chatRoomService.updateFilterInfo(filters); // 인자로 받은 리스트를 현재 필터 목록으로 업데이트
