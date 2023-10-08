@@ -688,4 +688,65 @@ public class ChatRoomControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    public void 차단사용자가_참여중인_모집방_필터링_성공() throws Exception {
+        // given
+        signUp();
+        String accessToken = login();
+        Member member = memberRepository.findByMemberEmail(username).get();
+        String uid = String.valueOf(member.getUid());
+
+        // 친구 1,2 생성
+        Member member1 = Member.builder().memberNickName("friend1").memberEmail("friend1@konkuk.ac.kr").memberPassword("password1!@").build();
+        Member member2 = Member.builder().memberNickName("friend2").memberEmail("friend2@konkuk.ac.kr").memberPassword("password1!@").build();
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        member.addFriend(Friend.builder().member(member).friendUid(member1.getUid()).isBlock(true).build());
+        member.addFriend(Friend.builder().member(member).friendUid(member2.getUid()).isBlock(false).build());
+
+        // 모집방 1~4 생성
+        ChatRoomCreateDto chatRoomCreateDto1 = new ChatRoomCreateDto("모집방1", "2023-08-17", "17:20", "19:30", "한식", 4);
+        ChatRoomCreateDto chatRoomCreateDto2 = new ChatRoomCreateDto("모집방2", "2023-08-17", "17:30", "19:30", "한식", 4);
+        ChatRoomCreateDto chatRoomCreateDto3 = new ChatRoomCreateDto("모집방3", "2023-08-17", "18:30", "19:30", "일식", 4);
+        ChatRoomCreateDto chatRoomCreateDto4 = new ChatRoomCreateDto("모집방4", "2023-08-08", "17:30", "19:30", "한식", 4);
+        ChatRoom chatRoom1 = chatRoomCreateDto1.toEntity();
+        ChatRoom chatRoom2 = chatRoomCreateDto2.toEntity();
+        ChatRoom chatRoom3 = chatRoomCreateDto3.toEntity();
+        ChatRoom chatRoom4 = chatRoomCreateDto4.toEntity();
+        List<ChatRoom> initial = Arrays.asList(chatRoom1, chatRoom2, chatRoom3, chatRoom4);
+        chatRoomRepository.saveAll(initial);
+
+        assertThat(memberRepository.findAll().size()).isEqualTo(3);
+        assertThat(chatRoomRepository.findAll().size()).isEqualTo(4);
+        assertThat(member.getFriendList().stream().filter(friend -> friend.getIsBlock().equals(true))).size().isEqualTo(1);
+
+        // 차단사용자 모집방 1,2 참여
+        MemberChatRoom memberChatRoom1 = new MemberChatRoom(member1, chatRoom1);
+        MemberChatRoom memberChatRoom2 = new MemberChatRoom(member1, chatRoom2);
+        member1.addChatRoom(memberChatRoom1);
+        chatRoom1.addParticipant(memberChatRoom1);
+        member1.addChatRoom(memberChatRoom2);
+        chatRoom2.addParticipant(memberChatRoom2);
+
+        // 친구 모집방 2,3 참여
+        MemberChatRoom memberChatRoom3 = new MemberChatRoom(member2, chatRoom2);
+        MemberChatRoom memberChatRoom4 = new MemberChatRoom(member2, chatRoom3);
+        member2.addChatRoom(memberChatRoom3);
+        chatRoom2.addParticipant(memberChatRoom3);
+        member2.addChatRoom(memberChatRoom4);
+        chatRoom3.addParticipant(memberChatRoom4);
+
+        // 차단한 사용자가 참여하는 모집방을 필터링 조건으로 선택했을 때
+        List<FilterInfoDto> filters = new ArrayList<>();
+        filters.add(new FilterInfoDto("block", uid));
+
+        // when, then
+        mockMvc.perform(post("/chatRooms/filtered")
+                        .header(accessHeader, BEARER+accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(filters)))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
 }

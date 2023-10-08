@@ -129,18 +129,6 @@ public class ChatRoomSpecification {
         return specification;
     }
 
-    // 친구가 참여 중인 모집방 필터링
-    public static Specification<ChatRoom> filteredByFriend(MemberRepository memberRepository, Long uid) {
-        Member member = memberRepository.findById(uid).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-        List<Long> friendUidList = member.getFriendList().stream().map(Friend::getFriendUid).toList(); // 사용자의 친구 uid 추출
-
-        Specification<ChatRoom> specification = Specification.where(null);
-        for(Long friendUid : friendUidList){
-            specification = specification.or(filteredByParticipantUid(friendUid));
-        }
-        return specification;
-    }
-
     // 사용자의 uid로 참여 중인 모집방 필터링
     public static Specification<ChatRoom> filteredByParticipantUid(Long uid) {
         return (root, query, criteriaBuilder) -> {
@@ -152,9 +140,32 @@ public class ChatRoomSpecification {
         };
     }
 
+    // 친구가 참여 중인 모집방 필터링
+    public static Specification<ChatRoom> filteredByFriend(MemberRepository memberRepository, Long uid) {
+        Member member = memberRepository.findById(uid).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        List<Long> friendUidList = member.getFriendList().stream()
+                .filter(friend -> friend.getIsBlock().equals(false)) // 사용자의 친구 uid 추출
+                .map(Friend::getFriendUid).toList();
+
+        Specification<ChatRoom> specification = Specification.where(null);
+        for(Long friendUid : friendUidList){
+            specification = specification.or(filteredByParticipantUid(friendUid));
+        }
+        return specification;
+    }
+
     // 차단한 사용자가 참여 중인 모집방 필터링
-    public static Specification<ChatRoom> filteredByBlock() {
-        return null;
+    public static Specification<ChatRoom> filteredByBlock(MemberRepository memberRepository, Long uid) {
+        Member member = memberRepository.findById(uid).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        List<Long> blockUidList = member.getFriendList().stream()
+                .filter(friend -> friend.getIsBlock().equals(true)) // 사용자가 차단한 사용자 uid 추출
+                .map(Friend::getFriendUid).toList();
+
+        Specification<ChatRoom> specification = Specification.where(null);
+        for(Long blockUid : blockUidList){
+            specification = specification.or(filteredByParticipantUid(blockUid));
+        }
+        return specification;
     }
 
     // FilterInfo 객체로부터 Specification 생성
@@ -186,7 +197,7 @@ public class ChatRoomSpecification {
                 specification = ChatRoomSpecification.filteredByFriend(memberRepository, Long.valueOf(filterValue));
                 break;
             case "block":
-                specification = ChatRoomSpecification.filteredByBlock();
+                specification = ChatRoomSpecification.filteredByBlock(memberRepository, Long.valueOf(filterValue));
                 break;
             default:
                 break; // 유효한 필터 타입이 아닐 경우 null 반환
