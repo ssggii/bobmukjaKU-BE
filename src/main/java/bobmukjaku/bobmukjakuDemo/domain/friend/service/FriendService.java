@@ -30,6 +30,7 @@ public class FriendService {
     public void createFriend(FriendUpdateDto friendUpdateDto) throws Exception {
         Member member = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         Friend friend = Friend.builder().member(member).friendUid(friendUpdateDto.friendUid()).isBlock(false).build();
+        friendRepository.save(friend);
         member.addFriend(friend);
     }
 
@@ -41,6 +42,7 @@ public class FriendService {
                 .findFirst();
         if (friendToRemove.isPresent()) {
             member.deleteFriend(friendToRemove.get());
+            friendRepository.delete(friendToRemove.get());
         } else {
             throw new Exception("Friend not found with ID: " + friendUpdateDto.friendUid());
         }
@@ -68,6 +70,7 @@ public class FriendService {
     public void createBlock(FriendUpdateDto friendUpdateDto) throws Exception {
         Member member = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         Friend block = Friend.builder().member(member).friendUid(friendUpdateDto.friendUid()).isBlock(true).build();
+        friendRepository.save(block);
         member.addFriend(block);
     }
 
@@ -78,6 +81,7 @@ public class FriendService {
                 .filter(friend -> friend.getFriendUid().equals(friendUpdateDto.friendUid())).findFirst();
         if(blockToRemove.isPresent()){
             Friend block = blockToRemove.get();
+            friendRepository.delete(block);
             member.deleteFriend(block);
         } else {
             throw new Exception("Blocked friend not found with ID: " + friendUpdateDto.friendUid());
