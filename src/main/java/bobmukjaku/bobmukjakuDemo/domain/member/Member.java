@@ -54,7 +54,7 @@ public class Member extends BaseTimeEntity {
 
     // member-chatroom 연관관계 매핑
     @Builder.Default
-    @OneToMany(mappedBy = "joiner", cascade = ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "joiner", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, orphanRemoval = true)
     private List<MemberChatRoom> joiningRooms = new ArrayList<>();
 
     // member-filterInfo 연관관계 매핑

@@ -6,14 +6,9 @@ import bobmukjaku.bobmukjakuDemo.domain.member.TimeBlock;
 import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberException;
 import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberExceptionType;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
-import bobmukjaku.bobmukjakuDemo.domain.memberchatroom.MemberChatRoom;
-import bobmukjaku.bobmukjakuDemo.domain.memberchatroom.repository.MemberChatRoomRepository;
-import bobmukjaku.bobmukjakuDemo.global.utility.SecurityUtil;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.sql.Time;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -34,6 +29,7 @@ public class ChatRoomSpecification {
     * - 시간표 데이터로 검색
     * - 친구가 참여 중인 모집방 검색
     * - 차단한 사용자가 참여 중인 모집방 검색
+    * - 모임 종료 시간이 현재 시간보다 이전인 모집방 검색
     *
     * 2. 다중 조건 필터링
     * - 필터링 (최종)
@@ -166,6 +162,26 @@ public class ChatRoomSpecification {
             specification = specification.or(filteredByParticipantUid(blockUid));
         }
         return specification;
+    }
+
+    // 모임 종료 시간이 현재 시간보다 이전인 모집방 검색
+    public static Specification<ChatRoom> getExpiredChatRooms() {
+        LocalDate currentDate = LocalDate.now(); // 현재 날짜
+        LocalTime currentTime = LocalTime.now(); // 현재 시간
+        return (root, query, criteriaBuilder) -> {
+            root.fetch("meetingDate");
+            root.fetch("endTime");
+            return criteriaBuilder.and(
+                    criteriaBuilder.equal(
+                            root.get("meetingDate").as(LocalDate.class),
+                            currentDate
+                    ),
+                    criteriaBuilder.lessThan(
+                            root.get("endTime").as(LocalTime.class),
+                            currentTime
+                    )
+            );
+        };
     }
 
     // FilterInfo 객체로부터 Specification 생성

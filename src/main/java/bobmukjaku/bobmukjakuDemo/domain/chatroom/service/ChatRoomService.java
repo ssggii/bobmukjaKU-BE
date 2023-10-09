@@ -20,9 +20,11 @@ import com.google.firebase.messaging.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -204,4 +206,15 @@ public class ChatRoomService {
             }
         }, taskTime);
     }
+
+    // 모집방 삭제
+    @Scheduled(cron = "0 0 0 * * ?") // 매일 밤 자정에 동작
+    public void deleteExpiredRooms() {
+        Specification<ChatRoom> specification = ChatRoomSpecification.getExpiredChatRooms();
+        List<ChatRoom> expiredChatRooms = chatRoomRepository.findAll(specification); // 현재 시간보다 endTime이 이전인 모집방 검색
+        if(!expiredChatRooms.isEmpty()){
+            chatRoomRepository.deleteAll(expiredChatRooms); // 데이터베이스에서 삭제
+        }
+    }
+
 }
