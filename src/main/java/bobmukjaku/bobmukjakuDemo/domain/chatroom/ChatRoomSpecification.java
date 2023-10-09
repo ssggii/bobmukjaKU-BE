@@ -165,14 +165,12 @@ public class ChatRoomSpecification {
     }
 
     // 모임 종료 시간이 현재 시간보다 이전인 모집방 검색
-    public static Specification<ChatRoom> getExpiredChatRooms() {
+    public static Specification<ChatRoom> filterExpiredChatRooms() {
         LocalDate currentDate = LocalDate.now(); // 현재 날짜
         LocalTime currentTime = LocalTime.now(); // 현재 시간
         return (root, query, criteriaBuilder) -> {
-            root.fetch("meetingDate");
-            root.fetch("endTime");
             return criteriaBuilder.and(
-                    criteriaBuilder.equal(
+                    criteriaBuilder.lessThanOrEqualTo(
                             root.get("meetingDate").as(LocalDate.class),
                             currentDate
                     ),
