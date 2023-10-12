@@ -49,7 +49,7 @@ public class FriendController {
         if(friendInfoList != null && !friendInfoList.isEmpty()){
             return new ResponseEntity(friendInfoList, HttpStatus.OK);
         } else {
-            return new ResponseEntity("등록된 친구가 없습니다", HttpStatus.OK);
+            return new ResponseEntity("등록된 친구가 없습니다", HttpStatus.NO_CONTENT);
         }
     }
 
@@ -72,7 +72,7 @@ public class FriendController {
         if(blockInfoList != null && !blockInfoList.isEmpty()){
             return new ResponseEntity(blockInfoList, HttpStatus.OK);
         } else {
-            return new ResponseEntity("차단한 사용자가 없습니다", HttpStatus.OK);
+            return new ResponseEntity("차단한 사용자가 없습니다", HttpStatus.NO_CONTENT);
         }
     }
 }
