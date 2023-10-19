@@ -21,11 +21,11 @@ public class ChattingController {
     public ResponseEntity<Object> sendMessageToFireBase(@RequestBody ChatModel md) throws Exception {
         if(!md.getShareMessage()) {
             //플라스크에 요청을 보내서 메시지 욕설 여부 확인
-            /*String message = md.getMessage();
+            String message = md.getMessage();
             if (chattingService.inspectBadWord(md.getMessage())) {
                 System.out.println("욕설감지\n");
-                md.setMessage("##### " + message);
-            }*/
+                md.setMessage("욕설을 감지하였습니다.");
+            }
             System.out.println("일반메시지\n");
         }
         chattingService.sendMessageToFireBase(md);
