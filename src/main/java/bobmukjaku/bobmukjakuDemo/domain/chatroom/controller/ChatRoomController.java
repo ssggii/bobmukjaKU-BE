@@ -31,7 +31,6 @@ public class ChatRoomController {
      * 모집방 삭제 - 자동 종료, 모집방 나가기
      * 메시지 전송
      * 필터목록 조회
-     *
      * */
 
     private final ChatRoomService chatRoomService;

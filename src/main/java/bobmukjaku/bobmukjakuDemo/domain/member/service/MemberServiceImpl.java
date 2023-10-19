@@ -129,4 +129,15 @@ public class MemberServiceImpl implements MemberService{
         member.updateRate(member.getRate() + score);
     }
 
+    @Override
+    public boolean resetMemberPassword(PasswordUpdateDto passwordUpdateDto) {
+        boolean result = false;
+        Member member = memberRepository.findByMemberEmail(passwordUpdateDto.username().get())
+                .orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        if(passwordUpdateDto.newPassword().isPresent()){
+            member.updatePassword(passwordEncoder, passwordUpdateDto.newPassword().get());
+            result = true;
+        }
+        return result;
+    }
 }

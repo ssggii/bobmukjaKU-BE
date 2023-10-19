@@ -20,15 +20,16 @@ public class ExceptionAdvice {
         log.error("BaseException errorMessage(): {}",exception.getExceptionType().getErrorMessage());
         log.error("BaseException errorCode(): {}",exception.getExceptionType().getErrorCode());
 
-        return new ResponseEntity(new ExceptionDto(exception.getExceptionType().getErrorCode()),exception.getExceptionType().getHttpStatus());
+        return new ResponseEntity(new ExceptionDto(exception.getExceptionType().getErrorCode(), exception.getExceptionType().getErrorMessage())
+                ,exception.getExceptionType().getHttpStatus());
     }
 
     //@Valid 에서 예외 발생
     @ExceptionHandler(BindException.class)
     public ResponseEntity handleValidEx(BindException exception){
 
-        log.error("@ValidException 발생! {}", exception.getMessage() );
-        return new ResponseEntity(new ExceptionDto(2000),HttpStatus.BAD_REQUEST);
+        log.error("@Valid Exception 발생! {}", exception.getMessage() );
+        return new ResponseEntity(new ExceptionDto(2000, "@Valid Exception 발생"),HttpStatus.BAD_REQUEST);
     }
 
     //HttpMessageNotReadableException  => json 파싱 오류
@@ -36,7 +37,7 @@ public class ExceptionAdvice {
     public ResponseEntity httpMessageNotReadableExceptionEx(HttpMessageNotReadableException exception){
 
         log.error("Json을 파싱하는 과정에서 예외 발생! {}", exception.getMessage() );
-        return new ResponseEntity(new ExceptionDto(3000),HttpStatus.BAD_REQUEST);
+        return new ResponseEntity(new ExceptionDto(3000, "Json 파싱 에러 발생"),HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
@@ -49,5 +50,6 @@ public class ExceptionAdvice {
     @AllArgsConstructor
     static class ExceptionDto {
         private Integer errorCode;
+        private String errorMessage;
     }
 }

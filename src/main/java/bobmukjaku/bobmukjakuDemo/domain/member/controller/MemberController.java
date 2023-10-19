@@ -24,7 +24,7 @@ public class MemberController {
      * 메일인증
      * 회원가입
      * 회원조회 - 닉네임 중복 검사, 전체 조회, uid로 조회, 내 정보 조회, 시간표 조회
-     * 회원수정 - 기본 정보 수정, 비밀번호 재설정, 시간표 저장
+     * 회원수정 - 기본 정보 수정, 메일 인증 후 비밀번호 재설정, 시간표 저장
      * 회원탈퇴
      *
      * */
@@ -99,7 +99,7 @@ public class MemberController {
         return new ResponseEntity(memberService.getMyTimeBlocks(), HttpStatus.OK);
     }
 
-    //rate 업데이트
+    // rate 업데이트
     @PutMapping("/member/info/rate")
     @ResponseStatus(HttpStatus.OK)
     public void rateUpdate(@RequestBody RateUpdateDto rateUpdateDto) throws Exception {
@@ -107,4 +107,13 @@ public class MemberController {
         memberService.rateUpdate(rateUpdateDto.uid(), rateUpdateDto.score());
     }
 
+    // (메일 인증 후) 비밀번호 재설정
+    @PutMapping("/resetPassword")
+    public ResponseEntity resetMemberPassword(@RequestBody PasswordUpdateDto passwordUpdateDto, HttpServletResponse response) throws Exception {
+        if(memberService.resetMemberPassword(passwordUpdateDto)){
+            return new ResponseEntity(HttpStatus.OK);
+        }else{
+            return new ResponseEntity("비밀번호 재설정을 실패하였습니다. 새로운 비밀번호를 확인해주세요.", HttpStatus.BAD_REQUEST);
+        }
+    }
 }
