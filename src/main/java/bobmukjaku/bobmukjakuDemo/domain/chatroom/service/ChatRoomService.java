@@ -1,5 +1,6 @@
 package bobmukjaku.bobmukjakuDemo.domain.chatroom.service;
 
+import bobmukjaku.bobmukjakuDemo.domain.chatroom.dto.FilteredRoomInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.repository.FilterInfoRepository;
 import bobmukjaku.bobmukjakuDemo.domain.friend.Friend;
 import bobmukjaku.bobmukjakuDemo.domain.memberchatroom.MemberChatRoom;
@@ -118,7 +119,7 @@ public class ChatRoomService {
     }
 
     // 필터링
-    public List<ChatRoomInfoDto> getChatRoomsFiltered(List<FilterInfo> filters) throws Exception {
+    public List<FilteredRoomInfoDto> getChatRoomsFiltered(List<FilterInfo> filters) throws Exception {
         Member member = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         List<Specification<ChatRoom>> specifications = new ArrayList<>();
 
@@ -130,23 +131,47 @@ public class ChatRoomService {
                 System.out.println("유효하지 않은 필터입니다.");
         }
 
-        // 필터링된 방
+        // FilterInfo로 필터링
         Specification<ChatRoom> combinedSpecification = ChatRoomSpecification.combineSpecifications(specifications);
         List<ChatRoom> filteredChatRooms = chatRoomRepository.findAll(combinedSpecification);
 
-        // 차단 사용자가 참여 중인 방
+        // 필터링 결과에서 차단 사용자가 참여하는 방 제외
         List<Long> blockUidList = member.getFriendList().stream()
                 .filter(friend -> friend.getIsBlock().equals(true)) // 사용자가 차단한 사용자 uid 추출
                 .map(Friend::getFriendUid).toList();
         if(blockUidList != null && !blockUidList.isEmpty()){ // 차단사용자가 있을 경우
             List<ChatRoom> blockedRooms = chatRoomRepository.findAll(ChatRoomSpecification.filteredByBlock(blockUidList));
-            filteredChatRooms.removeAll(blockedRooms); // 필터링된 방 - 차단 참여자가 참여 중인 방
+            filteredChatRooms.removeAll(blockedRooms); // (필터링된 방 - 차단 참여자가 참여 중인 방)
+        }
+
+        // 필터링 결과에서 친구가 참여하는 방 구별 (hasFriend 1로 변경)
+        List<Long> friendUidList = member.getFriendList().stream()
+                .filter(friend -> friend.getIsBlock().equals(false)) // 사용자의 친구 uid 추출
+                .map(Friend::getFriendUid).toList();
+
+        if(friendUidList != null && !friendUidList.isEmpty()){ // 밥친구가 있을 경우
+            List<ChatRoom> friendRooms = chatRoomRepository.findAll(ChatRoomSpecification.filteredByFriend(friendUidList));
+            List<ChatRoom> filteredRoomsWithFriend = new ArrayList<>(filteredChatRooms);
+            filteredRoomsWithFriend.retainAll(friendRooms); // 필터링 결과에서 친구가 참여 중인 방 추출
+
+            if (!filteredRoomsWithFriend.isEmpty()) {
+                List<FilteredRoomInfoDto> filteredRoomsWithFriendDto = new ArrayList<>();
+                for (ChatRoom room : filteredRoomsWithFriend) {
+                    FilteredRoomInfoDto dto = new FilteredRoomInfoDto(room);
+                    dto.updateHasFriend(1); // 친구 참여 표시
+                    filteredRoomsWithFriendDto.add(dto);
+                }
+                filteredChatRooms.removeAll(filteredRoomsWithFriend);
+                filteredRoomsWithFriendDto.addAll(filteredChatRooms.stream().map(FilteredRoomInfoDto::new).collect(Collectors.toList()));
+                return filteredRoomsWithFriendDto;
+            }
         }
 
         if (filteredChatRooms.isEmpty()) {
             return null;
         }
-        return filteredChatRooms.stream().map(ChatRoomInfoDto::new).collect(Collectors.toList());
+
+        return filteredChatRooms.stream().map(FilteredRoomInfoDto::new).collect(Collectors.toList());
     }
 
     // 필터 조회

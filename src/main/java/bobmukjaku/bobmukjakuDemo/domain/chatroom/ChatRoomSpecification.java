@@ -137,12 +137,7 @@ public class ChatRoomSpecification {
     }
 
     // 친구가 참여 중인 모집방 필터링
-    public static Specification<ChatRoom> filteredByFriend(MemberRepository memberRepository, Long uid) {
-        Member member = memberRepository.findById(uid).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-        List<Long> friendUidList = member.getFriendList().stream()
-                .filter(friend -> friend.getIsBlock().equals(false)) // 사용자의 친구 uid 추출
-                .map(Friend::getFriendUid).toList();
-
+    public static Specification<ChatRoom> filteredByFriend(List<Long> friendUidList) {
         Specification<ChatRoom> specification = Specification.where(null);
         for(Long friendUid : friendUidList){
             specification = specification.or(filteredByParticipantUid(friendUid));
