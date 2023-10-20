@@ -109,11 +109,8 @@ public class MemberController {
 
     // (메일 인증 후) 비밀번호 재설정
     @PutMapping("/resetPassword")
-    public ResponseEntity resetMemberPassword(@RequestBody PasswordUpdateDto passwordUpdateDto, HttpServletResponse response) throws Exception {
-        if(memberService.resetMemberPassword(passwordUpdateDto)){
-            return new ResponseEntity(HttpStatus.OK);
-        }else{
-            return new ResponseEntity("비밀번호 재설정을 실패하였습니다. 새로운 비밀번호를 확인해주세요.", HttpStatus.BAD_REQUEST);
-        }
+    @ResponseStatus(HttpStatus.OK)
+    public void resetMemberPassword(@RequestBody PasswordUpdateDto passwordUpdateDto, HttpServletResponse response) throws Exception {
+        memberService.resetMemberPassword(passwordUpdateDto);
     }
 }

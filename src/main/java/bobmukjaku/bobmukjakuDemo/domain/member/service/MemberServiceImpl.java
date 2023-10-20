@@ -130,14 +130,11 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
-    public boolean resetMemberPassword(PasswordUpdateDto passwordUpdateDto) {
-        boolean result = false;
+    public void resetMemberPassword(PasswordUpdateDto passwordUpdateDto) {
         Member member = memberRepository.findByMemberEmail(passwordUpdateDto.username().get())
                 .orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         if(passwordUpdateDto.newPassword().isPresent()){
             member.updatePassword(passwordEncoder, passwordUpdateDto.newPassword().get());
-            result = true;
         }
-        return result;
     }
 }

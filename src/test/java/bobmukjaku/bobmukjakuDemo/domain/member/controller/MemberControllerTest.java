@@ -528,7 +528,7 @@ public class MemberControllerTest {
     @Test
     public void 메일인증_후_비밀번호_재설정_성공() throws Exception {
         // given
-        String signUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username,password,nickName));
+        String signUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username, password, nickName));
         signUp(signUpData);
         Member member = memberRepository.findByMemberEmail(username).get();
 
@@ -540,42 +540,16 @@ public class MemberControllerTest {
 
         // when
         mockMvc.perform(
-                put("/resetPassword")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .content(passwordUpdateDto)
-        )
-                .andDo(print())
-                .andExpect(status().isOk());
-
-        // then
-        assertThat(passwordEncoder.matches(newPassword, member.getMemberPassword())).isEqualTo(true);
-    }
-
-    @Test
-    public void 비밀번호_재설정_실패_새비밀번호_입력값_없는_경우() throws Exception {
-        // given
-        String signUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username,password,nickName));
-        signUp(signUpData);
-        Member member = memberRepository.findByMemberEmail(username).get();
-
-        String newPassword = "password@!1";
-        Map<String, Object> map = new HashMap<>();
-        map.put("username", username);
-        String passwordUpdateDto = objectMapper.writeValueAsString(map);
-
-        // when
-        mockMvc.perform(
                         put("/resetPassword")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .characterEncoding(StandardCharsets.UTF_8)
                                 .content(passwordUpdateDto)
                 )
                 .andDo(print())
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk());
 
         // then
-        assertThat(passwordEncoder.matches(newPassword, member.getMemberPassword())).isEqualTo(false);
+        assertThat(passwordEncoder.matches(newPassword, member.getMemberPassword())).isEqualTo(true);
     }
 
     @Test
