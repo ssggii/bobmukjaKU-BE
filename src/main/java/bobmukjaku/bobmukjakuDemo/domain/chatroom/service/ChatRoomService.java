@@ -118,6 +118,7 @@ public class ChatRoomService {
 
     // 필터링
     public List<ChatRoomInfoDto> getChatRoomsFiltered(List<FilterInfo> filters) throws Exception {
+        Member member = memberRepository.findByMemberEmail(SecurityUtil.getLoginUsername()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         List<Specification<ChatRoom>> specifications = new ArrayList<>();
 
         for (FilterInfo filter : filters) {
@@ -128,12 +129,21 @@ public class ChatRoomService {
                 System.out.println("유효하지 않은 필터입니다.");
         }
 
+        // 필터링된 방
         Specification<ChatRoom> combinedSpecification = ChatRoomSpecification.combineSpecifications(specifications);
-        List<ChatRoom> chatRooms = chatRoomRepository.findAll(combinedSpecification);
-        if(chatRooms.isEmpty()) {
+        List<ChatRoom> filteredChatRooms = chatRoomRepository.findAll(combinedSpecification);
+
+        // 차단 사용자가 참여 중인 방
+        List<ChatRoom> blockedRooms = chatRoomRepository.findAll(ChatRoomSpecification.filteredByBlock(member));
+
+        // 필터링된 방 - 차단 참여자가 참여 중인 방
+        filteredChatRooms.removeAll(blockedRooms);
+
+        // 결과 반환
+        if (filteredChatRooms.isEmpty()) {
             return null;
         }
-        return chatRooms.stream().map(ChatRoomInfoDto::new).collect(Collectors.toList());
+        return filteredChatRooms.stream().map(ChatRoomInfoDto::new).collect(Collectors.toList());
     }
 
     // 필터 조회

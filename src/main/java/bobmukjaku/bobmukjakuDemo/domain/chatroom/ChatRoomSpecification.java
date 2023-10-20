@@ -151,8 +151,7 @@ public class ChatRoomSpecification {
     }
 
     // 차단한 사용자가 참여 중인 모집방 필터링
-    public static Specification<ChatRoom> filteredByBlock(MemberRepository memberRepository, Long uid) {
-        Member member = memberRepository.findById(uid).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+    public static Specification<ChatRoom> filteredByBlock(Member member) {
         List<Long> blockUidList = member.getFriendList().stream()
                 .filter(friend -> friend.getIsBlock().equals(true)) // 사용자가 차단한 사용자 uid 추출
                 .map(Friend::getFriendUid).toList();
@@ -206,12 +205,6 @@ public class ChatRoomSpecification {
                 break;
             case "timeTable":
                 specification = ChatRoomSpecification.filteredByTimeTable(memberRepository, Long.valueOf(filterValue));
-                break;
-            case "friend":
-                specification = ChatRoomSpecification.filteredByFriend(memberRepository, Long.valueOf(filterValue));
-                break;
-            case "block":
-                specification = ChatRoomSpecification.filteredByBlock(memberRepository, Long.valueOf(filterValue));
                 break;
             default:
                 break; // 유효한 필터 타입이 아닐 경우 null 반환

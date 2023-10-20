@@ -339,7 +339,7 @@ public class ChatRoomControllerTest {
         List<ChatRoom> initial = Arrays.asList(chatRoom1, chatRoom2, chatRoom3, chatRoom4, chatRoom5, chatRoom6);
         chatRoomRepository.saveAll(initial);
 
-        // 음식-한식, 정원-4를 필터링 조건으로 선택했을 때
+        // 음식-중식, 정원-4를 필터링 조건으로 선택했을 때
         List<FilterInfoDto> filters = new ArrayList<>();
         filters.add(new FilterInfoDto("kindOfFood", "중식"));
         filters.add(new FilterInfoDto("total", "4"));
@@ -736,9 +736,9 @@ public class ChatRoomControllerTest {
         member2.addChatRoom(memberChatRoom4);
         chatRoom3.addParticipant(memberChatRoom4);
 
-        // 차단한 사용자가 참여하는 모집방을 필터링 조건으로 선택했을 때
+        // 음식 종류(한식)로 필터링한 경우 -> 참여 가능한 && 차단사용자가 참여하지 않는 && 음식종류가 한식인 모집방이 결과로 나와야 함
         List<FilterInfoDto> filters = new ArrayList<>();
-        filters.add(new FilterInfoDto("block", uid));
+        filters.add(new FilterInfoDto("kindOfFood", "한식"));
 
         // when, then
         mockMvc.perform(post("/chatRooms/filtered")
