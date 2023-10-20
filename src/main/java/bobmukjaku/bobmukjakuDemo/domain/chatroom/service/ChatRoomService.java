@@ -1,6 +1,7 @@
 package bobmukjaku.bobmukjakuDemo.domain.chatroom.service;
 
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.repository.FilterInfoRepository;
+import bobmukjaku.bobmukjakuDemo.domain.friend.Friend;
 import bobmukjaku.bobmukjakuDemo.domain.memberchatroom.MemberChatRoom;
 import bobmukjaku.bobmukjakuDemo.domain.memberchatroom.repository.MemberChatRoomRepository;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoom;
@@ -134,12 +135,14 @@ public class ChatRoomService {
         List<ChatRoom> filteredChatRooms = chatRoomRepository.findAll(combinedSpecification);
 
         // 차단 사용자가 참여 중인 방
-        List<ChatRoom> blockedRooms = chatRoomRepository.findAll(ChatRoomSpecification.filteredByBlock(member));
+        List<Long> blockUidList = member.getFriendList().stream()
+                .filter(friend -> friend.getIsBlock().equals(true)) // 사용자가 차단한 사용자 uid 추출
+                .map(Friend::getFriendUid).toList();
+        if(blockUidList != null && !blockUidList.isEmpty()){ // 차단사용자가 있을 경우
+            List<ChatRoom> blockedRooms = chatRoomRepository.findAll(ChatRoomSpecification.filteredByBlock(blockUidList));
+            filteredChatRooms.removeAll(blockedRooms); // 필터링된 방 - 차단 참여자가 참여 중인 방
+        }
 
-        // 필터링된 방 - 차단 참여자가 참여 중인 방
-        filteredChatRooms.removeAll(blockedRooms);
-
-        // 결과 반환
         if (filteredChatRooms.isEmpty()) {
             return null;
         }

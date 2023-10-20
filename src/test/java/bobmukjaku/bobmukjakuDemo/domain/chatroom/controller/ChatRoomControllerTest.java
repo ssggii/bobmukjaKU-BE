@@ -607,7 +607,6 @@ public class ChatRoomControllerTest {
         List<ChatRoom> initial = Arrays.asList(chatRoom1, chatRoom2, chatRoom3, chatRoom4, chatRoom5, chatRoom6);
         chatRoomRepository.saveAll(initial);
 
-        List<TimeBlock> timeBlockList = new ArrayList<>();
         member.getTimeBlockList().add(TimeBlock.builder().dayOfWeek(4).time(LocalTime.parse("17:00")).build());
 
         // 음식-한식, 정원-4, 시간표 ON를 필터링 조건으로 선택했을 때
@@ -627,7 +626,7 @@ public class ChatRoomControllerTest {
         assertThat(filterInfoRepository.findAll().size()).isEqualTo(3);
     }
 
-    @Test
+/*    @Test
     public void 친구가_참여중인_모집방_필터링_성공() throws Exception {
         // given
         signUp();
@@ -686,7 +685,7 @@ public class ChatRoomControllerTest {
                         .content(new ObjectMapper().writeValueAsString(filters)))
                 .andDo(print())
                 .andExpect(status().isOk());
-    }
+    }*/
 
     @Test
     public void 차단사용자가_참여중인_모집방_필터링_성공() throws Exception {

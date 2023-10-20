@@ -151,11 +151,7 @@ public class ChatRoomSpecification {
     }
 
     // 차단한 사용자가 참여 중인 모집방 필터링
-    public static Specification<ChatRoom> filteredByBlock(Member member) {
-        List<Long> blockUidList = member.getFriendList().stream()
-                .filter(friend -> friend.getIsBlock().equals(true)) // 사용자가 차단한 사용자 uid 추출
-                .map(Friend::getFriendUid).toList();
-
+    public static Specification<ChatRoom> filteredByBlock(List<Long> blockUidList) {
         Specification<ChatRoom> specification = Specification.where(null);
         for(Long blockUid : blockUidList){
             specification = specification.or(filteredByParticipantUid(blockUid));
