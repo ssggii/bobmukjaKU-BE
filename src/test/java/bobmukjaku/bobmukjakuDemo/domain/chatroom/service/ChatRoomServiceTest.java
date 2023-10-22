@@ -43,33 +43,32 @@ public class ChatRoomServiceTest {
     ChatRoomService chatRoomService;
 
     @Test
-    public void 만료된_모집방_삭제_성공() throws Exception {
-
+    public void 만료된_모집방_필터링_성공() throws Exception {
         // given
-        // 현재 시간에서 1시간 이전의 시간을 계산
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(); // 현재 날짜
         LocalDate yesterday = today.minusDays(1);
+        LocalDate theDayBeforeYesterday = today.minusDays(2);
         LocalDate tomorrow = today.plusDays(1);
         LocalTime currentTime = LocalTime.now();
-        LocalTime oneHourAgo = currentTime.minusHours(1);
+        LocalTime futureTime = currentTime.plusHours(1);
 
-        // 만료되어야 할 모집방을 생성하고 저장
         ChatRoom expiredRoom1 = ChatRoom.builder().roomName("모집방1").meetingDate(yesterday).endTime(currentTime).build();
+        ChatRoom expiredRoom2 = ChatRoom.builder().roomName("모집방2").meetingDate(theDayBeforeYesterday).endTime(futureTime).build();
+        ChatRoom notExpiredRoom = ChatRoom.builder().roomName("모집방3").meetingDate(tomorrow).endTime(currentTime).build();
         chatRoomRepository.save(expiredRoom1);
-
-        ChatRoom expiredRoom3 = ChatRoom.builder().roomName("모집방3").meetingDate(yesterday).endTime(oneHourAgo).build();
-        chatRoomRepository.save(expiredRoom3);
-
-        ChatRoom expiredRoom2 = ChatRoom.builder().roomName("모집방2").meetingDate(today).endTime(oneHourAgo).build();
         chatRoomRepository.save(expiredRoom2);
-
-        ChatRoom notExpiredRoom = ChatRoom.builder().roomName("모집방4").meetingDate(tomorrow).endTime(oneHourAgo).build();
         chatRoomRepository.save(notExpiredRoom);
 
         // when
-        chatRoomService.deleteExpiredRooms();
+        Specification<ChatRoom> specification = ChatRoomSpecification.filterExpiredChatRooms();
+        List<ChatRoom> expiredChatRooms = chatRoomRepository.findAll(specification); // 모임날짜가 현재 날짜보다 이전인 모집방 검색
+        if(!expiredChatRooms.isEmpty()){
+            chatRoomRepository.deleteAll(expiredChatRooms); // 데이터베이스에서 삭제
+        }
 
         // then
         assertThat(chatRoomRepository.findAll().size()).isEqualTo(1);
+        assertThat(chatRoomRepository.findAll().get(0).getRoomName()).isEqualTo(notExpiredRoom.getRoomName());
+
     }
 }

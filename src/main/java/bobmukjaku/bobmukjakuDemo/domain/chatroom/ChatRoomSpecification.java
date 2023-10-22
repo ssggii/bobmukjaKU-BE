@@ -154,22 +154,15 @@ public class ChatRoomSpecification {
         return specification;
     }
 
-    // 모임 종료 시간이 현재 시간보다 이전인 모집방 검색
+    // 만료된 모집방 모집방 검색
     public static Specification<ChatRoom> filterExpiredChatRooms() {
         LocalDate currentDate = LocalDate.now(); // 현재 날짜
-        LocalTime currentTime = LocalTime.now(); // 현재 시간
-        return (root, query, criteriaBuilder) -> {
-            return criteriaBuilder.and(
-                    criteriaBuilder.lessThanOrEqualTo(
-                            root.get("meetingDate").as(LocalDate.class),
-                            currentDate
-                    ),
-                    criteriaBuilder.lessThan(
-                            root.get("endTime").as(LocalTime.class),
-                            currentTime
-                    )
-            );
-        };
+
+        return ((root, query, criteriaBuilder) ->
+                criteriaBuilder.lessThan( // 모임 날짜가 현재 날짜보다 이전인 모집방 검색
+                root.get("meetingDate").as(LocalDate.class),
+                currentDate)
+        );
     }
 
     // FilterInfo 객체로부터 Specification 생성
