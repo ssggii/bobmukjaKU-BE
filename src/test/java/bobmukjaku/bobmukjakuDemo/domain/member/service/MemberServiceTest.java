@@ -154,7 +154,7 @@ public class MemberServiceTest {
 
         // when
         String updateNickName = "수정닉네임";
-        memberService.updateMemberInfo(new MemberUpdateDto(Optional.of(updateNickName), Optional.empty(), Optional.empty(), Optional.empty(), null), SecurityUtil.getLoginUsername());
+        memberService.updateMemberInfo(new MemberUpdateDto(Optional.of(updateNickName), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()), SecurityUtil.getLoginUsername());
         clear();
         
         // then
@@ -170,7 +170,7 @@ public class MemberServiceTest {
 
         // when
         String updateColor = "bg18";
-        memberService.updateMemberInfo(new MemberUpdateDto(Optional.empty(), Optional.of(updateColor), Optional.empty(), Optional.empty(), null), SecurityUtil.getLoginUsername());
+        memberService.updateMemberInfo(new MemberUpdateDto(Optional.empty(), Optional.of(updateColor), Optional.empty(), Optional.empty(), Optional.empty()), SecurityUtil.getLoginUsername());
         clear();
 
         // then
@@ -188,7 +188,7 @@ public class MemberServiceTest {
         // when
         String updateNickName = "수정닉네임";
         String updateColor = "bg18";
-        memberService.updateMemberInfo(new MemberUpdateDto(Optional.of(updateNickName), Optional.of(updateColor), Optional.empty(), Optional.empty(), null), SecurityUtil.getLoginUsername());
+        memberService.updateMemberInfo(new MemberUpdateDto(Optional.of(updateNickName), Optional.of(updateColor), Optional.empty(), Optional.empty(), Optional.empty()), SecurityUtil.getLoginUsername());
         clear();
 
         // then

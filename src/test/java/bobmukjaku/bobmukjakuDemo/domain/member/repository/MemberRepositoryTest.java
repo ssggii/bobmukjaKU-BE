@@ -112,7 +112,7 @@ class MemberRepositoryTest {
         clear();
 
         String updatePassword = "updatePassword";
-        String updateNickName = "updateNickName";
+        String updateNickName = "newName";
         int updateRate = 50;
         String updateProfileColor = "bg15";
 
