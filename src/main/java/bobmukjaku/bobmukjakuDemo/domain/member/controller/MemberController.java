@@ -113,4 +113,10 @@ public class MemberController {
     public void resetMemberPassword(@RequestBody PasswordUpdateDto passwordUpdateDto, HttpServletResponse response) throws Exception {
         memberService.resetMemberPassword(passwordUpdateDto);
     }
+
+    //로그인 없이 uid로 닉네임,rate,배경색 검색
+    @GetMapping("/member/name_rate_bg/{uid}")
+    public NameRateBgDto getNameRateBg(@PathVariable("uid") Long uid){
+        return memberService.getNameRateBg(uid);
+    }
 }

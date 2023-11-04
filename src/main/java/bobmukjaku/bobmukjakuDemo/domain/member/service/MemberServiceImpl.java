@@ -137,4 +137,11 @@ public class MemberServiceImpl implements MemberService{
             member.updatePassword(passwordEncoder, passwordUpdateDto.newPassword().get());
         }
     }
+
+    @Override
+    public NameRateBgDto getNameRateBg(Long uid) {
+        Member member = memberRepository.findById(uid)
+                .orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        return new NameRateBgDto(member.getMemberNickName(), member.getRate(), member.getProfileColor());
+    }
 }
