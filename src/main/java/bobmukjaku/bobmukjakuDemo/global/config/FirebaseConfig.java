@@ -4,25 +4,34 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.util.FileCopyUtils;
 
 import java.io.FileInputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 @Configuration
 public class FirebaseConfig {
+
+    @Autowired
+    private ResourceLoader resourceLoader;
 
     //파이어베이스 Admin sdk 초기화
     @PostConstruct
     public void initFirebaseAdminSdk() {
 
         try {
-            FileInputStream serviceAccount = new FileInputStream(
-                    //파이어베이스에서 발급받은 json파일의 경로를 명시
-                    "D:/tools/spring/projects/bobmukjakuDemo/src/main/resources/serviceAccountKey.json"
-            );
+            Resource resource = resourceLoader.getResource("classpath:serviceAccountKey.json");
+            InputStream inputStream = resource.getInputStream();
+            GoogleCredentials credentials = GoogleCredentials.fromStream(inputStream);
 
             FirebaseOptions options = new FirebaseOptions.Builder()
-                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                    .setCredentials(credentials)
                     .setDatabaseUrl("https://bobmukjaku-default-rtdb.firebaseio.com/")
                     .setDatabaseAuthVariableOverride(null)
                     .build();
