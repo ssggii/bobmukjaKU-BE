@@ -2,12 +2,15 @@ package bobmukjaku.bobmukjakuDemo.global.login.handler;
 
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
 import bobmukjaku.bobmukjakuDemo.global.jwt.service.JwtService;
+import bobmukjaku.bobmukjakuDemo.global.utility.RedisUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -20,6 +23,7 @@ public class LoginSuccessJWTProvideHandler extends SimpleUrlAuthenticationSucces
 
     private final JwtService jwtService;
     private final MemberRepository memberRepository;
+    private final RedisUtil redisUtil;
 
     private String extractUsername(Authentication authentication){
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
@@ -38,6 +42,9 @@ public class LoginSuccessJWTProvideHandler extends SimpleUrlAuthenticationSucces
         memberRepository.findByMemberEmail(username).ifPresent(
                 member -> member.updateRefreshToken(refreshToken)
         );
+
+        // 로그인 시 redis에 토큰 저장
+        redisUtil.set("loginID:" + username, accessToken, 300);
 
         log.info("로그인에 성공합니다. username: {}", username);
         log.info("AccessToken을 발급합니다. AccessToken: {}", accessToken);

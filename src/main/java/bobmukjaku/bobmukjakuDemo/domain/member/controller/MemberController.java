@@ -3,7 +3,9 @@ package bobmukjaku.bobmukjakuDemo.domain.member.controller;
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.*;
 import bobmukjaku.bobmukjakuDemo.domain.member.service.MemberService;
+import bobmukjaku.bobmukjakuDemo.global.login.handler.LogoutService;
 import bobmukjaku.bobmukjakuDemo.global.utility.SecurityUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +22,7 @@ public class MemberController {
     /*
      *
      * <회원 API>
-     * 로그인
+     * 로그아웃
      * 메일인증
      * 회원가입
      * 회원조회 - 닉네임 중복 검사, 전체 조회, uid로 조회, 내 정보 조회, 시간표 조회
@@ -30,6 +32,12 @@ public class MemberController {
      * */
 
     private final MemberService memberService;
+    private final LogoutService logoutService;
+
+    @PostMapping("/auth/logout")
+    public void logout(HttpServletRequest servletRequest) {
+        logoutService.logout();
+    }
 
     // 회원가입
     @PostMapping("/signUp")

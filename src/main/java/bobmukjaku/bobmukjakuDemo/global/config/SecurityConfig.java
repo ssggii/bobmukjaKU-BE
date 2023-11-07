@@ -8,6 +8,7 @@ import bobmukjaku.bobmukjakuDemo.global.jwt.service.JwtService;
 import bobmukjaku.bobmukjakuDemo.global.login.filter.JsonUsernamePasswordAuthenticationFilter;
 import bobmukjaku.bobmukjakuDemo.global.login.handler.LoginFailureHandler;
 import bobmukjaku.bobmukjakuDemo.global.login.handler.LoginSuccessJWTProvideHandler;
+import bobmukjaku.bobmukjakuDemo.global.utility.RedisUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,7 @@ public class SecurityConfig {
     private final LoginService loginService;
     private final MemberRepository memberRepository;
     private final JwtService jwtService;
+    private final RedisUtil redisUtil;
 
     // 인증 없이 접근 가능
     private static final String[] WHITE_LIST = {
@@ -49,7 +51,7 @@ public class SecurityConfig {
 
     // USER 권한으로 접근 가능
     private static final String[] USER_LIST = {
-            "/message",
+            "/message", "/auth/logout",
             "/member/info/*", "/member/info", "/timeTable", "/filter/info/*", "/filter/info",
             "/chatRoom/member/*", "/chatRoom/member", "/chatRoom/info/*", "/chatRooms/info", "/chatRooms/filtered", "/chatRoom/joiners",
             "/files", "/place/*",
@@ -86,7 +88,7 @@ public class SecurityConfig {
 
     @Bean
     public LoginSuccessJWTProvideHandler loginSuccessJWTProvideHandler(){
-        return new LoginSuccessJWTProvideHandler(jwtService, memberRepository);
+        return new LoginSuccessJWTProvideHandler(jwtService, memberRepository, redisUtil);
     }
 
     @Bean
