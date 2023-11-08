@@ -246,7 +246,7 @@ public class ChatRoomService {
     }
 
     // 모집방 삭제
-    @Scheduled(cron = "0 20 20 * * ?") // 매일 밤 자정에 동작
+    @Scheduled(cron = "0 0 0 * * ?") // 매일 밤 자정에 동작
     public void deleteExpiredRooms() {
         Specification<ChatRoom> specification = ChatRoomSpecification.filterExpiredChatRooms();
         List<ChatRoom> expiredChatRooms = chatRoomRepository.findAll(specification); // 모임날짜가 현재 날짜보다 이전인 모집방 검색
