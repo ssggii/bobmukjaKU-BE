@@ -35,7 +35,7 @@ public class ChattingService {
     // 욕설 감지
     public Boolean inspectBadWord(String message) throws Exception {
         WebClient client = WebClient.builder()
-                .baseUrl("http://192.168.84.159:8080")
+                .baseUrl("http://43.200.23.47:5000")
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
 
