@@ -124,8 +124,8 @@ public class MemberServiceImpl implements MemberService{
     public void rateUpdate(Long id, Integer score) throws Exception {
         Member member = memberRepository.findById(id)
                 .orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-        if((member.getRate() == 100 && score == 1)
-        || (member.getRate() == 0 && score == -1))return;
+        if(((member.getRate() + score) > 100)
+        || ((member.getRate() + score) < 0))return;
         member.updateRate(member.getRate() + score);
     }
 
