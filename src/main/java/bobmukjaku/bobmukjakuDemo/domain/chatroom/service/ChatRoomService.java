@@ -219,7 +219,7 @@ public class ChatRoomService {
     // 종료시간에 참여자들에게 알림을 보내도록 예약
     public void reserveNotification(Long roomId, LocalDate date, LocalTime time) throws Exception{
         Calendar endAt = Calendar.getInstance();
-        endAt.set(date.getYear(), date.getMonth().getValue()-1, date.getDayOfMonth(), time.getHour(), time.getMinute());
+        endAt.set(date.getYear(), date.getMonth().getValue()-1, date.getDayOfMonth(), time.getHour(), time.getMinute()-30);
         //endAt.set(2023,7,17,0,56);
         Date taskTime = new Date(endAt.getTimeInMillis());
         Timer timer = new Timer();
