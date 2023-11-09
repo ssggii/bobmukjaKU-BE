@@ -32,17 +32,14 @@ public class FirebaseConfig {
             Resource resource = resourceLoader.getResource("classpath:serviceAccountKey.json");
             InputStream inputStream = resource.getInputStream();
             GoogleCredentials credentials = GoogleCredentials.fromStream(inputStream);
-
-            FirebaseOptions options = new FirebaseOptions.Builder()
+            FirebaseOptions.Builder builder = FirebaseOptions.builder();
+             FirebaseOptions options = builder
                     .setCredentials(credentials)
                     .setDatabaseUrl("https://bobmukjaku-default-rtdb.firebaseio.com/")
                     .setDatabaseAuthVariableOverride(null)
                     .build();
 
             FirebaseApp.initializeApp(options);
-            FirebaseDatabase.getInstance().getReference("/").removeValue((error, ref) -> {
-
-            });
 
         } catch (Exception e) {
             e.printStackTrace();
