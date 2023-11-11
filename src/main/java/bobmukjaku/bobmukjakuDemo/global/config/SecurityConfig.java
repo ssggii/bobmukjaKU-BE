@@ -51,7 +51,7 @@ public class SecurityConfig {
 
     // USER 권한으로 접근 가능
     private static final String[] USER_LIST = {
-            "/message", "/auth/logout",
+            "/message", "/auth/logout", "/member/account",
             "/member/info/*", "/member/info", "/timeTable", "/filter/info/*", "/filter/info",
             "/chatRoom/member/*", "/chatRoom/member", "/chatRoom/info/*", "/chatRooms/info", "/chatRooms/filtered", "/chatRoom/joiners",
             "/files", "/place/*",

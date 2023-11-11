@@ -205,21 +205,12 @@ public class MemberServiceTest {
         MemberSignUpDto memberSignUpDto = setMember();
 
         // when
-        memberService.withdraw(PASSWORD, SecurityUtil.getLoginUsername());
+        memberService.withdrawMember(SecurityUtil.getLoginUsername());
 
         // then
         assertThat(assertThrows(Exception.class, ()->
                 memberRepository.findByMemberEmail(memberSignUpDto.memberEmail()).orElseThrow(()->
                         new Exception("회원이 아닙니다."))).getMessage()).isEqualTo("회원이 아닙니다.");
-    }
-
-    @Test
-    public void 회원탈퇴_실패_비밀번호_불일치() throws Exception {
-        // given
-        MemberSignUpDto memberSignUpDto = setMember();
-
-        // when, then
-        assertThat(assertThrows(MemberException.class, () -> memberService.withdraw(PASSWORD+"123", SecurityUtil.getLoginUsername())).getExceptionType()).isEqualTo(MemberExceptionType.WRONG_PASSWORD);
     }
 
     @Test

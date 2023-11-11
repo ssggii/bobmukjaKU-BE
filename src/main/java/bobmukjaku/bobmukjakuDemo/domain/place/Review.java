@@ -32,11 +32,14 @@ public class Review {
     private String imageUrl; // 리뷰 사진 링크
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "uid")
+    @JoinColumn(name = "uid", nullable = true)
     private Member writer; // 작성자
 
     public ReviewInfoDto toDto(Review review){
         return ReviewInfoDto.builder().uid(writer.getUid()).placeId(placeId).placeName(placeName).contents(contents).imageUrl(imageUrl).build();
     }
 
+    public void setWriter(Member writer) {
+        this.writer = writer;
+    }
 }

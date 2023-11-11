@@ -7,6 +7,8 @@ import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberException;
 import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberExceptionType;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.TimeBlockRepository;
+import bobmukjaku.bobmukjakuDemo.domain.memberchatroom.MemberChatRoom;
+import bobmukjaku.bobmukjakuDemo.domain.place.Review;
 import bobmukjaku.bobmukjakuDemo.global.utility.SecurityUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -73,10 +75,15 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
-    public void withdrawMember(String username) throws Exception { // 회원탈퇴 (수정)
+    public void withdrawMember(String username) throws Exception {
         Member member = memberRepository.findByMemberEmail(username)
                 .orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-
+        for(Review review : member.getReviewList()){
+            review.setWriter(null);
+        }
+        for(MemberChatRoom memberChatRoom : member.getJoiningRooms()){
+            memberChatRoom.getChatRoom().deleteParticipant(memberChatRoom);
+        }
         memberRepository.delete(member);
     }
 

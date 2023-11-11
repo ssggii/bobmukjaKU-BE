@@ -344,51 +344,25 @@ public class MemberControllerTest {
     @Test
     public void 회원탈퇴_성공() throws Exception {
         // given
-        String signUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username,password,nickName));
+        String signUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username, password, nickName));
         signUp(signUpData);
-
         String accessToken = getAccessToken();
 
         Map<String, Object> map = new HashMap<>();
-        map.put("checkPassword", password);
-        String updatePassword = objectMapper.writeValueAsString(map);
+        map.put("username", username);
+        String usernameForWithdraw = objectMapper.writeValueAsString(map);
 
         // when
         mockMvc.perform(
-                delete("/member/info")
-                        .header(accessHeader, BEARER+accessToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(updatePassword))
+                        delete("/member/account")
+                                .header(accessHeader, BEARER + accessToken)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(usernameForWithdraw))
                 .andDo(print())
                 .andExpect(status().isOk());
 
         // then
-        assertThrows(Exception.class, ()->memberRepository.findByMemberEmail(username).orElseThrow(()->new Exception("회원이 아닙니다.")));
-    }
-
-    @Test
-    public void 회원탈퇴_실패_비밀번호_틀림() throws Exception {
-        // given
-        String signUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username,password,nickName));
-        signUp(signUpData);
-
-        String accessToken = getAccessToken();
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("checkPassword", password+11);
-        String updatePassword = objectMapper.writeValueAsString(map);
-
-        // when
-        mockMvc.perform(
-                        delete("/member/info")
-                                .header(accessHeader, BEARER+accessToken)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(updatePassword))
-                .andExpect(status().isBadRequest());
-
-        // then
-        Member member = memberRepository.findByMemberEmail(username).orElseThrow(()->new Exception("회원이 아닙니다."));
-        assertThat(member).isNotNull();
+        assertThrows(Exception.class, () -> memberRepository.findByMemberEmail(username).orElseThrow(() -> new Exception("회원이 아닙니다.")));
     }
 
     @Test
@@ -396,19 +370,18 @@ public class MemberControllerTest {
         // given
         String signUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username,password,nickName));
         signUp(signUpData);
-
         String accessToken = getAccessToken();
 
         Map<String, Object> map = new HashMap<>();
-        map.put("checkPassword", password);
-        String updatePassword = objectMapper.writeValueAsString(map);
+        map.put("username", username);
+        String usernameForWithdraw = objectMapper.writeValueAsString(map);
 
         // when
         mockMvc.perform(
                         delete("/member/info")
                                 .header(accessHeader, BEARER+accessToken+"1")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(updatePassword))
+                                .content(usernameForWithdraw))
                 .andExpect(status().isForbidden());
 
         // then
