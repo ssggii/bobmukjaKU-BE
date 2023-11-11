@@ -81,10 +81,10 @@ public class MemberController {
     }
 
     // 회원탈퇴
-    @DeleteMapping("/member/info")
+    @DeleteMapping("/member/account")
     @ResponseStatus(HttpStatus.OK)
-    public void withdraw(@Valid @RequestBody MemberWithdrawDto memberWithdrawDto) throws Exception {
-        memberService.withdraw(memberWithdrawDto.checkPassword(), SecurityUtil.getLoginUsername());
+    public void withdrawMember(HttpServletResponse response) throws Exception {
+        memberService.withdrawMember(SecurityUtil.getLoginUsername());
     }
 
     // 메일인증

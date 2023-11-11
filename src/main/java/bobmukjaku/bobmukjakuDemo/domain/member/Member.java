@@ -69,7 +69,7 @@ public class Member extends BaseTimeEntity {
 
     // member-review 연관관계 매핑
     @Builder.Default
-    @OneToMany(mappedBy = "writer", cascade = ALL)
+    @OneToMany(mappedBy = "writer", cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH})
     private List<Review> reviewList = new ArrayList<>();
 
     // member-scrap 연관관계 매핑
@@ -79,7 +79,7 @@ public class Member extends BaseTimeEntity {
 
     // member-friend 연관관계 매핑
     @Builder.Default
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", cascade = ALL)
     private List<Friend> friendList = new ArrayList<>();
 
     // 회원 가입 시 USER 권한 부여

@@ -8,7 +8,7 @@ public interface MemberService {
 
     public void signUp(MemberSignUpDto memberSignUpDto) throws Exception; // 회원가입
     public void updateMemberInfo(MemberUpdateDto memberUpdateDto, String username) throws Exception; // 회원정보수정
-    public void withdraw(String checkPassword, String username) throws Exception; // 회원탈퇴
+    public void withdrawMember(String username) throws Exception; // 회원탈퇴
     public boolean checkNickName(String nickName) throws Exception; // 닉네임 중복 검사
 
     MemberInfoDto getInfo(Long id) throws Exception; // id로 조회
@@ -18,5 +18,5 @@ public interface MemberService {
     public void updateTimeBlock(List<TimeBlockDto> timeBlockDtoList) throws Exception; // 시간표 저장
     public List<TimeBlockDto> getMyTimeBlocks() throws Exception; // 시간표 조회
     public void rateUpdate(Long id, Integer score) throws Exception; // rate 업데이트
-    public void resetMemberPassword(PasswordUpdateDto passwordUpdateDto); // (메일 인증 후) 비밀번호 재설정
+    public void resetMemberPassword(PasswordUpdateDto passwordUpdateDto) throws Exception; // (메일 인증 후) 비밀번호 재설정
 }

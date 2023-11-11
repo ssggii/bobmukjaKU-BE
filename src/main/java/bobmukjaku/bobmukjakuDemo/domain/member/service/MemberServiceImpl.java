@@ -73,13 +73,9 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
-    public void withdraw(String checkPassword, String username) throws Exception {
+    public void withdrawMember(String username) throws Exception { // 회원탈퇴 (수정)
         Member member = memberRepository.findByMemberEmail(username)
                 .orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-
-        if(!member.matchPassword(passwordEncoder, checkPassword)){
-            throw new MemberException(MemberExceptionType.WRONG_PASSWORD);
-        }
 
         memberRepository.delete(member);
     }
