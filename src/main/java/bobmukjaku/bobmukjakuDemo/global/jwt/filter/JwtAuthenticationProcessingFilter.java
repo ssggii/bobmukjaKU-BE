@@ -3,6 +3,7 @@ package bobmukjaku.bobmukjakuDemo.global.jwt.filter;
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
 import bobmukjaku.bobmukjakuDemo.global.jwt.service.JwtService;
+import bobmukjaku.bobmukjakuDemo.global.utility.RedisUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,6 +26,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final MemberRepository memberRepository;
+    private final RedisUtil redisUtil;
 
     private GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();
 
@@ -57,17 +59,31 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     }
 
     private void checkAccessTokenAndAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
         jwtService.extractAccessToken(request).filter(jwtService::isTokenValid).ifPresent(
+                accessToken -> {
+                    if (redisUtil.hasKeyBlackList(accessToken)) {
+                        try {
+                            handleLoggedOutToken(response);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                        return;
+                    }
+                    jwtService.extractUsername(accessToken).ifPresent(
 
-                accessToken -> jwtService.extractUsername(accessToken).ifPresent(
-
-                        username -> memberRepository.findByMemberEmail(username).ifPresent(
-                                this::saveAuthentication
-                        )
-                )
+                            username -> memberRepository.findByMemberEmail(username).ifPresent(
+                                    this::saveAuthentication
+                            )
+                    );
+                }
         );
 
         filterChain.doFilter(request,response);
+    }
+
+    private void handleLoggedOutToken(HttpServletResponse response) throws IOException{
+        response.sendError(401, "로그인이 필요합니다");
     }
 
     private void saveAuthentication(Member member) {
