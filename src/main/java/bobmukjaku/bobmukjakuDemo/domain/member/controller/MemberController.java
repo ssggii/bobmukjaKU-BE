@@ -35,8 +35,9 @@ public class MemberController {
     private final LogoutService logoutService;
 
     @PostMapping("/auth/logout")
-    public void logout(HttpServletRequest servletRequest) {
-        logoutService.logout();
+    public ResponseEntity<String> logout(HttpServletRequest request) {
+        logoutService.logout(request);
+        return ResponseEntity.ok("로그아웃 완료");
     }
 
     // 회원가입

@@ -23,7 +23,6 @@ public class LoginSuccessJWTProvideHandler extends SimpleUrlAuthenticationSucces
 
     private final JwtService jwtService;
     private final MemberRepository memberRepository;
-    private final RedisUtil redisUtil;
 
     private String extractUsername(Authentication authentication){
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
@@ -42,9 +41,6 @@ public class LoginSuccessJWTProvideHandler extends SimpleUrlAuthenticationSucces
         memberRepository.findByMemberEmail(username).ifPresent(
                 member -> member.updateRefreshToken(refreshToken)
         );
-
-        // 로그인 시 redis에 토큰 저장
-        redisUtil.set("loginID:" + username, accessToken, 300);
 
         log.info("로그인에 성공합니다. username: {}", username);
         log.info("AccessToken을 발급합니다. AccessToken: {}", accessToken);
