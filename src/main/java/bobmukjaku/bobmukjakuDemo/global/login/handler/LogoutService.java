@@ -21,10 +21,10 @@ public class LogoutService {
     private final RedisUtil redisUtil;
     private final JwtServiceImpl jwtService;
 
-    public void logout(HttpServletRequest request) {
+    /*public void logout(HttpServletRequest request) {
         String username = SecurityUtil.getLoginUsername();
         String accessToken = jwtService.extractAccessToken(request).get();
         jwtService.deleteRefreshToken(username); // refreshToken 삭제
         redisUtil.setBlackList(accessToken, "accessToken", 90); // Redis에 accessToken 등록
-    }
+    }*/
 }

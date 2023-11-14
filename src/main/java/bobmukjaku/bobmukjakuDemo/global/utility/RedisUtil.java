@@ -10,8 +10,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 @RequiredArgsConstructor
 public class RedisUtil {
-
-    private final RedisTemplate<String, Object> redisTemplate;
+    /*private final RedisTemplate<String, Object> redisTemplate;
     private final RedisTemplate<String, Object> redisBlackListTemplate;
 
     public void set(String key, Object o, int minutes) {
@@ -46,5 +45,5 @@ public class RedisUtil {
 
     public boolean hasKeyBlackList(String key) {
         return Boolean.TRUE.equals(redisBlackListTemplate.hasKey(key));
-    }
+    }*/
 }

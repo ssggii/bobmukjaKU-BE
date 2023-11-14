@@ -16,7 +16,4 @@ public class CustomErrorController implements ErrorController {
         return new ResponseEntity<>("로그아웃한 토큰임", HttpStatus.UNAUTHORIZED);
     }
 
-    /*public String getErrorPath() {
-        return "/error";
-    }*/
 }

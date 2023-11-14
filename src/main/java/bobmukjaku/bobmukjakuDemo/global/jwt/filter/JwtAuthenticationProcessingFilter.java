@@ -66,13 +66,13 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
         jwtService.extractAccessToken(request).filter(jwtService::isTokenValid).ifPresent(
                 accessToken -> {
-                    if (redisUtil.hasKeyBlackList(accessToken)) {
+                    /*if (redisUtil.hasKeyBlackList(accessToken)) {
                         try {
                             response.sendError(401);
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
-                    }
+                    }*/
                     jwtService.extractUsername(accessToken).ifPresent(
 
                             username -> memberRepository.findByMemberEmail(username).ifPresent(

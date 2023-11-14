@@ -34,11 +34,11 @@ public class MemberController {
     private final MemberService memberService;
     private final LogoutService logoutService;
 
-    @PostMapping("/auth/logout")
+    /*@PostMapping("/auth/logout")
     public ResponseEntity<String> logout(HttpServletRequest request) {
         logoutService.logout(request);
         return ResponseEntity.ok("로그아웃 완료");
-    }
+    }*/
 
     // 회원가입
     @PostMapping("/signUp")
