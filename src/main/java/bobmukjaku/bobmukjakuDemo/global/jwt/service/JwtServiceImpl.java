@@ -123,7 +123,7 @@ public class JwtServiceImpl implements JwtService{
         try {
             return Optional.ofNullable(JWT.require(Algorithm.HMAC512(secret)).build().verify(accessToken).getClaim(USERNAME_CLAIM).asString());
         }catch (Exception e){
-            System.out.println(e.getMessage()); // log로 출력하려 했지만..일단 sout으로 출력
+            System.out.println(e.getMessage());
             return Optional.empty();
         }
     }
@@ -144,7 +144,7 @@ public class JwtServiceImpl implements JwtService{
             JWT.require(Algorithm.HMAC512(secret)).build().verify(token);
             return true;
         }catch (Exception e){
-            System.out.println("유효하지 않은 Token입니다."); // log로 출력하려 했지만..일단 sout으로 출력
+            System.out.println("유효하지 않은 Token입니다.");
             return false;
         }
     }

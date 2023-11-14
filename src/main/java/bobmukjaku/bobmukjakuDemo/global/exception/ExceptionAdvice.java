@@ -4,15 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.bind.BindException;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
-@RestControllerAdvice // 모든 @Controller에서 발생하는 예외를 처리, @ExceptionHanlder를 통해 어떤 예외를 처리할지 명시
+@RestControllerAdvice// 모든 @Controller에서 발생하는 예외를 처리, @ExceptionHanlder를 통해 어떤 예외를 처리할지 명시
 public class ExceptionAdvice {
 
     @ExceptionHandler(BaseException.class)
