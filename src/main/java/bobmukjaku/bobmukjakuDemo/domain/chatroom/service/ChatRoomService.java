@@ -219,7 +219,7 @@ public class ChatRoomService {
     // 종료시간에 참여자들에게 알림을 보내도록 예약
     public void reserveNotification(Long roomId, LocalDate date, LocalTime time) throws Exception{
         Calendar endAt = Calendar.getInstance();
-        endAt.set(date.getYear(), date.getMonth().getValue()-1, date.getDayOfMonth(), time.getHour(), time.getMinute());
+        endAt.set(date.getYear(), date.getMonth().getValue()-1, date.getDayOfMonth(), time.getHour(), time.getMinute()-30);
         //endAt.set(2023,7,17,0,56);
         Date taskTime = new Date(endAt.getTimeInMillis());
         Timer timer = new Timer();
@@ -246,7 +246,7 @@ public class ChatRoomService {
     }
 
     // 모집방 삭제
-    @Scheduled(cron = "0 20 20 * * ?") // 매일 밤 자정에 동작
+    @Scheduled(cron = "0 0 0 * * ?") // 매일 밤 자정에 동작
     public void deleteExpiredRooms() {
         Specification<ChatRoom> specification = ChatRoomSpecification.filterExpiredChatRooms();
         List<ChatRoom> expiredChatRooms = chatRoomRepository.findAll(specification); // 모임날짜가 현재 날짜보다 이전인 모집방 검색

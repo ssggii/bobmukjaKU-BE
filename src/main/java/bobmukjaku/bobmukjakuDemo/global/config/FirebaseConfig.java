@@ -3,6 +3,9 @@ package bobmukjaku.bobmukjakuDemo.global.config;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -29,8 +32,8 @@ public class FirebaseConfig {
             Resource resource = resourceLoader.getResource("classpath:serviceAccountKey.json");
             InputStream inputStream = resource.getInputStream();
             GoogleCredentials credentials = GoogleCredentials.fromStream(inputStream);
-
-            FirebaseOptions options = new FirebaseOptions.Builder()
+            FirebaseOptions.Builder builder = FirebaseOptions.builder();
+             FirebaseOptions options = builder
                     .setCredentials(credentials)
                     .setDatabaseUrl("https://bobmukjaku-default-rtdb.firebaseio.com/")
                     .setDatabaseAuthVariableOverride(null)

@@ -18,5 +18,6 @@ public interface MemberService {
     public void updateTimeBlock(List<TimeBlockDto> timeBlockDtoList) throws Exception; // 시간표 저장
     public List<TimeBlockDto> getMyTimeBlocks() throws Exception; // 시간표 조회
     public void rateUpdate(Long id, Integer score) throws Exception; // rate 업데이트
-    public void resetMemberPassword(PasswordUpdateDto passwordUpdateDto) throws Exception; // (메일 인증 후) 비밀번호 재설정
+    public void resetMemberPassword(PasswordUpdateDto passwordUpdateDto); // (메일 인증 후) 비밀번호 재설정
+    public NameRateBgDto getNameRateBg(Long uid);//로그인 없이 닉네임,rate,배경색 조회
 }
