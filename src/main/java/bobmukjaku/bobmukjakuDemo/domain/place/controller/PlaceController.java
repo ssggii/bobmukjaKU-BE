@@ -43,14 +43,20 @@ public class PlaceController {
     @GetMapping("/place/review/info/1/{uid}")
     public ResponseEntity getReviewInfoByUid(@PathVariable Long uid) throws Exception {
         List<ReviewInfoDto> result = placeService.getReviewInfoByUid(uid);
-        return new ResponseEntity(result, HttpStatus.OK);
+        if(result != null && !result.isEmpty())
+            return new ResponseEntity(result, HttpStatus.OK);
+        else
+            return new ResponseEntity("등록된 리뷰가 없습니다", HttpStatus.NO_CONTENT);
     }
 
     // 음식점 id로 리뷰 조회
     @GetMapping("/place/review/info/2/{placeId}")
     public ResponseEntity getReviewInfoByPlaceId(@PathVariable String placeId) throws Exception {
         List<ReviewInfoDto> result = placeService.getReviewInfoByPlaceId(placeId);
-        return new ResponseEntity(result, HttpStatus.OK);
+        if(result != null)
+            return new ResponseEntity(result, HttpStatus.OK);
+        else
+            return new ResponseEntity("리뷰가 없습니다.", HttpStatus.NO_CONTENT);
     }
 
     // 스크랩 등록
