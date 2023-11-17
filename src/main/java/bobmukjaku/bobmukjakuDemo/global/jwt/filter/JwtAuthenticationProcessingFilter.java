@@ -2,7 +2,6 @@ package bobmukjaku.bobmukjakuDemo.global.jwt.filter;
 
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
-import bobmukjaku.bobmukjakuDemo.global.exception.LoggedOutTokenException;
 import bobmukjaku.bobmukjakuDemo.global.jwt.service.JwtService;
 import bobmukjaku.bobmukjakuDemo.global.utility.RedisUtil;
 import jakarta.servlet.FilterChain;
@@ -10,8 +9,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
@@ -20,7 +17,6 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -36,11 +32,10 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
     private final String NO_CHECK_URL = "/login"; // "/login"으로 들어오는 요청에 대해서는 작동 X
 
-    /**
-     * 1. 리프레시 토큰이 오는 경우 -> 유효하면 AccessToken 재발급후, 필터 진행 X, 바로 튕기기
-     *
-     * 2. 리프레시 토큰은 없고 AccessToken만 있는 경우 -> 유저정보 저장후 필터 계속 진행
-     */
+    /*
+    * 1. refresh token이 오는 경우 -> 토큰 검사 후 유효하면 access token 재발급, 필터 진행하지 않고 튕김
+    * 2. access token만 오는 경우 -> 유저 정보 저장 후 필터 진행
+    * */
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException{
@@ -101,7 +96,6 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     }
 
     private void checkRefreshTokenAndReIssueAccessToken(HttpServletResponse response, String refreshToken) {
-
         memberRepository.findByRefreshToken(refreshToken).ifPresent(
                 member -> jwtService.sendAccessToken(response, jwtService.createAccessToken(member.getMemberEmail()))
         );
