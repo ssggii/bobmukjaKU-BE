@@ -1,9 +1,8 @@
 package bobmukjaku.bobmukjakuDemo.domain.member.controller;
 
-import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.*;
 import bobmukjaku.bobmukjakuDemo.domain.member.service.MemberService;
-import bobmukjaku.bobmukjakuDemo.global.login.handler.LogoutService;
+import bobmukjaku.bobmukjakuDemo.domain.member.service.LogoutService;
 import bobmukjaku.bobmukjakuDemo.global.utility.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
