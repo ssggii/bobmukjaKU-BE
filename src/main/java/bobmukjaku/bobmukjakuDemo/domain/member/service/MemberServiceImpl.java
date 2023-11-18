@@ -1,5 +1,8 @@
 package bobmukjaku.bobmukjakuDemo.domain.member.service;
 
+import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoom;
+import bobmukjaku.bobmukjakuDemo.domain.chatroom.repository.ChatRoomRepository;
+import bobmukjaku.bobmukjakuDemo.domain.chatroom.service.ChatRoomService;
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import bobmukjaku.bobmukjakuDemo.domain.member.TimeBlock;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.*;
@@ -24,13 +27,13 @@ import java.util.stream.Collectors;
 public class MemberServiceImpl implements MemberService{
 
     private final MemberRepository memberRepository;
+    private final ChatRoomRepository chatRoomRepository;
     private final TimeBlockRepository timeBlockRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailAuthService emailAuthService;
 
     @Override
     public void signUp(MemberSignUpDto memberSignUpDto) throws Exception {
-
         // 회원가입 여부 체크
         if (memberRepository.findByMemberEmail(memberSignUpDto.memberEmail()).isPresent()){
             throw new MemberException(MemberExceptionType.ALREADY_EXIST_USERNAME);
@@ -78,12 +81,24 @@ public class MemberServiceImpl implements MemberService{
     public void withdrawMember(String username) throws Exception {
         Member member = memberRepository.findByMemberEmail(username)
                 .orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-        for(Review review : member.getReviewList()){
-            review.setWriter(null);
+
+        // 리뷰 데이터 남김
+        if(!member.getReviewList().isEmpty()){
+            for(Review review : member.getReviewList()){
+                review.setWriter(null);
+            }
         }
-        for(MemberChatRoom memberChatRoom : member.getJoiningRooms()){
-            memberChatRoom.getChatRoom().deleteParticipant(memberChatRoom);
+
+        // 모집방 퇴장
+        if(!member.getJoiningRooms().isEmpty()){
+            for(MemberChatRoom memberChatRoom : member.getJoiningRooms()){
+                ChatRoom chatRoomToExit = memberChatRoom.getChatRoom();
+                chatRoomToExit.deleteParticipant(memberChatRoom);
+                if(chatRoomToExit.getCurrentNum() == 0) // 마지막 참여자인 경우
+                    chatRoomRepository.delete(chatRoomToExit); // 모집방도 삭제
+            }
         }
+
         memberRepository.delete(member);
     }
 
