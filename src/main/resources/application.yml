@@ -1,10 +1,9 @@
 spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-#    url: jdbc:mariadb://localhost:3307/test
-    url: jdbc:mariadb://mariadb.crzcejb5ip3c.ap-northeast-2.rds.amazonaws.com:3307/bobmukjaku_db
-    username: root
-    password: ssggii!!
+    url: jdbc:mariadb://localhost:3307/test
+    username: test
+    password: ssggii
 
   jpa:
     show-sql: true
@@ -30,9 +29,8 @@ spring:
 
   data:
     redis:
-      host: http://43.202.12.102:8080
+      host: localhost
       port: 6379
-      password: foobared
 
 logging:
   level:

@@ -250,7 +250,7 @@ public class JwtAuthenticationFilterTest {
         String subject = JWT.require(Algorithm.HMAC512(secret)).build().verify(responseAccessToken).getSubject();
 
         assertThat(subject).isEqualTo(ACCESS_TOKEN_SUBJECT);
-        assertThat(responseRefreshToken).isNull();//refreshToken은 재발급되지 않음
+        assertThat(responseRefreshToken).isNull(); // refreshToken은 재발급되지 않음
     }
 
 
