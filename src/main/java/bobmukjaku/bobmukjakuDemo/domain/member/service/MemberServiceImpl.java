@@ -3,6 +3,7 @@ package bobmukjaku.bobmukjakuDemo.domain.member.service;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.ChatRoom;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.repository.ChatRoomRepository;
 import bobmukjaku.bobmukjakuDemo.domain.chatroom.service.ChatRoomService;
+import bobmukjaku.bobmukjakuDemo.domain.friend.repository.FriendRepository;
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import bobmukjaku.bobmukjakuDemo.domain.member.TimeBlock;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.*;
@@ -28,6 +29,7 @@ public class MemberServiceImpl implements MemberService{
 
     private final MemberRepository memberRepository;
     private final ChatRoomRepository chatRoomRepository;
+    private final FriendRepository friendRepository;
     private final TimeBlockRepository timeBlockRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailAuthService emailAuthService;
@@ -79,27 +81,27 @@ public class MemberServiceImpl implements MemberService{
 
     @Override
     public void withdrawMember(String username) throws Exception {
-        Member member = memberRepository.findByMemberEmail(username)
+        Member memberToWithdraw = memberRepository.findByMemberEmail(username)
                 .orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-
         // 리뷰 데이터 남김
-        if(!member.getReviewList().isEmpty()){
-            for(Review review : member.getReviewList()){
+        if(!memberToWithdraw.getReviewList().isEmpty()){
+            for(Review review : memberToWithdraw.getReviewList()){
                 review.setWriter(null);
             }
         }
-
         // 모집방 퇴장
-        if(!member.getJoiningRooms().isEmpty()){
-            for(MemberChatRoom memberChatRoom : member.getJoiningRooms()){
+        if(!memberToWithdraw.getJoiningRooms().isEmpty()){
+            for(MemberChatRoom memberChatRoom : memberToWithdraw.getJoiningRooms()){
                 ChatRoom chatRoomToExit = memberChatRoom.getChatRoom();
                 chatRoomToExit.deleteParticipant(memberChatRoom);
                 if(chatRoomToExit.getCurrentNum() == 0) // 마지막 참여자인 경우
                     chatRoomRepository.delete(chatRoomToExit); // 모집방도 삭제
             }
         }
+        // 다른 회원이 memberToWithdraw를 친구 또는 차단으로 등록한 데이터 삭제
+        friendRepository.deleteFriendByFriendUid(memberToWithdraw.getUid());
 
-        memberRepository.delete(member);
+        memberRepository.delete(memberToWithdraw);
     }
 
     @Override
