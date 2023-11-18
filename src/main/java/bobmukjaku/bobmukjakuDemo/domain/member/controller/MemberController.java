@@ -83,8 +83,9 @@ public class MemberController {
     // 회원탈퇴
     @DeleteMapping("/member/account")
     @ResponseStatus(HttpStatus.OK)
-    public void withdrawMember(HttpServletResponse response) throws Exception {
+    public ResponseEntity withdrawMember(HttpServletResponse response) throws Exception {
         memberService.withdrawMember(SecurityUtil.getLoginUsername());
+        return new ResponseEntity("회원탈퇴 완료", HttpStatus.OK);
     }
 
     // 메일인증
