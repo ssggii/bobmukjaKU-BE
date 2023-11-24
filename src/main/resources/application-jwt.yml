@@ -2,9 +2,9 @@ jwt:
   secret: ZG9uZ2h1bi1zaGFycC1kYnJ1YS13ZWItcHJvamVjdC11c2luZy1qd3Qtc2VjcmV0LURvbmdodW4tc3ByaW5nLWJvb3Qtand0LWJhY2stZW5kLWFuZC1qcy1jb2xsYWJv
 
   access:
-    expiration: 3600 # 1시간
+    expiration: 30 # 1시간
     header: Authorization
 
   refresh:
-    expiration: 1209600 # 2주
+    expiration: 60 # 2주
     header: Authorization-refresh
