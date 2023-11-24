@@ -7,5 +7,4 @@ import org.springframework.boot.test.context.SpringBootTest;
 @Transactional
 public class PlaceRepositoryTest {
 
-    // 스크랩 등
 }
