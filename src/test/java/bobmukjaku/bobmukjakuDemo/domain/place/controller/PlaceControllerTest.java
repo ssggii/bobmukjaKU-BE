@@ -1,10 +1,12 @@
 package bobmukjaku.bobmukjakuDemo.domain.place.controller;
 
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
+import bobmukjaku.bobmukjakuDemo.domain.member.Role;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberSignUpDto;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
 import bobmukjaku.bobmukjakuDemo.domain.place.Review;
 import bobmukjaku.bobmukjakuDemo.domain.place.Scrap;
+import bobmukjaku.bobmukjakuDemo.domain.place.dto.TopScrapRestaurantsInterface;
 import bobmukjaku.bobmukjakuDemo.domain.place.repository.ReviewRepository;
 import bobmukjaku.bobmukjakuDemo.domain.place.repository.ScrapRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,7 +23,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -353,5 +357,44 @@ public class PlaceControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
 
+    }
+
+    @Test
+    public void 상위스크랩_음식점_조회_성공() throws Exception {
+
+        // given
+        signUp();
+        String accessToken = login();
+        Member member = memberRepository.findByMemberEmail(username).get();
+
+        Scrap scrap1 = Scrap.builder().placeId("place111").placeName("음식점1").member(member).build();
+        Scrap scrap2 = Scrap.builder().placeId("place111").placeName("음식점1").member(member).build();
+        Scrap scrap3 = Scrap.builder().placeId("place111").placeName("음식점1").member(member).build();
+        Scrap scrap4 = Scrap.builder().placeId("place222").placeName("음식점2").member(member).build();
+        Scrap scrap5 = Scrap.builder().placeId("place222").placeName("음식점2").member(member).build();
+        Scrap scrap6 = Scrap.builder().placeId("place333").placeName("음식점3").member(member).build();
+        Scrap scrap7 = Scrap.builder().placeId("place333").placeName("음식점3").member(member).build();
+        Scrap scrap8 = Scrap.builder().placeId("place333").placeName("음식점3").member(member).build();
+        Scrap scrap9 = Scrap.builder().placeId("place333").placeName("음식점3").member(member).build();
+        Scrap scrap10 = Scrap.builder().placeId("place444").placeName("음식점4").member(member).build();
+        scrapRepository.save(scrap1);
+        scrapRepository.save(scrap2);
+        scrapRepository.save(scrap3);
+        scrapRepository.save(scrap4);
+        scrapRepository.save(scrap5);
+        scrapRepository.save(scrap6);
+        scrapRepository.save(scrap7);
+        scrapRepository.save(scrap8);
+        scrapRepository.save(scrap9);
+        scrapRepository.save(scrap10);
+
+        // when, then
+        mockMvc.perform(
+                        get("/place/top/scrap")
+                                .header(accessHeader, BEARER+accessToken)
+                                .characterEncoding(StandardCharsets.UTF_8)
+                )
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 }

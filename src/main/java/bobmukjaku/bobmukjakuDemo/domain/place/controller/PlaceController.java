@@ -94,4 +94,11 @@ public class PlaceController {
         return new ResponseEntity<>(placeService.getScrapCountsOfPlace(placeId), HttpStatus.OK);
     }
 
+    // 상위 스크랩 음식점 조회
+    @GetMapping("/place/top/scrap")
+    public ResponseEntity<List<TopScrapRestaurantsInterface>> getTopScrapRestaurants() {
+        List<TopScrapRestaurantsInterface> topScrapRestaurants = placeService.getTopScrapRestaurants();
+        return ResponseEntity.ok(topScrapRestaurants);
+    }
+
 }

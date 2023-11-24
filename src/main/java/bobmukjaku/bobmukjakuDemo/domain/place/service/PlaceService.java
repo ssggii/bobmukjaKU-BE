@@ -9,6 +9,7 @@ import bobmukjaku.bobmukjakuDemo.domain.place.Scrap;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewDeleteDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.ScrapInfoDto;
+import bobmukjaku.bobmukjakuDemo.domain.place.dto.TopScrapRestaurantsInterface;
 import bobmukjaku.bobmukjakuDemo.domain.place.repository.ReviewRepository;
 import bobmukjaku.bobmukjakuDemo.domain.place.repository.ScrapRepository;
 import com.google.cloud.storage.*;
@@ -118,6 +119,11 @@ public class PlaceService {
     // 음식점 스크랩 수 조회
     public Long getScrapCountsOfPlace(String placeId) throws Exception {
         return scrapRepository.countByPlaceId(placeId);
+    }
+
+    // 상위 스크랩 음식점 조회
+    public List<TopScrapRestaurantsInterface> getTopScrapRestaurants() {
+        return scrapRepository.findTop10PlacesByScrapCount();
     }
 
 }
