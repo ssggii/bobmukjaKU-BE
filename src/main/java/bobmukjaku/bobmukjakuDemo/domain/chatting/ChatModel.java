@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Map;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,4 +18,5 @@ public class ChatModel {
     private Boolean shareMessage;
     private String chatRoomId;
     private Boolean profanity;
+    private Map<String,Boolean> readList;
 }
