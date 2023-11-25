@@ -7,10 +7,7 @@ import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
 import bobmukjaku.bobmukjakuDemo.domain.place.Place;
 import bobmukjaku.bobmukjakuDemo.domain.place.Review;
 import bobmukjaku.bobmukjakuDemo.domain.place.Scrap;
-import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewInfoDto;
-import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewDeleteDto;
-import bobmukjaku.bobmukjakuDemo.domain.place.dto.ScrapInfoDto;
-import bobmukjaku.bobmukjakuDemo.domain.place.dto.TopScrapRestaurantsInterface;
+import bobmukjaku.bobmukjakuDemo.domain.place.dto.*;
 import bobmukjaku.bobmukjakuDemo.domain.place.repository.PlaceRepository;
 import bobmukjaku.bobmukjakuDemo.domain.place.repository.ReviewRepository;
 import bobmukjaku.bobmukjakuDemo.domain.place.repository.ScrapRepository;
@@ -21,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -140,9 +138,15 @@ public class PlaceService {
         return scrapRepository.countByPlaceId(placeId);
     }
 
-/*    // 상위 스크랩 음식점 조회
+    // 상위 스크랩 음식점 조회
     public List<TopScrapRestaurantsInterface> getTopScrapRestaurants() {
-        return scrapRepository.findTop10PlacesByScrapCount();
+        return placeRepository.findTop10CustomSort();
+    }
+
+    /*// 키워드를 음식점 이름으로 포함하는 음식점 조회
+    public List<PlaceInfoDto> getPlacesByKeyword(String keyword) throws Exception {
+        List<Place> places = placeRepository.findByPlaceNameIgnoreCase(keyword);
+        return places.stream().map(Place::toDto).collect(Collectors.toList());
     }*/
 
 }

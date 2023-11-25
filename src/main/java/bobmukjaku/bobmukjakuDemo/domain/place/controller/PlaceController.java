@@ -1,5 +1,6 @@
 package bobmukjaku.bobmukjakuDemo.domain.place.controller;
 
+import bobmukjaku.bobmukjakuDemo.domain.place.Place;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.*;
 import bobmukjaku.bobmukjakuDemo.domain.place.service.PlaceService;
 import lombok.RequiredArgsConstructor;
@@ -95,11 +96,18 @@ public class PlaceController {
         return new ResponseEntity<>(placeService.getScrapCountsOfPlace(placeId), HttpStatus.OK);
     }
 
-/*    // 상위 스크랩 음식점 조회
+    // 상위 스크랩 음식점 조회
     @GetMapping("/place/top/scrap")
     public ResponseEntity<List<TopScrapRestaurantsInterface>> getTopScrapRestaurants() {
         List<TopScrapRestaurantsInterface> topScrapRestaurants = placeService.getTopScrapRestaurants();
         return ResponseEntity.ok(topScrapRestaurants);
+    }
+
+    // 키워드를 음식점 이름으로 포함하는 음식점 조회
+    /*@GetMapping("/place/name/keyword")
+    public ResponseEntity searchPlacesByKeyword(@PathVariable String keyword) throws Exception {
+        List<PlaceInfoDto> places = placeService.getPlacesByKeyword(keyword);
+        return ResponseEntity.ok(places);
     }*/
 
 }
