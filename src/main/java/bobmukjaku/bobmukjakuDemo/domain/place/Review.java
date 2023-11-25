@@ -36,10 +36,14 @@ public class Review {
     private Member writer; // 작성자
 
     public ReviewInfoDto toDto(Review review){
-        return ReviewInfoDto.builder().uid(writer.getUid()).placeId(placeId).placeName(placeName).contents(contents).imageUrl(imageUrl).build();
+        if(review.writer == null){
+            return ReviewInfoDto.builder().uid(-1L).placeId(placeId).placeName(placeName).contents(contents).imageUrl(imageUrl).build();
+        } else {
+            return ReviewInfoDto.builder().uid(writer.getUid()).placeId(placeId).placeName(placeName).contents(contents).imageUrl(imageUrl).build();
+        }
     }
 
-    public void setWriter(Member writer) {
-        this.writer = writer;
+    public void setWriter(Member member) {
+        this.writer = member;
     }
 }
