@@ -3,16 +3,21 @@ package bobmukjaku.bobmukjakuDemo.domain.place.controller;
 import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import bobmukjaku.bobmukjakuDemo.domain.member.Role;
 import bobmukjaku.bobmukjakuDemo.domain.member.dto.MemberSignUpDto;
+import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberException;
+import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberExceptionType;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
+import bobmukjaku.bobmukjakuDemo.domain.place.Place;
 import bobmukjaku.bobmukjakuDemo.domain.place.Review;
 import bobmukjaku.bobmukjakuDemo.domain.place.Scrap;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.TopScrapRestaurantsInterface;
+import bobmukjaku.bobmukjakuDemo.domain.place.repository.PlaceRepository;
 import bobmukjaku.bobmukjakuDemo.domain.place.repository.ReviewRepository;
 import bobmukjaku.bobmukjakuDemo.domain.place.repository.ScrapRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,6 +54,9 @@ public class PlaceControllerTest {
     MemberRepository memberRepository;
 
     @Autowired
+    PlaceRepository placeRepository;
+
+    @Autowired
     ScrapRepository scrapRepository;
 
     @Autowired
@@ -56,12 +64,12 @@ public class PlaceControllerTest {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
-    private String username = "username@konkuk.ac.kr";
+    private String username = "username111@konkuk.ac.kr";
     private String password = "password1234@";
-    private String nickName = "ssggii";
+    private String nickName = "user111";
 
     @AfterEach
-    private void clear() {
+    private void after() {
         em.flush();
         em.clear();
     }
@@ -101,6 +109,8 @@ public class PlaceControllerTest {
         signUp();
         String accessToken = login();
         Member member = memberRepository.findByMemberEmail(username).get();
+        Place place = placeRepository.findByPlaceId("음식점1_id").get();
+        System.out.println("업데이트 전: " + place.getReviewCount());
 
         Map<String, Object> map = new HashMap<>();
         map.put("placeId", "음식점1_id");
@@ -121,7 +131,10 @@ public class PlaceControllerTest {
 
         // then
         assertThat(reviewRepository.findAll().size()).isEqualTo(1);
+        assertThat(placeRepository.findAll().size()).isEqualTo(1);
         assertThat(member.getReviewList().size()).isEqualTo(1);
+        assertThat(place.getReviewCount()).isEqualTo(1);
+
     }
 
     // 리뷰 삭제
@@ -131,6 +144,8 @@ public class PlaceControllerTest {
         signUp();
         String accessToken = login();
         Member member = memberRepository.findByMemberEmail(username).get();
+        Place place = placeRepository.findByPlaceId("음식점1_id").get();
+        System.out.println("리뷰 삭제 전: " + place.getReviewCount());
 
         Review review1 = Review.builder().placeId("음식점1_id").placeName("음식점1").contents("너모 맛있어요").imageUrl("리뷰사진1 링크").writer(member).build();
         Review review2 = Review.builder().placeId("음식점2_id").placeName("음식점2").contents("너모 맛있어요2").imageUrl("리뷰사진2 링크").build();
@@ -158,6 +173,7 @@ public class PlaceControllerTest {
         // then
         assertThat(reviewRepository.findAll().size()).isEqualTo(1);
         assertThat(member.getReviewList().size()).isEqualTo(0);
+        assertThat(place.getReviewCount()).isEqualTo(0);
 
     }
 
@@ -222,6 +238,8 @@ public class PlaceControllerTest {
         signUp();
         String accessToken = login();
         Member member = memberRepository.findByMemberEmail(username).get();
+        Place place = placeRepository.findByPlaceId("음식점1_id").get();
+        System.out.println("업데이트 전: " + place.getReviewCount());
 
         Map<String, Object> map = new HashMap<>();
         map.put("uid", member.getUid());
@@ -241,6 +259,7 @@ public class PlaceControllerTest {
         // then
         assertThat(scrapRepository.findAll().size()).isEqualTo(1);
         assertThat(member.getScrapList().size()).isEqualTo(1);
+        assertThat(place.getScrapCount()).isEqualTo(2);
 
     }
 
@@ -251,9 +270,11 @@ public class PlaceControllerTest {
         signUp();
         String accessToken = login();
         Member member = memberRepository.findByMemberEmail(username).get();
+        Place place = placeRepository.findByPlaceId("음식점1_id").get();
+        System.out.println("업데이트 전: " + place.getReviewCount());
 
-        Scrap scrap1 = Scrap.builder().placeId("음식점1").member(member).build();
-        Scrap scrap2 = Scrap.builder().placeId("음식점2").member(member).build();
+        Scrap scrap1 = Scrap.builder().placeId("음식점1_id").member(member).build();
+        Scrap scrap2 = Scrap.builder().placeId("음식점2_id").member(member).build();
         member.addScrap(scrap1);
         member.addScrap(scrap2);
 
@@ -277,6 +298,7 @@ public class PlaceControllerTest {
         // then
         assertThat(scrapRepository.findAll().size()).isEqualTo(1);
         assertThat(member.getScrapList().size()).isEqualTo(1);
+        assertThat(place.getScrapCount()).isEqualTo(0);
 
     }
 

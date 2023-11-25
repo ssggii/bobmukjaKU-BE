@@ -22,6 +22,7 @@ public class PlaceController {
     * 스크랩 등록
     * 스크랩 해제
     * 스크랩 조회 - uid로 스크랩 정보 조회, 음식점 id로 스크랩 정보 조회(uid 같이 반환)
+    * 상위 스크랩 음식점 조회
     *
     * */
 
@@ -94,11 +95,11 @@ public class PlaceController {
         return new ResponseEntity<>(placeService.getScrapCountsOfPlace(placeId), HttpStatus.OK);
     }
 
-    // 상위 스크랩 음식점 조회
+/*    // 상위 스크랩 음식점 조회
     @GetMapping("/place/top/scrap")
     public ResponseEntity<List<TopScrapRestaurantsInterface>> getTopScrapRestaurants() {
         List<TopScrapRestaurantsInterface> topScrapRestaurants = placeService.getTopScrapRestaurants();
         return ResponseEntity.ok(topScrapRestaurants);
-    }
+    }*/
 
 }

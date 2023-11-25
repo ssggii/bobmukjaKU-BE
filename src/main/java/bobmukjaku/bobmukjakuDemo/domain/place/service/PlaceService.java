@@ -4,12 +4,14 @@ import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberException;
 import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberExceptionType;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
+import bobmukjaku.bobmukjakuDemo.domain.place.Place;
 import bobmukjaku.bobmukjakuDemo.domain.place.Review;
 import bobmukjaku.bobmukjakuDemo.domain.place.Scrap;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewDeleteDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.ScrapInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.TopScrapRestaurantsInterface;
+import bobmukjaku.bobmukjakuDemo.domain.place.repository.PlaceRepository;
 import bobmukjaku.bobmukjakuDemo.domain.place.repository.ReviewRepository;
 import bobmukjaku.bobmukjakuDemo.domain.place.repository.ScrapRepository;
 import com.google.cloud.storage.*;
@@ -31,6 +33,7 @@ public class PlaceService {
     private String fireBaseBucket;
 
     private final MemberRepository memberRepository;
+    private final PlaceRepository placeRepository;
     private final ReviewRepository reviewRepository;
     private final ScrapRepository scrapRepository;
 
@@ -53,6 +56,10 @@ public class PlaceService {
         Member member = memberRepository.findById(reviewInfoDto.getUid()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         Review review = reviewInfoDto.toEntity(member);
         member.addReview(review);
+
+        Place place = placeRepository.findByPlaceId(reviewInfoDto.getPlaceId())
+                .orElseThrow(() -> new Exception("Place not found with ID: " + reviewInfoDto.getPlaceId()));
+        place.addReviewCount();
     }
 
     // 리뷰 삭제
@@ -65,6 +72,10 @@ public class PlaceService {
                     review.getWriter().deleteReview(review);
                     reviewRepository.delete(review);
                 });
+
+        Place place = placeRepository.findByPlaceId(reviewDeleteDto.placeId())
+                .orElseThrow(() -> new Exception("Place not found with ID: " + reviewDeleteDto.placeId()));
+        place.subReviewCount();
     }
 
     // uid로 리뷰 조회
@@ -87,6 +98,10 @@ public class PlaceService {
         Member member = memberRepository.findById(scrapInfoDto.uid()).orElseThrow(()->new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         Scrap scrap = scrapInfoDto.toEntity(member);
         member.addScrap(scrap);
+
+        Place place = placeRepository.findByPlaceId(scrapInfoDto.placeId())
+                .orElseThrow(() -> new Exception("Place not found with ID: " + scrapInfoDto.placeId()));
+        place.addScrapCount();
     }
 
     // 스크랩 해제
@@ -99,6 +114,10 @@ public class PlaceService {
                     scrap.getMember().deleteScrap(scrap);
                     scrapRepository.delete(scrap);
                 });
+
+        Place place = placeRepository.findByPlaceId(scrapInfoDto.placeId())
+                .orElseThrow(() -> new Exception("Place not found with ID: " + scrapInfoDto.placeId()));
+        place.subScrapCount();
     }
 
     // uid로 스크랩 조회
@@ -121,9 +140,9 @@ public class PlaceService {
         return scrapRepository.countByPlaceId(placeId);
     }
 
-    // 상위 스크랩 음식점 조회
+/*    // 상위 스크랩 음식점 조회
     public List<TopScrapRestaurantsInterface> getTopScrapRestaurants() {
         return scrapRepository.findTop10PlacesByScrapCount();
-    }
+    }*/
 
 }

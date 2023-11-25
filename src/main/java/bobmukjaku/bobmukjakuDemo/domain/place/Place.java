@@ -3,8 +3,6 @@ package bobmukjaku.bobmukjakuDemo.domain.place;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 
 @Table(name = "restaurant")
 @Getter
@@ -37,7 +35,6 @@ public class Place {
     public void addReviewCount(){
         this.reviewCount++;
     }
-
     public void subReviewCount(){
         this.reviewCount--;
     }
