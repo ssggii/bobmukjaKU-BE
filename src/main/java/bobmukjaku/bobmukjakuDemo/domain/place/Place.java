@@ -1,5 +1,6 @@
 package bobmukjaku.bobmukjakuDemo.domain.place;
 
+import bobmukjaku.bobmukjakuDemo.domain.place.dto.PlaceInfoDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -37,6 +38,11 @@ public class Place {
     }
     public void subReviewCount(){
         this.reviewCount--;
+    }
+
+    public static PlaceInfoDto toDto(Place place) {
+        PlaceInfoDto placeInfoDto = new PlaceInfoDto(place.placeId, place.placeName);
+        return placeInfoDto;
     }
 
 }

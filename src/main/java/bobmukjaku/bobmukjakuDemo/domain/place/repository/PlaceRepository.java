@@ -4,6 +4,7 @@ import bobmukjaku.bobmukjakuDemo.domain.place.Place;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.TopScrapRestaurantsInterface;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +18,7 @@ public interface PlaceRepository extends JpaRepository<Place, String> {
             "         p.placeName ASC")
     List<TopScrapRestaurantsInterface> findTop10CustomSort(); // 스크랩&리뷰 수 기반 상위 음식점 검색
 
-    /*// 특정 키워드를 음식점 이름으로 포함하는 모든 Place 객체 검색
+    // 특정 키워드를 음식점 이름으로 포함하는 모든 Place 객체 검색
     @Query("SELECT p FROM Place p WHERE LOWER(p.placeName) = LOWER(:keyword)")
-    List<Place> findByPlaceNameIgnoreCase(@Param("keyword") String keyword);*/
+    List<Place> findByPlaceNameIgnoreCase(@Param("keyword") String keyword);
 }

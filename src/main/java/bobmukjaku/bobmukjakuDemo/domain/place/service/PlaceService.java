@@ -143,10 +143,10 @@ public class PlaceService {
         return placeRepository.findTop10CustomSort();
     }
 
-    /*// 키워드를 음식점 이름으로 포함하는 음식점 조회
+    // 키워드를 음식점 이름으로 포함하는 음식점 조회
     public List<PlaceInfoDto> getPlacesByKeyword(String keyword) throws Exception {
         List<Place> places = placeRepository.findByPlaceNameIgnoreCase(keyword);
         return places.stream().map(Place::toDto).collect(Collectors.toList());
-    }*/
+    }
 
 }

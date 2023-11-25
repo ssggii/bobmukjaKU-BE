@@ -104,10 +104,10 @@ public class PlaceController {
     }
 
     // 키워드를 음식점 이름으로 포함하는 음식점 조회
-    /*@GetMapping("/place/name/keyword")
+    @GetMapping("/place/name/keyword")
     public ResponseEntity searchPlacesByKeyword(@PathVariable String keyword) throws Exception {
         List<PlaceInfoDto> places = placeService.getPlacesByKeyword(keyword);
         return ResponseEntity.ok(places);
-    }*/
+    }
 
 }
