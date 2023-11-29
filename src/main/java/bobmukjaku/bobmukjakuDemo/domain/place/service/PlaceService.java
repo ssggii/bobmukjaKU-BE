@@ -132,8 +132,7 @@ public class PlaceService {
         JSONParser jsonParser = new JSONParser(); // JSON 파싱 객체
 
         JSONObject jsonObject = (JSONObject) jsonParser.parse(jsonData); // JSON 객체로 파싱해서 저장
-        JSONObject response = (JSONObject) jsonObject.get("response"); // response 내부의 데이터
-        JSONObject body = (JSONObject) response.get("body"); // body 데이터
+        JSONObject body = (JSONObject) jsonObject.get("body"); // body 데이터
         JSONArray array = (JSONArray) body.get("items"); // body 내부의 데이터 배열
 
         for(int i = 0; i< array.size(); i++) {

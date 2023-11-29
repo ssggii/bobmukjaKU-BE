@@ -105,7 +105,7 @@ public class PlaceController {
         String urlStr = "https://apis.data.go.kr/B553077/api/open/sdsc2/storeListInDong?" +
                 "ServiceKey=VYIyj%2BcymAgnf1xMSx%2Bx0aCOwrLNT4bFmRhEc2BCLNOHi772zuCMomRy5AvxiLp6CSXadCFA70HEePy6Ewf2%2Fg%3D%3D" +
                 "&pageNo=0" +
-                "&numOfRows=20" +
+                "&numOfRows=400" +
                 "&divId=adongCd" +
                 "&key=11215710" +
                 "&indsLclsCd=I2" +

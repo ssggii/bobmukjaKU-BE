@@ -1,10 +1,7 @@
 package bobmukjaku.bobmukjakuDemo.domain.place;
 
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.PlaceInfoDto;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Table(name = "restaurant")
@@ -16,6 +13,7 @@ import lombok.*;
 public class Place {
 
     @Id
+    @Column(name = "place_id")
     private String placeId; // 음식점 ID
 
     @Column(name = "place_name")
