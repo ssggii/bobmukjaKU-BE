@@ -7,6 +7,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 
 @RestController
@@ -92,6 +96,40 @@ public class PlaceController {
     @GetMapping("/place/scrap/count/{placeId}")
     public ResponseEntity<Long> getScrapCountsOfPlace(@PathVariable String placeId) throws Exception {
         return new ResponseEntity<>(placeService.getScrapCountsOfPlace(placeId), HttpStatus.OK);
+    }
+
+    // 소상공인 상권정보 API 호출
+    @GetMapping("/api")
+    public String callApi() throws Exception{
+        StringBuilder result = new StringBuilder();
+
+        String urlStr = "https://apis.data.go.kr/B553077/api/open/sdsc2/storeListInDong?" +
+                "ServiceKey=VYIyj%2BcymAgnf1xMSx%2Bx0aCOwrLNT4bFmRhEc2BCLNOHi772zuCMomRy5AvxiLp6CSXadCFA70HEePy6Ewf2%2Fg%3D%3D" +
+                "&pageNo=0" +
+                "&numOfRows=20" +
+                "&divId=adongCd" +
+                "&key=11215710" +
+                "&indsLclsCd=I2" +
+                "&indsMclsCd=I201" +
+                "&indsSclsCd=I20101" +
+                "&type=json";
+        URL url = new URL(urlStr);
+
+        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+        urlConnection.setRequestMethod("GET");
+
+        BufferedReader bufferedReader;
+        bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
+
+        String returnLine;
+
+        while((returnLine = bufferedReader.readLine()) != null){
+            result.append(returnLine + "\n\r");
+        }
+
+        urlConnection.disconnect();
+
+        return result.toString();
     }
 
 }
