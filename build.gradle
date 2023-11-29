@@ -36,6 +36,7 @@ dependencies {
 	implementation 'com.google.firebase:firebase-admin:9.2.0'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
 
 	// p6spy
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.7.1'

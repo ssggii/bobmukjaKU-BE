@@ -4,17 +4,22 @@ import bobmukjaku.bobmukjakuDemo.domain.member.Member;
 import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberException;
 import bobmukjaku.bobmukjakuDemo.domain.member.exception.MemberExceptionType;
 import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
+import bobmukjaku.bobmukjakuDemo.domain.place.Place;
 import bobmukjaku.bobmukjakuDemo.domain.place.Review;
 import bobmukjaku.bobmukjakuDemo.domain.place.Scrap;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewInfoDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewDeleteDto;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.ScrapInfoDto;
+import bobmukjaku.bobmukjakuDemo.domain.place.repository.PlaceRepository;
 import bobmukjaku.bobmukjakuDemo.domain.place.repository.ReviewRepository;
 import bobmukjaku.bobmukjakuDemo.domain.place.repository.ScrapRepository;
 import com.google.cloud.storage.*;
 import com.google.firebase.auth.FirebaseAuthException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +37,7 @@ public class PlaceService {
     private final MemberRepository memberRepository;
     private final ReviewRepository reviewRepository;
     private final ScrapRepository scrapRepository;
+    private final PlaceRepository placeRepository;
 
     // 이미지 url 생성
     public String getImageUrl(String imageFileName) throws Exception, FirebaseAuthException {
@@ -118,6 +124,31 @@ public class PlaceService {
     // 음식점 스크랩 수 조회
     public Long getScrapCountsOfPlace(String placeId) throws Exception {
         return scrapRepository.countByPlaceId(placeId);
+    }
+
+    // 음식점 데이터 JSON 파싱해서 DB에 저장
+    public void loadSave(String jsonData) throws Exception{
+        JSONObject jObject; // JSON 객체
+        JSONParser jsonParser = new JSONParser(); // JSON 파싱 객체
+
+        JSONObject jsonObject = (JSONObject) jsonParser.parse(jsonData); // JSON 객체로 파싱해서 저장
+        JSONObject response = (JSONObject) jsonObject.get("response"); // response 내부의 데이터
+        JSONObject body = (JSONObject) response.get("body"); // body 데이터
+        JSONArray array = (JSONArray) body.get("items"); // body 내부의 데이터 배열
+
+        for(int i = 0; i< array.size(); i++) {
+            jObject = (JSONObject) array.get(i);
+
+            // 빌더 패턴으로 Place 엔티티 생성
+            Place place = Place.builder()
+                    .placeId(jObject.get("bizesId").toString())
+                    .placeName(jObject.get("bizesNm").toString())
+                    .scrapCount(0)
+                    .reviewCount(0)
+                    .build();
+
+            placeRepository.save(place);
+        }
     }
 
 }

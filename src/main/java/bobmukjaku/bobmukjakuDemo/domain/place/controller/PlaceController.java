@@ -98,7 +98,7 @@ public class PlaceController {
         return new ResponseEntity<>(placeService.getScrapCountsOfPlace(placeId), HttpStatus.OK);
     }
 
-    // 소상공인 상권정보 API 호출
+    // 음식점 데이터 DB에 저장
     @GetMapping("/api")
     public String callApi() throws Exception{
         StringBuilder result = new StringBuilder();
@@ -126,7 +126,7 @@ public class PlaceController {
         }
 
         urlConnection.disconnect();
-
+        placeService.loadSave(result.toString()); // JSON으로 파싱 후 DB에 데이터 삽입
         return result.toString();
     }
 
