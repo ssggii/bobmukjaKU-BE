@@ -102,7 +102,6 @@ public class PlaceController {
     @GetMapping("/api")
     public String callApi() throws Exception{
         StringBuilder result = new StringBuilder();
-
         String urlStr = "https://apis.data.go.kr/B553077/api/open/sdsc2/storeListInDong?" +
                 "ServiceKey=VYIyj%2BcymAgnf1xMSx%2Bx0aCOwrLNT4bFmRhEc2BCLNOHi772zuCMomRy5AvxiLp6CSXadCFA70HEePy6Ewf2%2Fg%3D%3D" +
                 "&pageNo=0" +
@@ -122,7 +121,6 @@ public class PlaceController {
         bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
 
         String returnLine;
-
         while((returnLine = bufferedReader.readLine()) != null){
             result.append(returnLine + "\n\r");
         }
