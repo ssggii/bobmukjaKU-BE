@@ -100,12 +100,12 @@ public class PlaceController {
 
     // 음식점 데이터 DB에 저장
     @GetMapping("/api")
-    public String callApi() throws Exception{
+    public ResponseEntity callApi() throws Exception{
         StringBuilder result = new StringBuilder();
         String urlStr = "https://apis.data.go.kr/B553077/api/open/sdsc2/storeListInDong?" +
                 "ServiceKey=VYIyj%2BcymAgnf1xMSx%2Bx0aCOwrLNT4bFmRhEc2BCLNOHi772zuCMomRy5AvxiLp6CSXadCFA70HEePy6Ewf2%2Fg%3D%3D" +
                 "&pageNo=0" +
-                "&numOfRows=400" +
+                "&numOfRows=1000" +
                 "&divId=adongCd" +
                 "&key=11215710" +
                 "&indsLclsCd=I2" +
@@ -126,8 +126,9 @@ public class PlaceController {
         }
 
         urlConnection.disconnect();
-        placeService.loadSave(result.toString()); // JSON으로 파싱 후 DB에 데이터 삽입
-        return result.toString();
+        int rowNum = placeService.loadSave(result.toString()); // DB에 저장된 데이터 개수
+
+        return new ResponseEntity<>("저장된 데이터 개수: " + rowNum, HttpStatus.OK);
     }
 
 }

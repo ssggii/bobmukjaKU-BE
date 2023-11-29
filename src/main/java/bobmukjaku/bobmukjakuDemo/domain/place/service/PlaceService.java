@@ -127,7 +127,7 @@ public class PlaceService {
     }
 
     // 음식점 데이터 JSON 파싱해서 DB에 저장
-    public void loadSave(String jsonData) throws Exception{
+    public int loadSave(String jsonData) throws Exception{
         JSONObject jObject; // JSON 객체
         JSONParser jsonParser = new JSONParser(); // JSON 파싱 객체
 
@@ -148,6 +148,8 @@ public class PlaceService {
 
             placeRepository.save(place);
         }
+
+        return array.size();
     }
 
 }
