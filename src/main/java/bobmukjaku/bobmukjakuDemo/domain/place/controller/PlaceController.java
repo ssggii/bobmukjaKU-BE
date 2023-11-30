@@ -99,18 +99,17 @@ public class PlaceController {
     }
 
     // 음식점 데이터 DB에 저장
-    @GetMapping("/api")
-    public ResponseEntity callApi() throws Exception{
+    @PostMapping("/api")
+    public ResponseEntity callApi(@RequestBody PlaceCodeDto placeCodeDto) throws Exception{
         StringBuilder result = new StringBuilder();
         String urlStr = "https://apis.data.go.kr/B553077/api/open/sdsc2/storeListInDong?" +
                 "ServiceKey=VYIyj%2BcymAgnf1xMSx%2Bx0aCOwrLNT4bFmRhEc2BCLNOHi772zuCMomRy5AvxiLp6CSXadCFA70HEePy6Ewf2%2Fg%3D%3D" +
                 "&pageNo=0" +
                 "&numOfRows=1000" +
                 "&divId=adongCd" +
-                "&key=11215710" +
+                "&key=" + placeCodeDto.key() +
                 "&indsLclsCd=I2" +
-                "&indsMclsCd=I201" +
-                "&indsSclsCd=I20101" +
+                "&indsMclsCd=" + placeCodeDto.indsMclsCd() +
                 "&type=json";
         URL url = new URL(urlStr);
 
