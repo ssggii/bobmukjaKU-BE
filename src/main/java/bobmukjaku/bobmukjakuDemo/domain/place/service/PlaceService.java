@@ -19,7 +19,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -143,10 +145,18 @@ public class PlaceService {
         return placeRepository.findTop10CustomSort();
     }
 
-    // 키워드를 음식점 이름으로 포함하는 음식점 조회
-    public List<PlaceInfoDto> getPlacesByKeyword(String keyword) throws Exception {
-        List<Place> places = placeRepository.findByPlaceNameIgnoreCase(keyword);
-        return places.stream().map(Place::toDto).collect(Collectors.toList());
+    // 이름으로 음식점 조회
+    public List<Place> getPlacesByKeyword(String[] characters) throws Exception {
+        Set<Place> resultSet = new HashSet<>();
+        for(String character : characters){
+            List<Place> places = placeRepository.findByPlaceNameContaining(character);
+            if (resultSet.isEmpty()) {
+                resultSet.addAll(places);
+            } else {
+                resultSet.retainAll(places);
+            }
+        }
+        return new ArrayList<>(resultSet);
     }
 
 }

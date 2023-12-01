@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -103,10 +104,11 @@ public class PlaceController {
         return ResponseEntity.ok(topScrapRestaurants);
     }
 
-    // 키워드를 음식점 이름으로 포함하는 음식점 조회
-    @GetMapping("/place/name/keyword")
+    // 이름으로 음식점 검색
+    @GetMapping("/place/name/{keyword}")
     public ResponseEntity searchPlacesByKeyword(@PathVariable String keyword) throws Exception {
-        List<PlaceInfoDto> places = placeService.getPlacesByKeyword(keyword);
+        String[] characters = keyword.split("");
+        List<PlaceInfoDto> places = placeService.getPlacesByKeyword(characters).stream().map(Place::toDto).collect(Collectors.toList());
         return ResponseEntity.ok(places);
     }
 
