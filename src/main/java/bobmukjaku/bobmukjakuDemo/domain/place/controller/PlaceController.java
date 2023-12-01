@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -105,11 +106,12 @@ public class PlaceController {
     }
 
     // 이름으로 음식점 검색
-    @GetMapping("/place/name/{keyword}")
-    public ResponseEntity searchPlacesByKeyword(@PathVariable String keyword) throws Exception {
-        String[] characters = keyword.split("");
-        List<PlaceInfoDto> places = placeService.getPlacesByKeyword(characters).stream().map(Place::toDto).collect(Collectors.toList());
-        return ResponseEntity.ok(places);
+    @GetMapping("/place/name")
+    public ResponseEntity searchPlacesByKeyword(@RequestParam String keyword) throws Exception {
+        char[] charArray = keyword.replaceAll("\\s", "").toCharArray(); // 공백 제거 후 char 배열로 변환
+        Set<Place> places = placeService.getPlacesByKeyword(charArray);
+        Set<PlaceInfoDto> placeInfoDtos = places.stream().map(Place::toDto).collect(Collectors.toSet());
+        return new ResponseEntity<>(placeInfoDtos, HttpStatus.OK);
     }
 
 }
