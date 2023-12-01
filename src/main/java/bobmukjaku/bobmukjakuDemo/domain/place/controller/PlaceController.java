@@ -1,5 +1,6 @@
 package bobmukjaku.bobmukjakuDemo.domain.place.controller;
 
+import bobmukjaku.bobmukjakuDemo.domain.place.Place;
 import bobmukjaku.bobmukjakuDemo.domain.place.dto.*;
 import bobmukjaku.bobmukjakuDemo.domain.place.service.PlaceService;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +12,9 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -128,6 +131,15 @@ public class PlaceController {
         int rowNum = placeService.loadSave(result.toString()); // DB에 저장된 데이터 개수
 
         return new ResponseEntity<>("저장된 데이터 개수: " + rowNum, HttpStatus.OK);
+    }
+
+    // 이름으로 음식점 검색
+    @GetMapping("/place/name")
+    public ResponseEntity searchPlacesByKeyword(@RequestParam String keyword) throws Exception {
+        char[] charArray = keyword.replaceAll("\\s", "").toCharArray(); // 공백 제거 후 char 배열로 변환
+        Set<Place> places = placeService.getPlacesByKeyword(charArray);
+        Set<PlaceInfoDto> placeInfoDtos = places.stream().map(Place::toDto).collect(Collectors.toSet());
+        return new ResponseEntity<>(placeInfoDtos, HttpStatus.OK);
     }
 
 }

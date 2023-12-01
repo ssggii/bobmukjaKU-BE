@@ -23,7 +23,7 @@ import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -150,6 +150,21 @@ public class PlaceService {
         }
 
         return array.size();
+    }
+
+    public Set<Place> getPlacesByKeyword(char[] characters) throws Exception {
+        Set<Place> resultSet = null; // 초기화된 Set 객체 생성
+
+        for (char character : characters) {
+            List<Place> places = placeRepository.findByPlaceNameContaining(character);
+            if (resultSet == null) {
+                resultSet = new HashSet<>(places); // 최초의 검색어에 대한 결과를 resultSet에 할당
+            } else {
+                resultSet.retainAll(places); // 검색어에 대한 교집합 구하기
+            }
+        }
+
+        return resultSet;
     }
 
 }
