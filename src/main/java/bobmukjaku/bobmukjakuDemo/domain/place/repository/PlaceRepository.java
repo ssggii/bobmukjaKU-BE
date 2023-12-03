@@ -18,7 +18,7 @@ public interface PlaceRepository extends JpaRepository<Place, String> {
     @Query("SELECT p FROM Place p " +
             "ORDER BY p.scrapCount DESC, " +
             "         p.reviewCount DESC, " +
-            "         p.placeName ASC")
+            "         p.placeName ASC LIMIT 10")
     List<TopScrapRestaurantsInterface> findTop10CustomSort(); // 스크랩&리뷰 수 기반 상위 음식점 검색
 
 }
