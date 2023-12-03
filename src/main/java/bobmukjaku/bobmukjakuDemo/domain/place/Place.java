@@ -40,6 +40,13 @@ public class Place {
         this.reviewCount--;
     }
 
+    public void updateScrapCount(int scrapCount) {
+        this.scrapCount = scrapCount;
+    }
+    public void updateReviewCount(int reviewCount){
+        this.reviewCount = reviewCount;
+    }
+
     public static PlaceInfoDto toDto(Place place) {
         PlaceInfoDto placeInfoDto = new PlaceInfoDto(place.placeId, place.placeName);
         return placeInfoDto;

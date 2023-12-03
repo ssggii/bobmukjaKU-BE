@@ -17,4 +17,8 @@ public interface ScrapRepository extends JpaRepository<Scrap, Long> {
             "GROUP BY s.placeId " +
             "ORDER BY COUNT(s.placeId) DESC, s.placeId ASC")
     List<Object[]> findTop10PlacesByScrapCount(); // 상위 스크랩 음식점 조회
+
+    @Query("SELECT DISTINCT s.placeId FROM Scrap s")
+    List<String> findDistinctPlaceIds(); // 전체 Scrap 엔티티에서 placeId 중복 없이 가져오기
+
 }

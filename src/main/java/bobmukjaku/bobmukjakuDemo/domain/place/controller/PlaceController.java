@@ -142,4 +142,15 @@ public class PlaceController {
         return new ResponseEntity<>(placeInfoDtos, HttpStatus.OK);
     }
 
+    // scrap_count 업데이트
+    @PostMapping("/place/update/scrap/count")
+    public ResponseEntity updateScrapCount() throws Exception {
+        return new ResponseEntity(placeService.updateScrapCount(), HttpStatus.OK);
+    }
+
+    // review_count 업데이트
+    @PostMapping("/place/update/review/count")
+    public ResponseEntity updateReviewCount() throws Exception {
+        return new ResponseEntity(placeService.updateReviewCount(), HttpStatus.OK);
+    }
 }

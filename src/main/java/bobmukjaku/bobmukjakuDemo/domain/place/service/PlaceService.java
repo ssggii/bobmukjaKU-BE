@@ -7,9 +7,7 @@ import bobmukjaku.bobmukjakuDemo.domain.member.repository.MemberRepository;
 import bobmukjaku.bobmukjakuDemo.domain.place.Place;
 import bobmukjaku.bobmukjakuDemo.domain.place.Review;
 import bobmukjaku.bobmukjakuDemo.domain.place.Scrap;
-import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewInfoDto;
-import bobmukjaku.bobmukjakuDemo.domain.place.dto.ReviewDeleteDto;
-import bobmukjaku.bobmukjakuDemo.domain.place.dto.ScrapInfoDto;
+import bobmukjaku.bobmukjakuDemo.domain.place.dto.*;
 import bobmukjaku.bobmukjakuDemo.domain.place.repository.PlaceRepository;
 import bobmukjaku.bobmukjakuDemo.domain.place.repository.ReviewRepository;
 import bobmukjaku.bobmukjakuDemo.domain.place.repository.ScrapRepository;
@@ -152,6 +150,7 @@ public class PlaceService {
         return array.size();
     }
 
+    // 이름으로 음식점 검색
     public Set<Place> getPlacesByKeyword(char[] characters) throws Exception {
         Set<Place> resultSet = null; // 초기화된 Set 객체 생성
 
@@ -165,6 +164,32 @@ public class PlaceService {
         }
 
         return resultSet;
+    }
+
+    // scrap_count 업데이트
+    public List<ScrapCountUpdateDto> updateScrapCount() throws Exception {
+        List<String> placeIds = scrapRepository.findDistinctPlaceIds(); // 업데이트할 음식점 placeId 리스트
+        List<ScrapCountUpdateDto> updateDtos = new ArrayList<>();
+        for(String placeId : placeIds){
+            int scrapCount = Math.toIntExact(scrapRepository.countByPlaceId(placeId)); // 현재 스크랩 수
+            placeRepository.findByPlaceId(placeId).ifPresent(place -> place.updateScrapCount(scrapCount));
+            Place place = placeRepository.findByPlaceId(placeId).get();
+            updateDtos.add(new ScrapCountUpdateDto(place.getPlaceId(), place.getPlaceName(), place.getScrapCount()));
+        }
+        return updateDtos;
+    }
+
+    // review_count 업데이트
+    public List<ReviewCountUpdateDto> updateReviewCount() throws Exception {
+        List<String> placeIds = reviewRepository.findDistinctPlaceIds(); // 업데이트할 음식점 placeId 리스트
+        List<ReviewCountUpdateDto> updateDtos = new ArrayList<>();
+        for(String placeId : placeIds){
+            int reviewCount = Math.toIntExact(reviewRepository.countByPlaceId(placeId));
+            placeRepository.findByPlaceId(placeId).ifPresent(place -> place.updateReviewCount(reviewCount));
+            Place place = placeRepository.findByPlaceId(placeId).get();
+            updateDtos.add(new ReviewCountUpdateDto(place.getPlaceId(), place.getPlaceName(), place.getReviewCount()));
+        }
+        return updateDtos;
     }
 
 }

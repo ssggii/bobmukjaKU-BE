@@ -40,7 +40,8 @@ public class SecurityConfig {
 
     // 인증 없이 접근 가능
     private static final String[] WHITE_LIST = {
-            "/", "/login**", "/signUp**", "/check/nickname", "/mailAuth", "/resetPassword", "/member/name_rate_bg/*", "/api"
+            "/", "/login**", "/signUp**", "/check/nickname", "/mailAuth",
+            "/resetPassword", "/member/name_rate_bg/*", "/api", "/place/update/scrap/count", "/place/update/review/count"
     };
 
     // USER 권한으로 접근 가능
