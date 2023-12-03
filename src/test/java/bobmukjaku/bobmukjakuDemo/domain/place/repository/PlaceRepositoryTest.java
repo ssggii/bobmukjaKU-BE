@@ -75,23 +75,4 @@ public class PlaceRepositoryTest {
 
     }
 
-/*
-    @Test
-    void 키워드를_이름에_포함하는_음식점_반환() throws Exception {
-        // given
-        String keyword = "내찜닭";
-        *//*Place place1 = Place.builder().placeId("1").placeName("닭맛집").scrapCount(10).reviewCount(5).build();
-        Place place2 = Place.builder().placeId("2").placeName("내가찜한닭").scrapCount(15).reviewCount(8).build();
-        Place place3 = Place.builder().placeId("3").placeName("시홍쓰").scrapCount(7).reviewCount(7).build();
-        List<Place> places = List.of(place1, place2, place3);
-        placeRepository.saveAll(places);*//*
-
-        // when
-        List<PlaceInfoDto> result = placeService.getPlacesByKeyword(keyword);
-
-        // then
-        assertThat(result).hasSize(2);
-
-    }*/
-
 }
